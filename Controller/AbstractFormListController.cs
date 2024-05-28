@@ -144,7 +144,7 @@ namespace FrontEnd.Controller
                 ExecuteCRUD(ref temp, crud, sql, parameters);
             } 
             else ExecuteCRUD(ref temp, crud, sql, parameters);
-            Db.Records?.NotifyChildren(crud, temp);
+            Db.MasterSource?.NotifyChildren(crud, temp);
             return true;
         }
         

@@ -176,7 +176,7 @@ namespace FrontEnd.Controller
             Db.Model = CurrentModel;
             Db.Crud(crud, sql, parameters);
             ((AbstractModel)CurrentModel).IsDirty = false;
-            Db.Records?.NotifyChildren(crud, Db.Model); //tell children sources to reflect the changes occured in the master source's collection.
+            Db.MasterSource?.NotifyChildren(crud, Db.Model); //tell children sources to reflect the changes occured in the master source's collection.
             if (crud == CRUD.INSERT) GoLast(); //if the we have inserted a new record instruct the Navigator to move to the last record.
             return true;
         }
