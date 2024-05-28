@@ -1,0 +1,25 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:FrontEnd.Forms"
+    >
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Form.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/FormRow.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/FormList.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/SubForm.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/LoadingMask.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/RecordTracker.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/RecordStatus.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/CommandPanel.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/HeaderFilter.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/ReportPage.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/ReportViewer.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/PageTracker.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Dialogs.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Curtain.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Walkthrough.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

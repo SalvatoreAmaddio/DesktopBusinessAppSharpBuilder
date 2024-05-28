@@ -1,0 +1,62 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:report="clr-namespace:FrontEnd.Reports"
+                    xmlns:fr="clr-namespace:FrontEnd.Forms"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Images.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type report:ReportViewer}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type report:ReportViewer}">
+                    <Grid Background="Gray">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+
+                        <ToolBarTray Grid.Row="0" IsLocked="True">
+                            <ToolBarTray.Background>
+                                <SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
+                            </ToolBarTray.Background>
+                            <ToolBar IsOverflowOpen="False">
+                                <ToolBar.Background>
+                                    <SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
+                                </ToolBar.Background>
+                                <report:PDFButton Width="30" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Command="{TemplateBinding PrintCommand}"/>
+                                <Button Width="30" ToolTip="Send by email" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" x:Name="PART_SendButton">
+                                    <Image Source="{StaticResource send}"/>
+                                </Button>
+                                <Separator Width="10" Background="Transparent"/>
+                                <fr:Text x:Name="text_fileName" Placeholder="File name..." Text="{Binding Path=FileName, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="200"/>
+                                <Separator Width="10" Background="Transparent"/>
+                                <StackPanel VerticalAlignment="Center">
+                                    <CheckBox IsChecked="{Binding Path=OpenFile, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="Open File after printing" Width="160" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <Label Content="Save file in" VerticalAlignment="Center"/>
+                                <fr:Text Placeholder="Directory..." Text="{Binding Path=DirName, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="200"/>
+                                <Button x:Name="PART_ChooseDir" ToolTip="Choose Directory">
+                                    <Image Source="{StaticResource root_dir}" Width="30" Height="30"/>
+                                </Button>
+                            </ToolBar>
+                        </ToolBarTray>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <Border x:Name="Border" HorizontalAlignment="Center" Margin="0,0,0,10" BorderThickness="0" BorderBrush="Black" ScrollViewer.CanContentScroll="True">
+                                <report:ListPage x:Name="ListPage" ItemsSource="{Binding Path = ItemsSource, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" SelectedItem="{Binding Path = SelectedPage, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            </Border>
+                        </ScrollViewer>
+                        <ProgressBar IsIndeterminate="{TemplateBinding IsLoading}" Grid.Row="2"/>
+                        <Grid Grid.Row="3">
+                            <report:PageTracker ItemsSource="{TemplateBinding ItemsSource}" SelectedPage="{Binding Path = SelectedPage, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Message="{TemplateBinding Message}"/>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

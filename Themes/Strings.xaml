@@ -1,0 +1,16 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:clr="clr-namespace:System;assembly=mscorlib">
+
+    <clr:String x:Key="first">◀◀</clr:String>
+    <clr:String x:Key="previous">◀</clr:String>
+    <clr:String x:Key="next">▶</clr:String>
+    <clr:String x:Key="last">▶▶</clr:String>
+    <clr:String x:Key="editing">🖋️</clr:String>
+    <clr:String x:Key="editing2">🖊️</clr:String>
+    <clr:String x:Key="memo">📝</clr:String>
+    <clr:String x:Key="lock">🔒</clr:String>
+    <clr:String x:Key="magnifier">🔍</clr:String>
+    <clr:String x:Key="closeCurtain">⮜</clr:String>
+    <clr:String x:Key="openCurtain">⮞</clr:String>
+</ResourceDictionary>

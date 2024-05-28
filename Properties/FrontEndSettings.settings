@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="FrontEnd.Properties" GeneratedClassName="FrontEndSettings">
+  <Profiles />
+  <Settings>
+    <Setting Name="EmailUserName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">salvatoreamaddio94@gmail.com</Value>
+    </Setting>
+    <Setting Name="ReportDefaultDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

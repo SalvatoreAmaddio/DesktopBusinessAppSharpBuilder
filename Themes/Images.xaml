@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <BitmapImage x:Key="clearfilter" UriSource="pack://application:,,,/FrontEnd;component/images/clear_filter.png"/>
+    <BitmapImage x:Key="plus" UriSource="pack://application:,,,/FrontEnd;component/Images/plus.png"/>
+    <BitmapImage x:Key="close" UriSource="pack://application:,,,/FrontEnd;component/Images/close.png"/>
+    <BitmapImage x:Key="delete" UriSource="pack://application:,,,/FrontEnd;component/Images/delete.png"/>
+    <BitmapImage x:Key="filter" UriSource="pack://application:,,,/FrontEnd;component/Images/filter.png"/>
+    <BitmapImage x:Key="folder" UriSource="pack://application:,,,/FrontEnd;component/Images/folder.png"/>
+    <BitmapImage x:Key="nowifi" UriSource="pack://application:,,,/FrontEnd;component/Images/nowifi.png"/>
+    <BitmapImage x:Key="pdf" UriSource="pack://application:,,,/FrontEnd;component/Images/pdf.png"/>
+    <BitmapImage x:Key="save" UriSource="pack://application:,,,/FrontEnd;component/Images/save.png"/>
+    <BitmapImage x:Key="requery" UriSource="pack://application:,,,/FrontEnd;component/Images/requery.png"/>
+    <BitmapImage x:Key="excel" UriSource="pack://application:,,,/FrontEnd;component/Images/excel.png"/>
+    <BitmapImage x:Key="redlight" UriSource="pack://application:,,,/FrontEnd;component/Images/redlight.png"/>
+    <BitmapImage x:Key="padlock" UriSource="pack://application:,,,/FrontEnd;component/Images/padlock.png"/>
+    <BitmapImage x:Key="question" UriSource="pack://application:,,,/FrontEnd;component/Images/questionmark.png"/>
+    <BitmapImage x:Key="report" UriSource="pack://application:,,,/FrontEnd;component/Images/report.png"/>
+    <BitmapImage x:Key="emailsetting" UriSource="pack://application:,,,/FrontEnd;component/Images/emailsetting.png"/>
+    <BitmapImage x:Key="stopIcon" UriSource="pack://application:,,,/FrontEnd;component/Images/stopIcon.png"/>
+    <BitmapImage x:Key="thumbup" UriSource="pack://application:,,,/FrontEnd;component/Images/thumbup.png"/>
+    <BitmapImage x:Key="send" UriSource="pack://application:,,,/FrontEnd;component/Images/send.png"/>
+    <BitmapImage x:Key="root_dir" UriSource="pack://application:,,,/FrontEnd;component/Images/root_directory.png"/>
+    <BitmapImage x:Key="logout" UriSource="pack://application:,,,/FrontEnd;component/Images/logout.png"/>
+</ResourceDictionary>

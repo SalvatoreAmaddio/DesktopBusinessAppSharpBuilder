@@ -1,0 +1,218 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:FrontEnd.Dialogs"
+                    xmlns:fr="clr-namespace:FrontEnd.Forms"
+                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:b="clr-namespace:FrontEnd.Behaviours"
+                    >
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Images.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type local:UnsavedDialog}">
+        <Setter Property="Icon" Value="{StaticResource stopIcon}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:UnsavedDialog}">
+                    <Border Background="White"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid Background="White" Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="7*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{StaticResource redlight}" VerticalAlignment="Stretch" Height="100" Grid.Column="0" Grid.RowSpan="2"/>
+                            <Label Grid.Column="1" VerticalAlignment="Stretch" VerticalContentAlignment="Center" FontSize="15" Padding="10">
+                                <TextBlock TextWrapping="Wrap" Text="{TemplateBinding Text}"/>
+                            </Label>
+                            <StackPanel FocusManager.FocusedElement="{Binding ElementName=Yes}" Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
+                                <Button Tag="Yes" Content="YES" Width="70" x:Name="Yes" IsTabStop="True" TabIndex="0"/>
+                                <Separator Width="20" Background="Transparent"/>
+                                <Button Tag="No" Content="NO" Width="70" x:Name="No" IsTabStop="True" TabIndex="1"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:ConfirmDialog}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:ConfirmDialog}">
+                    <Border Background="White"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid Background="White" Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="7*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{StaticResource question}" VerticalAlignment="Stretch" Height="100" Grid.Column="0" Grid.RowSpan="2" Margin="0,0,0,5"/>
+                            <Label Grid.Column="1" VerticalAlignment="Stretch" VerticalContentAlignment="Center" FontSize="15" Padding="10">
+                                <TextBlock TextWrapping="Wrap" Text="{TemplateBinding Text}"/>
+                            </Label>
+                            <StackPanel FocusManager.FocusedElement="{Binding ElementName=Yes}" Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
+                                <Button Tag="Yes" Content="YES" Width="70" x:Name="Yes" IsTabStop="True" TabIndex="0"/>
+                                <Separator Width="20" Background="Transparent"/>
+                                <Button Tag="No" Content="NO" Width="70" x:Name="No" IsTabStop="True" TabIndex="1"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:Failure}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:Failure}">
+                    <Border Background="White"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid Background="White" Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="7*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{StaticResource redlight}" VerticalAlignment="Stretch" Height="100" Grid.Column="0" Grid.RowSpan="2"/>
+                            <Label Grid.Column="1" VerticalAlignment="Stretch" VerticalContentAlignment="Center" FontSize="15" Padding="10">
+                                <TextBlock TextWrapping="Wrap" Text="{TemplateBinding Text}"/>
+                            </Label>
+                            <StackPanel FocusManager.FocusedElement="{Binding ElementName=Okay}" Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
+                                <Button Tag="Okay" Content="Okay" Width="70" x:Name="Okay" IsTabStop="True" TabIndex="0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:EmailAppDialog}">
+        <Setter Property="Title" Value="Email's App Password"/>
+        <Setter Property="ResizeMode" Value="NoResize"/>
+        <Setter Property="WindowStyle" Value="SingleBorderWindow"/>
+        <Setter Property="SizeToContent" Value="Height"/>
+        <Setter Property="Width" Value="300"/>
+        <Setter Property="Icon" Value="{StaticResource emailsetting}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:EmailAppDialog}">
+                    <Border Background="White"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid Background="White" Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="10"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="10"/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+
+                            <fr:Text x:Name="PART_Username" Grid.Row="0" Placeholder="Email..." Text="{Binding Username, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <PasswordBox Grid.Row="2" x:Name="PART_Password">
+                                <i:Interaction.Behaviors>
+                                    <b:PlaceholderPasswordBox Placeholder="App's Password..."/>
+                                </i:Interaction.Behaviors>
+                            </PasswordBox>
+
+                            <Button Grid.Row="4" Tag="save" HorizontalAlignment="Stretch" Content="Save" x:Name="PART_Save" IsTabStop="True" TabIndex="0"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:ChangeUserPasswordDialog}">
+        <Setter Property="Title" Value="User's Password"/>
+        <Setter Property="ResizeMode" Value="NoResize"/>
+        <Setter Property="WindowStyle" Value="SingleBorderWindow"/>
+        <Setter Property="SizeToContent" Value="Height"/>
+        <Setter Property="Width" Value="300"/>
+        <Setter Property="Icon" Value="{StaticResource padlock}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:ChangeUserPasswordDialog}">
+                    <Border Background="White"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid Background="White" Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="10"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="10"/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+
+                            <PasswordBox Grid.Row="0" x:Name="PART_OldPassword">
+                                <i:Interaction.Behaviors>
+                                    <b:PlaceholderPasswordBox Placeholder="Old Password..."/>
+                                </i:Interaction.Behaviors>
+                            </PasswordBox>
+                            
+                            <PasswordBox Grid.Row="2" x:Name="PART_NewPassword">
+                                <i:Interaction.Behaviors>
+                                    <b:PlaceholderPasswordBox Placeholder="New Password..."/>
+                                </i:Interaction.Behaviors>
+                            </PasswordBox>
+
+                            <Button Grid.Row="4" Tag="change" HorizontalAlignment="Stretch" Content="Change" x:Name="PART_Change" IsTabStop="True" TabIndex="0"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:SuccessDialog}">
+        <Setter Property="Width" Value="300"/>
+        <Setter Property="Icon" Value="{StaticResource padlock}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:SuccessDialog}">
+                    <Border Background="White"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid Background="White" Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="10"/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="7*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{StaticResource thumbup}" VerticalAlignment="Stretch" Height="100" Grid.Column="0"/>
+                            <Label Grid.Column="1" VerticalAlignment="Stretch" VerticalContentAlignment="Center" FontSize="15" Padding="10">
+                                <TextBlock TextWrapping="Wrap" Text="{TemplateBinding Text}"/>
+                            </Label>
+                            <Button Grid.Row="2" Grid.ColumnSpan="2" Tag="ok" HorizontalAlignment="Stretch" Content="OK" x:Name="PART_OK" IsTabStop="True" TabIndex="0"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

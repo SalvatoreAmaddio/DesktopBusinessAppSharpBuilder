@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Name="b" x:Key="DefaultWhite" Color="#EDF1FF"/>
+    <SolidColorBrush x:Key="DefaultGrey" Color="{x:Static SystemColors.MenuColor}"/>
+    <SolidColorBrush x:Key="HappyBlue" Color="#0096FF"/>
+
+</ResourceDictionary>

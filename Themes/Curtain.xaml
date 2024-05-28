@@ -1,0 +1,95 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:FrontEnd.Forms"
+                    >
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Strings.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Colors.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+    
+    <Style TargetType="{x:Type local:Curtain}">
+        <Setter Property="BorderThickness" Value=".1"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Width" Value="250"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Panel.ZIndex" Value="99"/>
+        <Setter Property="Grid.RowSpan" Value="2"/>
+        <Setter Property="HeaderTitle" Value="Ciao!"/>
+        <Setter Property="Visibility" Value="Hidden"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:Curtain}">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="BorderBrush" Value="Black"/>
+                                    <Setter Property="BorderThickness" Value="0,.1,.2,0"/>
+                                    <Setter Property="Padding" Value="2"/>
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="100"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" Padding="4" x:Name="PART_HeaderBorder" Background="{StaticResource DefaultGrey}">
+                                <Grid>
+                                    <Label Content="{TemplateBinding HeaderTitle}" HorizontalAlignment="Center" VerticalAlignment="Center" FontStyle="Italic" FontSize="20"/>
+                                    <Button x:Name="PART_CloseButton" ToolTip="Close Curtain" Content="{StaticResource closeCurtain}" HorizontalAlignment="Right" VerticalAlignment="Center" BorderThickness="0" Background="Transparent"/>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="1" Background="White">
+                                <StackPanel x:Name="PART_Body" VerticalAlignment="Center">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="Label">
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="FontWeight" Value="Medium"/>
+                                            <Setter Property="Padding" Value="0,3,3,0"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <Label Content="Welcome to" FontSize="20"/>
+                                    <Label Content="{TemplateBinding SoftwareName}" FontWeight="Light"/>
+                                    <Label Content="{TemplateBinding SoftwareVersion}" FontWeight="Light"/>
+                                    <Label Content="Developed for:" FontWeight="Light"/>
+                                    <Label Content="{TemplateBinding ClientName}" FontWeight="Light"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="2" Background="{StaticResource DefaultGrey}">
+                                <StackPanel x:Name="PART_DeveloperInfoStackPanel" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="Label">
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="FontWeight" Value="Medium"/>
+                                            <Setter Property="Padding" Value="0,3,3,0"/>
+                                        </Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="FontWeight" Value="Medium"/>
+                                            <Setter Property="Padding" Value="0,3,3,0"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <Label Content="Developed by"/>
+                                    <Label x:Name="PART_DeveloperName" Content="{TemplateBinding DeveloperName}"/>
+                                    <Label x:Name="PART_SoftwareYear" Content="{TemplateBinding SoftwareYear}"/>
+                                    <TextBlock x:Name="PART_DeveloperWebsite">
+                                        <Hyperlink x:Name="PART_WebLink" NavigateUri="{TemplateBinding DeveloperWebsite}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+</ResourceDictionary>
