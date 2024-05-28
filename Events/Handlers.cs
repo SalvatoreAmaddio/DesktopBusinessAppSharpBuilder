@@ -24,21 +24,8 @@ namespace FrontEnd.Events
     /// <param name="e"></param>
     public delegate void FilterEventHandler(object? sender, FilterEventArgs e);
     
-    public class FilterEventArgs(object? origin, CRUD? crud, IAbstractSQLModelController? controller, int index) : EventArgs 
+    public class FilterEventArgs() : EventArgs 
     {
-        public object? Origin { get; } = origin;
-        public CRUD? Crud { get; } = crud;
-        public Type? OriginType => Origin?.GetType();
-        public int ModelIndex { get; } = index;
-        public IAbstractSQLModelController? Controller { get; } = controller;
-        public void AdjustIndex() 
-        {
-            if (Crud == CRUD.UPDATE) //reasset the index if the RunFilter fired.
-            {
-                Controller?.GoAt(ModelIndex);
-            }
-        }
-
     }
 
     public class OnDirtyChangedEventArgs(AbstractModel Model) : EventArgs

@@ -97,7 +97,7 @@ namespace FrontEnd.Source
                     break;
             }
 
-            RunFilter?.Invoke(this, new(this,crud, Controller, IndexOf((M)model)));
+            RunFilter?.Invoke(this,new());
 
         }
 

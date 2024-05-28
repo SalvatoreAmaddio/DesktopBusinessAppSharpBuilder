@@ -87,7 +87,7 @@ namespace FrontEnd.Forms
             foreach(var item in ItemsSource) 
                 item.Deselect();
 
-            ((IAbstractFormListController)DataContext).OnOptionFilter(new(this,null,null,0));
+            ((IAbstractFormListController)DataContext).OnOptionFilter(new());
             IsOpen = false;
             ResetDropDownButtonAppereance();
         }
@@ -137,7 +137,7 @@ namespace FrontEnd.Forms
             if (DropDownButton == null) throw new Exception("DropDownButton is null");
             DropDownButton.Content = ClearFilter;
             ToolTip = "Clear Filter";
-            ((IAbstractFormListController)DataContext).OnOptionFilter(new(this, null, null, 0));
+            ((IAbstractFormListController)DataContext).OnOptionFilter(new());
             if (!ItemsSource.Any(s=>s.IsSelected)) ResetDropDownButtonAppereance();
         }
         #endregion
