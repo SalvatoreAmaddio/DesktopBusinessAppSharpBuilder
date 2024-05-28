@@ -43,7 +43,11 @@ namespace FrontEnd.Source
         /// This constructor will consider this RecordSource object as a child of the <see cref="IAbstractDatabase.Records"/>
         /// </summary>
         /// <param name="db">An instance of <see cref="IAbstractDatabase"/></param>
-        public RecordSource(IAbstractDatabase db) : this(db.Records.Cast<M>()) => db.Records.AddChild(this);
+        public RecordSource(IAbstractDatabase db) : this(db.Records.Cast<M>()) 
+        {
+            db.Records.AddChild(this);
+            var x = Count;
+        } 
 
         /// <summary>
         /// It instantiates a RecordSource object filled with the given <see cref="IAbstractDatabase.Records"/> IEnumerable.
@@ -51,7 +55,11 @@ namespace FrontEnd.Source
         /// </summary>
         /// <param name="db">An instance of <see cref="IAbstractDatabase"/></param>
         /// <param name="controller">An instance of <see cref="IAbstractSQLModelController"/></param>
-        public RecordSource(IAbstractDatabase db, IAbstractFormController controller) : this(db) => Controller = controller;
+        public RecordSource(IAbstractDatabase db, IAbstractFormController controller) : this(db)
+        { 
+            Controller = controller;
+            var x = Count;
+        }
         #endregion
 
         #region Enumerator
