@@ -41,10 +41,6 @@
 	<PackageReference Include="BackendBusinessAppSharpBuilder" Version="1.0.0" />
 	<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
 	<PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
-	<PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
-	<PackageReference Include="System.Data.SQLite" Version="1.0.118" />
-	<PackageReference Include="System.Drawing.Common" Version="8.0.5" />
-	<PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -90,11 +86,4 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-
-	<!--
-	  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(ProjectDir)PrinterPortManager.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;" />
-  </Target>
-	-->
-
 </Project>
