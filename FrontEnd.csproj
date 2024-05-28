@@ -14,6 +14,7 @@
     <Description>Package to deal with the front-end of DesktopBusinessAppSharpBuilder.</Description>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageId>DesktopBusinessAppSharpBuilder</PackageId>
+	<PackageLicenseExpression>EPL-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,11 +24,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>embedded</DebugType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="images\logout.png" />
-    <None Remove="images\root_directory.png" />
-  </ItemGroup>
 
   <ItemGroup>
     <Page Remove="Themes\controls.xaml" />
