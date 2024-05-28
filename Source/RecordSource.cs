@@ -100,6 +100,7 @@ namespace FrontEnd.Source
                     {
                         if (navigator.BOF && !navigator.NoRecords) Controller?.GoFirst();
                         if (navigator.EOF && !navigator.NoRecords) Controller?.GoPrevious();
+                        if (Count==0) Controller?.GoAt(null);
                         else Controller?.GoAt(removedIndex);
                     }
                     break;

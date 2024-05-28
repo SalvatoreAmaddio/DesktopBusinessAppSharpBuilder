@@ -104,6 +104,7 @@ namespace FrontEnd.Controller
             if (record == null) 
             {
                 CurrentModel = null;
+                Records = Source.RecordPositionDisplayer();
                 return false;
             }
             else if (record.IsNewRecord() && OpenWindowOnNew) return GoNew();
