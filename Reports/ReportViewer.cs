@@ -1,4 +1,5 @@
-﻿using Backend.Utils;
+﻿using Backend.Exceptions;
+using Backend.Utils;
 using FrontEnd.Controller;
 using FrontEnd.Dialogs;
 using FrontEnd.Properties;
@@ -316,7 +317,19 @@ namespace FrontEnd.Reports
 
             PDFPrinter pdfPrinter = new(FileName, DirName);
 
-            await Task.Run(pdfPrinter.PrinterPortManager.SetPort);
+            try
+            {
+                await Task.Run(pdfPrinter.PrinterPortManager.SetPort);
+            }
+            catch (RunAsAdminException ex) 
+            {
+                Application.Current.Dispatcher.Invoke(() => 
+                {
+                    Failure.Throw(ex.Message,"Ouch.");
+                    IsLoading = false;
+                });
+                return false;
+            }
 
             Message = "Saving...";
             pdfPrinter.Print(doc.DocumentPaginator);
