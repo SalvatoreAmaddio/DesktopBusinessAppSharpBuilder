@@ -75,6 +75,7 @@ namespace FrontEnd.Source
 
         public virtual void Update(CRUD crud, ISQLModel model)
         {
+            int removedIndex = -1;
             switch (crud)
             {
                 case CRUD.INSERT:
@@ -85,7 +86,7 @@ namespace FrontEnd.Source
                     NotifyUIControl([]);
                     break;
                 case CRUD.DELETE:
-                    int removedIndex = IndexOf((M)model);
+                    removedIndex = IndexOf((M)model);
                     if (!Remove((M)model)) break;
                     if (navigator != null)
                     {
@@ -96,12 +97,8 @@ namespace FrontEnd.Source
                     break;
             }
 
-            RunFilter?.Invoke(this, new());
-            if (crud == CRUD.UPDATE) //reasset the index if the RunFilter fired.
-            {
-                int index = IndexOf((M)model);
-                Controller?.GoAt(index);
-            }
+            RunFilter?.Invoke(this, new(this,crud, Controller, IndexOf((M)model)));
+
         }
 
         /// <summary>
@@ -127,14 +124,6 @@ namespace FrontEnd.Source
         /// <returns>Task&lt;RecordSource></returns>
         public static async Task<RecordSource<M>> CreateFromAsyncList(IAsyncEnumerable<M> source) =>
         new RecordSource<M>(await source.ToListAsync());
-
-        /// <summary>
-        /// It takes an IAsyncEnumerable, converts it to a List and returns a RecordSource object.
-        /// </summary>
-        /// <param name="source"> An IAsyncEnumerable&lt;ISQLModel></param>
-        /// <returns>Task&lt;RecordSource></returns>
-        public static async Task<IEnumerable<M>> CreateFromAsyncList2(IAsyncEnumerable<M> source) =>
-        await source.ToListAsync();
 
         public virtual string RecordPositionDisplayer()
         {

@@ -1,4 +1,5 @@
-﻿using FrontEnd.Model;
+﻿using FrontEnd.Events;
+using FrontEnd.Model;
 using System.Windows.Input;
 
 namespace FrontEnd.Controller
@@ -26,7 +27,7 @@ namespace FrontEnd.Controller
         /// }
         /// </code>
         /// </summary>
-        public void OnOptionFilter();
+        public void OnOptionFilter(FilterEventArgs e);
 
         /// <summary>
         /// Gets and Sets the Search Query to be used. This property works in conjunction with a <see cref="FilterQueryBuilder"/> object.

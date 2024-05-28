@@ -4,6 +4,7 @@ using Backend.Model;
 using FrontEnd.Model;
 using FrontEnd.Source;
 using System.Windows.Input;
+using FrontEnd.Events;
 
 namespace FrontEnd.Controller
 {
@@ -32,8 +33,9 @@ namespace FrontEnd.Controller
             QueryBuiler = new(SearchQry);
             AsRecordSource().RunFilter += OnSourceRunFilter;
         }
+
         public abstract Task<IEnumerable<M>> SearchRecordAsync();
-        public abstract void OnOptionFilter();
+        public abstract void OnOptionFilter(FilterEventArgs e);
 
         /// <summary>
         /// Override this method to open a new window to view the selected record. <para/>
@@ -50,7 +52,7 @@ namespace FrontEnd.Controller
         /// Calls the <see cref="Open(M?)"/> by passing a new instance of <see cref="AbstractModel"/>.
         /// </summary>
         protected void OpenNew() => Open(new());
-        private void OnSourceRunFilter(object? sender, EventArgs e) => OnOptionFilter();
+        private void OnSourceRunFilter(object? sender, FilterEventArgs e) => OnOptionFilter(e);
         public void CleanSource()
         {
             if (OpenWindowOnNew) return;

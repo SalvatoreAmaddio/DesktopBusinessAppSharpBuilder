@@ -1,4 +1,8 @@
-﻿using FrontEnd.Model;
+﻿using Backend.Controller;
+using Backend.Database;
+using FrontEnd.Controller;
+using FrontEnd.Model;
+using FrontEnd.Source;
 
 namespace FrontEnd.Events
 {
@@ -10,7 +14,7 @@ namespace FrontEnd.Events
     public delegate void OnDirtyChangedEventHandler(object? sender, OnDirtyChangedEventArgs e);
 
     /// <summary>
-    /// This delegate works as a bridge between the <see cref="FrontEnd.Controller.AbstractFormListController{M}"/> and a <see cref="FrontEnd.Source.RecordSource{M}"/>.
+    /// This delegate works as a bridge between the <see cref="Controller.AbstractFormListController{M}"/> and a <see cref="Source.RecordSource{M}"/>.
     /// <para/>
     /// If any filter operations has been implemented in the Controller, The RecordSource can trigger them.
     /// <para/>
@@ -18,7 +22,24 @@ namespace FrontEnd.Events
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    public delegate void FilterEventHandler(object? sender, EventArgs e);
+    public delegate void FilterEventHandler(object? sender, FilterEventArgs e);
+    
+    public class FilterEventArgs(object? origin, CRUD? crud, IAbstractSQLModelController? controller, int index) : EventArgs 
+    {
+        public object? Origin { get; } = origin;
+        public CRUD? Crud { get; } = crud;
+        public Type? OriginType => Origin?.GetType();
+        public int ModelIndex { get; } = index;
+        public IAbstractSQLModelController? Controller { get; } = controller;
+        public void AdjustIndex() 
+        {
+            if (Crud == CRUD.UPDATE) //reasset the index if the RunFilter fired.
+            {
+                Controller?.GoAt(ModelIndex);
+            }
+        }
+
+    }
 
     public class OnDirtyChangedEventArgs(AbstractModel Model) : EventArgs
     {
