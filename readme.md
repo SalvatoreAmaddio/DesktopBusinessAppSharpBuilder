@@ -74,7 +74,7 @@ This framework was build by using the following NuGet Packages:
 ## Architecture:
 Picture 1 below shows the MCV pattern handled by the Framework.
 
-![Architecture]("https://raw.githubusercontent.com/SalvatoreAmaddio/DesktopBusinessAppSharpBuilder/master/architecture.png")
+![Architecture](https://raw.githubusercontent.com/SalvatoreAmaddio/DesktopBusinessAppSharpBuilder/master/architecture.png)
 
 **AbstractModel** represents the structure of a table within a database. It not only defines the schema but can also be extended to include methods and additional properties, just like any other class. This class utilizes a set of custom attributes to specify which properties are primary keys, foreign keys, or normal fields. This metadata is then sent to the QueryBuilder class (the ORM), which generates default SQL statements for SELECT and all CRUD (Create, Read, Update, Delete) operations.
 
