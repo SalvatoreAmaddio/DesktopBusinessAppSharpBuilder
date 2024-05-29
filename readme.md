@@ -121,6 +121,6 @@ Create your first Form Window:
 - Add a Form Control:
 ```xml
   <fr:Form>
-        ...
+        <!--Put your content here, like a Grid or a StackPanel-->
   </fr:Form>
 ```
