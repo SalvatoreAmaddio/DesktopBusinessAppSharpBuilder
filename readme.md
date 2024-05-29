@@ -6,8 +6,24 @@
 </div>
 
 ## Description
-DesktopBusinessAppSharpBuilder is a comprehensive framework designed to accelerate the development of desktop business applications. Utilizing C#, .NET, and WPF, it supports both backend and frontend development, providing seamless integration with databases like MySQL and SQLite. 
+DesktopBusinessAppSharpBuilder is a C# framework built on .NET, utilizing Windows Presentation Foundation (WPF). 
+It is designed to expedite the creation of business applications by offering a comprehensive set of tools and classes 
+designed for efficiency and scalability. This framework is built on .NET 8.0 specifically for Windows. 
+This means the application will use the .NET 8.0 runtime and is intended to run on the Windows operating system. 
 
-## Warning:
-Framwork still under development.
+## Problem Statement:
+Over the years, I recognized a recurring challenge in the development of business-oriented applications: the need for a streamlined, 
+efficient approach that reduces development time while maintaining high standards of functionality and performance. 
+This realization led to the creation of DesktopBusinessAppSharpBuilder.
+
+## Purpose:
+The primary objective of DesktopBusinessAppSharpBuilder is to accelerate the development of business applications by providing a robust set 
+of custom controls, classes, and utilities. This allows developers to focus more on business logic and less on the repetitive tasks often 
+associated with application development. Developers can focus on designing the user interface in XAML, defining classes that represent 
+their database tables, and implementing any other business logic their application might require. 
+By handling routine tasks and providing essential components, the framework simplifies development, 
+allowing programmers to work more efficiently and effectively on their projects while the Framework takes care of 
+various aspects of Windows Presentation Foundation (WPF).
+
+## Key Features:
 
