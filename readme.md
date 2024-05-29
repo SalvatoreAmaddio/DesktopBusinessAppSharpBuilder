@@ -219,4 +219,4 @@ public JobTitle? JobTitle { get => _jobTitle; set => UpdateProperty(ref value, r
 public string Email { get => _email; set => UpdateProperty(ref value, ref _email); }
 ```
 
-The ```csharp UpdateProperty(ref value, ref _var); ``` method raise the INotifyPropertyChange event.
+The ```UpdateProperty(ref value, ref _var); ``` method raise the INotifyPropertyChange event.
