@@ -26,4 +26,7 @@ allowing programmers to work more efficiently and effectively on their projects 
 various aspects of Windows Presentation Foundation (WPF).
 
 ## Key Features:
+• Custom ORM:
+-	Includes a custom Object-Relational Mapping (ORM) system. Automatically builds queries based on the defined models, simplifying database operations.
+
 
