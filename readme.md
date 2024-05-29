@@ -114,7 +114,13 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 Create your first Form Window:
 
 - Create a new Window File in View
-- add the following namespace  
+- Add the following namespace:
 ```xml
   xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"
+```
+- Add a Form Control:
+```xml
+  <fr:Form>
+        ...
+  </fr:Form>
 ```
