@@ -71,3 +71,12 @@ This framework was build by using the following NuGet Packages:
 - **MySqlConnector** (Version 2.2.7); Author: Bradley Grainger.
 - **System.Management** (Version 8.0.0); Author: Microsoft.
 
+## Architecture:
+Picture 1 below shows the MCV pattern handled by the Framework.
+
+AbstractModel represents the structure of a table within a database. It not only defines the schema but can also be extended to include methods and additional properties, just like any other class. This class utilizes a set of custom attributes to specify which properties are primary keys, foreign keys, or normal fields. This metadata is then sent to the QueryBuilder class (the ORM), which generates default SQL statements for SELECT and all CRUD (Create, Read, Update, Delete) operations.
+
+AbstractController is a class that accepts a generic parameter of type M, where M must be an instance of AbstractModel. This class serves as the intermediary between the GUI and the AbstractModel. It manages the communication, ensuring that user inputs from the GUI are properly handled and that the AbstractModel is updated accordingly. Additionally, it performs database queries and updates, facilitating seamless interaction between the user interface and the underlying data.
+
+Windows Presentation Foundation (WPF) is a GUI framework used for building rich desktop applications on Windows. Custom controls such as Form, FormList, SubForm, and ReportViewer are designed to communicate with the AbstractController through their DataContext property. This design ensures that the controls can seamlessly interact with the controller, facilitating data binding and user interface updates.
+
