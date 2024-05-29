@@ -258,7 +258,7 @@ public App()
 }
 ```
 
-The fetching of the data is an Asyncronous Task managed by the LoadingForm control. You can define your LoadingForm control by creating a new Window.xaml file in your view folder:
+The fetching of the data is an **Asyncronous Task** managed by the LoadingForm control. You can define your LoadingForm control by creating a new Window.xaml file in your view folder:
 
 ```xml
 ﻿<Window x:Class="MyApplication.View.LoadingForm"
@@ -277,4 +277,9 @@ The fetching of the data is an Asyncronous Task managed by the LoadingForm contr
         <Image Stretch="Fill" Source="your image path"/>
     </fr:LoadingMask>
 </Window>
+```
+
+In your App.xaml file, change the StartupUri property as follow:
+```xml
+    StartupUri="View/LoadingForm.xaml"
 ```
