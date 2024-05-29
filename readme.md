@@ -367,3 +367,5 @@ Here you can:
 - Delete a record.
 
 All of this operations are handled by the Framework through the EmployeeController class. Each change to the records are reflected onto the Database. If you attempt to omit a mandatory field, a Alert Message will popup and any Update or Insert operation will not be performed until you fill all mandatory fields.
+
+Explore the full code of a Demo Application [here](https://github.com/SalvatoreAmaddio/MyApplicationDemo)
