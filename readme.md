@@ -243,3 +243,18 @@ Also, you remember to add the ```[Table]``` attribute at the beginning of your c
     ...
  }
 ```
+
+At this point, we are ready to get the data from the Database. To do so, open your **App.xaml.cs** file and add the following constructor:
+
+```csharp
+public App() 
+{
+    Sys.LoadAllEmbeddedDll(); //load some custom assemblies that could be used later on.
+    DatabaseManager.Add(new SQLiteDatabase(new Employee())); //Add the database object responsible for dealing with this table.
+    DatabaseManager.Add(new SQLiteDatabase(new Gender())); //Add the database object responsible for dealing with this table.
+    DatabaseManager.Add(new SQLiteDatabase(new Department())); //Add the database object responsible for dealing with this table.
+    DatabaseManager.Add(new SQLiteDatabase(new JobTitle())); //Add the database object responsible for dealing with this table.
+    DatabaseManager.Add(new SQLiteDatabase(new Payslip())); //Add the database object responsible for dealing with this table.
+    DatabaseManager.Add(new SQLiteDatabase(new User())); //Add the database object responsible for dealing with this table.
+}
+```
