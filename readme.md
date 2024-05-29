@@ -110,3 +110,7 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
     - Data
     - Images (optional)
     - App.xaml
+
+Create your first Form Window:
+
+- Create a new Window File in View
