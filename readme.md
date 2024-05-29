@@ -167,7 +167,7 @@ Assuming your database has a table called Employee structure as follow:
 | Email       | Text           |
 
 An AbstractModel can represent the Table through a set of attributes.
-Let's start by defining the backup properties first:
+Let's start by defining the backup variables first:
 
  ```csharp
   long _employeeid;
@@ -183,4 +183,38 @@ Since Foreign Keys are fields representing a relationship between one Table and 
   JobTitle? _jobTitle; //JobTitle is a class extending AbstractModel
   Gender? _gender; //Gender is a class extending AbstractModel
   Department? _department; //Department is a class extending AbstractModel
+```
+
+Now we can define the properties for each backup variable.
+```csharp
+[PK]
+        public long EmployeeID { get => _employeeid; set => UpdateProperty(ref value, ref _employeeid); }
+
+        [Mandatory]
+        [Field]
+        public string FirstName { get => _firstName; set => UpdateProperty(ref value, ref _firstName); }
+
+        [Mandatory]
+        [Field]
+        public string LastName { get => _lastName; set => UpdateProperty(ref value, ref _lastName); }
+
+        [Mandatory]
+        [Field]
+        public DateTime? DOB { get => _dob; set => UpdateProperty(ref value, ref _dob); }
+
+        [Mandatory]
+        [FK]
+        public Gender? Gender { get => _gender; set => UpdateProperty(ref value, ref _gender); }
+
+        [Mandatory]
+        [FK]
+        public Department? Department { get => _department; set => UpdateProperty(ref value, ref _department); }
+
+        [Mandatory]
+        [FK]
+        public JobTitle? JobTitle { get => _jobTitle; set => UpdateProperty(ref value, ref _jobTitle); }
+
+        [Mandatory]
+        [Field]
+        public string Email { get => _email; set => UpdateProperty(ref value, ref _email); }
 ```
