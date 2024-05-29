@@ -283,9 +283,27 @@ The fetching of the data is an **Asyncronous Task** managed by the LoadingForm c
 
 In your App.xaml file, change the StartupUri property as follow:
 ```xml
-        StartupUri="View/LoadingForm.xaml"
+    StartupUri="View/LoadingForm.xaml"
 ```
 
 Now, when you click on Run, a Window will open loading the data in the background. Once this Task has completed, the window will close and the MainWindow will open.
 
 ## Define your first Controller:
+At this point, the application interrogates the SQLite Database in the Data folder and retrieves the data. However, to display the data on a Form, we must first define a Controller object.
+
+- Create a C# file in the Controller folder.
+- Extends **AbstractFormController<M>**.
+
+```csharp
+namespace MyApplication.Controller
+{
+    public class EmployeeController : AbstractFormController<Employee>
+    {
+        public RecordSource Genders { get; private set; } = new(DatabaseManager.Find<Gender>()!);
+        public RecordSource Departments { get; private set; } = new(DatabaseManager.Find<Department>()!);
+        public RecordSource Titles { get; private set; } = new(DatabaseManager.Find<JobTitle>()!);
+        public PayslipListController Payslips { get; } = new();
+        public override int DatabaseIndex => 0;
+    }
+}
+```
