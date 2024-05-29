@@ -187,34 +187,34 @@ Since Foreign Keys are fields representing a relationship between one Table and 
 
 Now we can define the properties for each backup variable.
 ```csharp
-        [PK]
-        public long EmployeeID { get => _employeeid; set => UpdateProperty(ref value, ref _employeeid); }
+[PK]
+public long EmployeeID { get => _employeeid; set => UpdateProperty(ref value, ref _employeeid); }
 
-        [Mandatory]
-        [Field]
-        public string FirstName { get => _firstName; set => UpdateProperty(ref value, ref _firstName); }
+[Mandatory]
+[Field]
+public string FirstName { get => _firstName; set => UpdateProperty(ref value, ref _firstName); }
 
-        [Mandatory]
-        [Field]
-        public string LastName { get => _lastName; set => UpdateProperty(ref value, ref _lastName); }
+[Mandatory]
+[Field]
+public string LastName { get => _lastName; set => UpdateProperty(ref value, ref _lastName); }
 
-        [Mandatory]
-        [Field]
-        public DateTime? DOB { get => _dob; set => UpdateProperty(ref value, ref _dob); }
+[Mandatory]
+[Field]
+public DateTime? DOB { get => _dob; set => UpdateProperty(ref value, ref _dob); }
 
-        [Mandatory]
-        [FK]
-        public Gender? Gender { get => _gender; set => UpdateProperty(ref value, ref _gender); }
+[Mandatory]
+[FK]
+public Gender? Gender { get => _gender; set => UpdateProperty(ref value, ref _gender); }
 
-        [Mandatory]
-        [FK]
-        public Department? Department { get => _department; set => UpdateProperty(ref value, ref _department); }
+[Mandatory]
+[FK]
+public Department? Department { get => _department; set => UpdateProperty(ref value, ref _department); }
 
-        [Mandatory]
-        [FK]
-        public JobTitle? JobTitle { get => _jobTitle; set => UpdateProperty(ref value, ref _jobTitle); }
+[Mandatory]
+[FK]
+public JobTitle? JobTitle { get => _jobTitle; set => UpdateProperty(ref value, ref _jobTitle); }
 
-        [Mandatory]
-        [Field]
-        public string Email { get => _email; set => UpdateProperty(ref value, ref _email); }
+[Mandatory]
+[Field]
+public string Email { get => _email; set => UpdateProperty(ref value, ref _email); }
 ```
