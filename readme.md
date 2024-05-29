@@ -180,7 +180,7 @@ Let's start by defining the backup properties first:
 **What about the Foreign Keys?**
 Since Foreign Keys are fields representing a relationship between one Table and another, you will need to create Model classes to represent each of those. Therefore:
 ```csharp
-  JobTitle? _jobTitle;
-  Gender? _gender;
-  Department? _department;
+  JobTitle? _jobTitle; //JobTitle is a class extending AbstractModel
+  Gender? _gender; //Gender is a class extending AbstractModel
+  Department? _department; //Department is a class extending AbstractModel
 ```
