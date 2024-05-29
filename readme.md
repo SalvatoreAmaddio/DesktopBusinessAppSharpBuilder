@@ -58,6 +58,16 @@ various aspects of Windows Presentation Foundation (WPF).
 - **Single File publishing:**
   - The Application can be distributed as a Single File, getting around the SQLite assembly issue.
 
-
-
+## NuGet Packages used:
+This framework was build by using the following NuGet Packages:
+- **Microsoft.Xaml.Behaviors.Wpf** (Version 1.1.77); Author: Microsoft.
+- **Refractored.MvvmHelpers** (Version 1.6.2); Author: James Montemagno.
+- **System.Data.SqlClient** (Version 4.8.6); Author: Microsoft.
+- **System.Data.SQLite** (Version 1.0.118); Authors: SQLite Development Team.
+- **System.Drawing.Common** (Version 8.0.5); Author: Microsoft.
+- **System.Linq.Async** (Version 6.0.1); Authors: Microsoft and other contributors.
+- **MailKit** (Version 4.6.0); Author: Jeffrey Stedfast.
+- **MimeKit** (Version 4.6.0); Author: Jeffrey Stedfast.
+- **MySqlConnector** (Version 2.2.7); Author: Bradley Grainger.
+- **System.Management** (Version 8.0.0); Author: Microsoft.
 
