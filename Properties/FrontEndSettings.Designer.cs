@@ -25,7 +25,7 @@ namespace FrontEnd.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("salvatoreamaddio94@gmail.com")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string EmailUserName {
             get {
                 return ((string)(this["EmailUserName"]));
@@ -44,18 +44,6 @@ namespace FrontEnd.Properties {
             }
             set {
                 this["ReportDefaultDirectory"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool FirstTimeLogin {
-            get {
-                return ((bool)(this["FirstTimeLogin"]));
-            }
-            set {
-                this["FirstTimeLogin"] = value;
             }
         }
     }
