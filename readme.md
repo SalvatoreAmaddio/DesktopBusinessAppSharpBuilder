@@ -105,6 +105,7 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 - Structure your project as follow:
 
 | Folders/File | Description                                                |
+|--------------|------------------------------------------------------------|
 | View         | Folder for xaml files.                                     |
 | Controller   | Folder for classes extending AbstractController<M>         |
 | Model        | Folder for classes extending AbstractModel                 |
