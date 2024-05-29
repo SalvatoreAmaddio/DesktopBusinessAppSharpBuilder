@@ -283,3 +283,7 @@ In your App.xaml file, change the StartupUri property as follow:
 ```xml
     StartupUri="View/LoadingForm.xaml"
 ```
+
+Now, when you click on Run, a Window will open loading the data in the background. Once this Task has completed, the window will close and the MainWindow will open.
+
+##Define your first Controller:
