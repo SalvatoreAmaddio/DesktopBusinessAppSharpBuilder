@@ -82,3 +82,5 @@ Picture 1 below shows the MCV pattern handled by the Framework.
 
 **Windows Presentation Foundation (WPF)** is a GUI framework used for building rich desktop applications on Windows. This Framework further enrich WPF by bringing a set of Custom controls such as Form, FormList, SubForm, and ReportViewer are designed to communicate with the AbstractController through their DataContext property. This design ensures that the controls can seamlessly interact with the controller, facilitating data binding and user interface updates.
 
+## Demo:
+You can view a Demo of this Framework in action at [Link Text](https://github.com/SalvatoreAmaddio/MyApplicationDemo)
