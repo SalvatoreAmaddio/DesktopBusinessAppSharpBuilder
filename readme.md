@@ -154,11 +154,14 @@ Assuming you have a SQLite database in the Data folder, you must create a Model 
 ```
 
 Assuming your database has a table called Employee structure as follow:
-- EmployeeID PK
-- FirstName
-- LastName
-- DOB
-- GenderID
-- DepartmentID FK
-- JobTitleID FK
-- Email
+
+| Field       | Description    |
+|-------------|----------------|
+| EmployeeID  | PK NN AI       |
+| FirstName   | Text           |
+| LastName    | Text           |
+| DOB         | Text           |
+| GenderID    | FK INT         |
+| DepartmentID| FK INT         |
+| JobTitleID  | FK INT         |
+| Email       | Text           |
