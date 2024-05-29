@@ -101,7 +101,6 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
         </ResourceDictionary>
     </Application.Resources>
 ```
-
 - Structure your project as follow:
 
 | Folders/Files | Description                                                |
@@ -184,106 +183,109 @@ Since Foreign Keys are fields representing a relationship between one Table and 
   Gender? _gender; //Gender is a class extending AbstractModel
   Department? _department; //Department is a class extending AbstractModel
 ```
+
 Update your constructor to fetch the data from the Database.
+
 ```csharp
-public Employee(DbDataReader reader)
-{
-    _employeeid = reader.GetInt64(0);
-    _firstName = reader.GetString(1);
-    _lastName = reader.GetString(2);
-    _dob = reader.GetDateTime(3);
-    _gender = new(reader.GetInt64(4)); //notice a ForeignKey Model was defined with a constructor taking a long as argument.
-    _department = new(reader.GetInt64(5)); //notice a ForeignKey Model was defined with a constructor taking a long as argument.
-    _jobTitle = new(reader.GetInt64(6)); //notice a ForeignKey Model was defined with a constructor taking a long as argument.
-    _email = reader.GetString(7);
-}
+    public Employee(DbDataReader reader)
+    {
+        _employeeid = reader.GetInt64(0);
+        _firstName = reader.GetString(1);
+        _lastName = reader.GetString(2);
+        _dob = reader.GetDateTime(3);
+        _gender = new(reader.GetInt64(4)); //notice a ForeignKey Model was defined with a constructor taking a long as argument.
+        _department = new(reader.GetInt64(5)); //notice a ForeignKey Model was defined with a constructor taking a long as argument.
+        _jobTitle = new(reader.GetInt64(6)); //notice a ForeignKey Model was defined with a constructor taking a long as argument.
+        _email = reader.GetString(7);
+    }
 ```
 
 Now we can define the properties for each backup variable.
+
 ```csharp
-[PK] //This attribute tells this property represents the Primary Key of the Employee Table.
-public long EmployeeID { get => _employeeid; set => UpdateProperty(ref value, ref _employeeid); }
+    [PK] //This attribute tells this property represents the Primary Key of the Employee Table.
+    public long EmployeeID { get => _employeeid; set => UpdateProperty(ref value, ref _employeeid); }
 
-[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
-[Field] //This attribute tells this property represents a Field of the Employee Table.
-public string FirstName { get => _firstName; set => UpdateProperty(ref value, ref _firstName); }
+    [Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+    [Field] //This attribute tells this property represents a Field of the Employee Table.
+    public string FirstName { get => _firstName; set => UpdateProperty(ref value, ref _firstName); }
 
-[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
-[Field] //This attribute tells this property represents a Field of the Employee Table.
-public string LastName { get => _lastName; set => UpdateProperty(ref value, ref _lastName); }
+    [Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+    [Field] //This attribute tells this property represents a Field of the Employee Table.
+    public string LastName { get => _lastName; set => UpdateProperty(ref value, ref _lastName); }
 
-[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
-[Field] //This attribute tells this property represents a Field of the Employee Table.
-public DateTime? DOB { get => _dob; set => UpdateProperty(ref value, ref _dob); }
+    [Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+    [Field] //This attribute tells this property represents a Field of the Employee Table.
+    public DateTime? DOB { get => _dob; set => UpdateProperty(ref value, ref _dob); }
 
-[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
-[FK] //This attribute tells this property represents a Foreign Key of the Employee Table.
-public Gender? Gender { get => _gender; set => UpdateProperty(ref value, ref _gender); }
+    [Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+    [FK] //This attribute tells this property represents a Foreign Key of the Employee Table.
+    public Gender? Gender { get => _gender; set => UpdateProperty(ref value, ref _gender); }
 
-[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
-[FK] //This attribute tells this property represents a Foreign Key of the Employee Table.
-public Department? Department { get => _department; set => UpdateProperty(ref value, ref _department); }
+    [Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+    [FK] //This attribute tells this property represents a Foreign Key of the Employee Table.
+    public Department? Department { get => _department; set => UpdateProperty(ref value, ref _department); }
 
-[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
-[FK] //This attribute tells this property represents a Foreign Key of the Employee Table.
-public JobTitle? JobTitle { get => _jobTitle; set => UpdateProperty(ref value, ref _jobTitle); }
+    [Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+    [FK] //This attribute tells this property represents a Foreign Key of the Employee Table.
+    public JobTitle? JobTitle { get => _jobTitle; set => UpdateProperty(ref value, ref _jobTitle); }
 
-[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
-[Field] //This attribute tells this property represents a Field of the Employee Table.
-public string Email { get => _email; set => UpdateProperty(ref value, ref _email); }
+    [Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+    [Field] //This attribute tells this property represents a Field of the Employee Table.
+    public string Email { get => _email; set => UpdateProperty(ref value, ref _email); }
 ```
 
 The ```UpdateProperty(ref value, ref _var); ``` method raise the INotifyPropertyChange event.
 
 Also, you remember to add the ```[Table]``` attribute at the beginning of your class. This attribute specify the name of the table.
 ```csharp
- [Table(nameof(Employee))]
- public class Employee : AbstractModel
- {
-    ...
- }
+     [Table(nameof(Employee))]
+     public class Employee : AbstractModel
+     {
+        ...
+     }
 ```
 
 At this point, we are ready to get the data from the Database. To do so, open your **App.xaml.cs** file and add the following constructor:
 
 ```csharp
-public App() 
-{
-    Sys.LoadAllEmbeddedDll(); //load some custom assemblies that could be used later on.
-    DatabaseManager.Add(new SQLiteDatabase(new Employee())); //Add the database object responsible for dealing with this table.
-    DatabaseManager.Add(new SQLiteDatabase(new Gender())); //Add the database object responsible for dealing with this table.
-    DatabaseManager.Add(new SQLiteDatabase(new Department())); //Add the database object responsible for dealing with this table.
-    DatabaseManager.Add(new SQLiteDatabase(new JobTitle())); //Add the database object responsible for dealing with this table.
-    DatabaseManager.Add(new SQLiteDatabase(new User())); //Add the database object responsible for dealing with this table.
-}
+    public App() 
+    {
+        Sys.LoadAllEmbeddedDll(); //load some custom assemblies that could be used later on.
+        DatabaseManager.Add(new SQLiteDatabase(new Employee())); //Add the database object responsible for dealing with this table.
+        DatabaseManager.Add(new SQLiteDatabase(new Gender())); //Add the database object responsible for dealing with this table.
+        DatabaseManager.Add(new SQLiteDatabase(new Department())); //Add the database object responsible for dealing with this table.
+        DatabaseManager.Add(new SQLiteDatabase(new JobTitle())); //Add the database object responsible for dealing with this table.
+        DatabaseManager.Add(new SQLiteDatabase(new User())); //Add the database object responsible for dealing with this table.
+    }
 ```
 
 The fetching of the data is an **Asyncronous Task** managed by the LoadingForm control. You can define your LoadingForm control by creating a new Window.xaml file in your view folder:
 
 ```xml
-﻿<Window x:Class="MyApplication.View.LoadingForm"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MyApplication.View"
-        xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"
-        mc:Ignorable="d"
-        ResizeMode="NoResize"
-        WindowStartupLocation="CenterScreen"
-        Title="Welcome" Height="450" Width="450">
+    ﻿<Window x:Class="MyApplication.View.LoadingForm"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:local="clr-namespace:MyApplication.View"
+            xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"
+            mc:Ignorable="d"
+            ResizeMode="NoResize"
+            WindowStartupLocation="CenterScreen"
+            Title="Welcome" Height="450" Width="450">
 
-    <fr:LoadingMask MainWindow="MainWindow">
-        <Image Stretch="Fill" Source="your image path"/>
-    </fr:LoadingMask>
-</Window>
+        <fr:LoadingMask MainWindow="MainWindow">
+            <Image Stretch="Fill" Source="your image path"/>
+        </fr:LoadingMask>
+    </Window>
 ```
 
 In your App.xaml file, change the StartupUri property as follow:
 ```xml
-    StartupUri="View/LoadingForm.xaml"
+        StartupUri="View/LoadingForm.xaml"
 ```
 
 Now, when you click on Run, a Window will open loading the data in the background. Once this Task has completed, the window will close and the MainWindow will open.
 
-##Define your first Controller:
+## Define your first Controller:
