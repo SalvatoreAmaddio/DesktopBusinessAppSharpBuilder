@@ -31,7 +31,6 @@ namespace FrontEnd.Model
 
         public User() 
         {
-            Sys.OnNoUsers();
             SelectQry = $"SELECT * FROM {nameof(User)} WHERE {nameof(UserName)} = @{nameof(UserName)};";
         }
 
