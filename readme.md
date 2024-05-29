@@ -126,6 +126,7 @@ Create your first Form Window:
 ```
 
 ## Define your first Model:
+Assuming you have a SQLite database in the Data folder, you must create a Model class for each Table in your database.
     - Create a C# file in the Model folder.
     - Extends **AbstractModel**.
     - Each Model has to have a Parameterless constructors.
