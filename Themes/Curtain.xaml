@@ -16,7 +16,6 @@
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Panel.ZIndex" Value="99"/>
         <Setter Property="Grid.RowSpan" Value="2"/>
-        <Setter Property="HeaderTitle" Value="Ciao!"/>
         <Setter Property="Visibility" Value="Hidden"/>
         <Setter Property="Template">
             <Setter.Value>

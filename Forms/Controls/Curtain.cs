@@ -1,4 +1,5 @@
 ﻿using Backend.Utils;
+using FrontEnd.Model;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,6 +40,11 @@ namespace FrontEnd.Forms
         static Curtain()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Curtain), new FrameworkPropertyMetadata(typeof(Curtain)));
+        }
+
+        public Curtain() 
+        {
+            HeaderTitle = $"Ciao {CurrentUser.UserName}!";
         }
 
         #region SoftwareInfo

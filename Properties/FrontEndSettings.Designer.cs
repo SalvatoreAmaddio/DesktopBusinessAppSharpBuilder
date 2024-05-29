@@ -46,5 +46,17 @@ namespace FrontEnd.Properties {
                 this["ReportDefaultDirectory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FirstTimeLogin {
+            get {
+                return ((bool)(this["FirstTimeLogin"]));
+            }
+            set {
+                this["FirstTimeLogin"] = value;
+            }
+        }
     }
 }

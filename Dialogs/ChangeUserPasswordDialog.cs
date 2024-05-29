@@ -30,12 +30,12 @@ namespace FrontEnd.Dialogs
         private void OnChangeClicked(object sender, RoutedEventArgs e)
         {
             if (PART_OldPassword == null) throw new Exception($"Failed to fetch {PART_OldPassword}");
-            if (!CurrentUser.Password.Equals(PART_OldPassword.Password))
-            {
-                Failure.Throw("The old Password does not match the current Password.", "Wrong Input");
-                PART_OldPassword.Password = string.Empty;
-                return;
-            }
+                if (!CurrentUser.Password.Equals(PART_OldPassword.Password))
+                {
+                    Failure.Throw("The old Password does not match the current Password.", "Wrong Input");
+                    PART_OldPassword.Password = string.Empty;
+                    return;
+                }
 
             if (PART_NewPassword == null) throw new Exception($"Failed to fetch {PART_NewPassword}");
 
