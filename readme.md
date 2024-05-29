@@ -91,3 +91,12 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 ## Getting Started:
 - Download the NuGet package 
 - Open your App.xaml file
+- Merge the ResourceDictionary as shown below:
+```xml
+ <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/FrontEndDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
