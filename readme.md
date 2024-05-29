@@ -26,17 +26,37 @@ allowing programmers to work more efficiently and effectively on their projects 
 various aspects of Windows Presentation Foundation (WPF).
 
 ## Key Features:
-- Custom ORM:
-	-	Includes a custom Object-Relational Mapping (ORM) system. Automatically 
-		builds queries based on the defined models, simplifying database operations.
+- **Custom ORM:**
+  - Includes a custom Object-Relational Mapping (ORM) system. Automatically builds queries based on the defined models, simplifying database operations.
 
--	Database Management:
-	-	Supports MySQL and SQLite databases.
-	-	Provides a set of classes to manage database operations seamlessly.
+- **Database Management:**
+  - Supports MySQL and SQLite databases.
+  - Provides a set of classes to manage database operations seamlessly.
 
--	MVC Pattern:
-	-   Implements the Model-View-Controller (MVC) pattern.
-	-	Abstract classes and interfaces designed to manage the Model and Controller components effectively.
+- **MVC Pattern:**
+  - Implements the Model-View-Controller (MVC) pattern.
+  - Abstract classes and interfaces designed to manage the Model and Controller components effectively.
+
+- **Data Binding:**
+  - Despite following the MVC pattern, data binding is extensively used to simplify UI updates and interactions.
+
+- **Custom Controls:**
+  - Includes custom WPF controls such as Form, FormList, and SubForms, ReportViewer which are not available in standard WPF.
+
+- **Win32 API Integration:**
+  - Uses the Win32 API to achieve advanced functionalities that enhance the capabilities of WPF applications.
+
+- **Security:**
+  - Utilizes the Windows Credential Manager System to securely store and manage sensitive information such as database connection strings and passwords.
+
+- **Email Integration:**
+  - Allows integration of your own email service to send emails directly from the application.
+
+- **Excel Integration:**
+  - Provides classes to easily create and read Excel files through COM (Component Object Model). Supports generating reports and data export/import functionalities.
+
+- **Single File publishing:**
+  - The Application can be distributed as a Single File, getting around the SQLite assembly issue.
 
 
 
