@@ -306,3 +306,53 @@ namespace MyApplication.Controller
     }
 }
 ```
+
+Now, you must associate this controller to your View File. Open the MainWindow.xaml.cs. Change the constructor as follow:
+```csharp
+public MainWindow() 
+{
+    InitializeComponent();
+    DataContext = new EmployeeController();
+    ((EmployeeController)DataContext).Window = this;
+}
+```
+
+Now, we are ready to structure our GUI by adding and binding controls.
+
+```xml
+﻿<Window x:Class="MyApplication.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyApplication.View"
+        mc:Ignorable="d"
+        xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"
+        xmlns:controller="clr-namespace:MyApplication.Controller"
+        Title="Employee Form"
+        WindowStartupLocation="CenterScreen"
+        SizeToContent="WidthAndHeight"
+        d:DataContext="{d:DesignInstance Type=controller:EmployeeControllerList, IsDesignTimeCreatable=False}" Height="490" Width="475"
+        >
+    <fr:Form>
+        <Grid Margin="10" fr:Definition.RowDefinitions="30,30,30,30,30,30,30,200" fr:Definition.ColumnDefinitions="80,150,30,150">
+            <Label Content="First Name"/>
+            <fr:Text Text="{Binding CurrentRecord.FirstName}" Grid.Row="0" Grid.Column="1"/>
+            <Label Grid.Row="1" Content="Last Name"/>
+            <fr:Text Text="{Binding CurrentRecord.LastName}" Grid.Row="1" Grid.Column="1"/>
+            <Label Grid.Row="2" Content="DOB"/>
+            <DatePicker SelectedDate="{Binding CurrentRecord.DOB}" Grid.Row="2" Grid.Column="1"/>
+            <Label Content="Gender" Grid.Row="3"/>
+            <fr:Combo ItemsSource="{Binding Genders}" SelectedItem="{Binding CurrentRecord.Gender}" Grid.Row="3" Grid.Column="1"/>
+            <Label Content="Department" Grid.Row="4"/>
+            <fr:Combo ItemsSource="{Binding Departments}" SelectedItem="{Binding CurrentRecord.Department, Mode=TwoWay}" Grid.Row="4" Grid.Column="1"/>
+            <Label Content="Job Title" Grid.Row="5"/>
+            <fr:Combo ItemsSource="{Binding Titles}" SelectedItem="{Binding CurrentRecord.JobTitle, Mode=TwoWay}" Grid.Row="5" Grid.Column="1"/>
+            <Label Content="Email" Grid.Row="6"/>
+            <fr:Text Text="{Binding CurrentRecord.Email}" Grid.Row="6" Grid.Column="1"/>
+            <fr:CommandPanel Grid.Row="0" Grid.RowSpan="4" Grid.Column="3" CommandParameter="{Binding CurrentRecord}" UpdateCMD="{Binding UpdateCMD}" DeleteCMD="{Binding DeleteCMD}"/>
+    </fr:Form>
+</Window>
+```
+
+When you click on Run, once the Loading is completed, you will have a Window display a Form.
