@@ -100,5 +100,6 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
+```xml
 
 - Structure your project as follow:
