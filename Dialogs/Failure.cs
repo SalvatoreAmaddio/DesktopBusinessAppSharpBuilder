@@ -43,7 +43,7 @@ namespace FrontEnd.Dialogs
             }
         }
 
-        public static DialogResult Throw(string? text = null, string? title = "Something is missing") => _ask(new Failure(text, title));
+        public static DialogResult Allert(string? text = null, string? title = "Something is missing") => _ask(new Failure(text, title));
 
     }
 }

@@ -163,7 +163,7 @@ namespace FrontEnd.Reports
 
             if (!EmailSender.CredentialCheck()) 
             {
-                Failure.Throw("I could not find any email settings.");
+                Failure.Allert("I could not find any email settings.");
                 return;
             }
 
@@ -187,7 +187,7 @@ namespace FrontEnd.Reports
 
             if (!File.Exists(FilePath))
             {
-                Failure.Throw("I could not find the file to attach.");
+                Failure.Allert("I could not find the file to attach.");
                 Message = "Email Task Failed.";
                 return;
             }
@@ -205,7 +205,7 @@ namespace FrontEnd.Reports
             }
             catch (Exception)
             {
-                Failure.Throw("The system failed to send the email. Possible reasons could be:\n- Wrong email settings,\nPoor internet connection.");
+                Failure.Allert("The system failed to send the email. Possible reasons could be:\n- Wrong email settings,\nPoor internet connection.");
                 Message = "Email Task Failed.";
                 return;
             }
@@ -267,19 +267,19 @@ namespace FrontEnd.Reports
         {
             if (!PDFPrinter.IsInstalled())
             {
-                Failure.Throw("I could not find a PDF Printer in your computer");
+                Failure.Allert("I could not find a PDF Printer in your computer");
                 return false;
             }
 
             if (string.IsNullOrEmpty(FileName)) 
             {
-                Failure.Throw("Please, specify a file name");
+                Failure.Allert("Please, specify a file name");
                 return false;
             }
 
             if (!Directory.Exists(DirName))
             {
-                Failure.Throw("The directory that you have specified does not exist.");
+                Failure.Allert("The directory that you have specified does not exist.");
                 return false;
             }
 
@@ -325,7 +325,7 @@ namespace FrontEnd.Reports
             {
                 Application.Current.Dispatcher.Invoke(() => 
                 {
-                    Failure.Throw(ex.Message,"Ouch.");
+                    Failure.Allert(ex.Message,"Ouch.");
                     IsLoading = false;
                 });
                 return false;

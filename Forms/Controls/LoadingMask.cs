@@ -54,7 +54,7 @@ namespace FrontEnd.Forms
             Type? mainWinType = Type.GetType($"{Namespace}.View.{MainWindow}, {assemblyName}"); 
             if (mainWinType == null) 
             {
-                Failure.Throw($"Could not find the Type of {MainWindow}","Ouch!");
+                Failure.Allert($"Could not find the Type of {MainWindow}","Ouch!");
                 return;
             }
             

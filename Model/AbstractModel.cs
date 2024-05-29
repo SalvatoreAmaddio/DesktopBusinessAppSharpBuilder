@@ -107,7 +107,7 @@ namespace FrontEnd.Model
             bool result = base.AllowUpdate();
 
             if (!result)
-                Failure.Throw($"Please fill all mandatory fields:\n{GetEmptyMandatoryFields()}");
+                Failure.Allert($"Please fill all mandatory fields:\n{GetEmptyMandatoryFields()}");
 
             return result;
         }

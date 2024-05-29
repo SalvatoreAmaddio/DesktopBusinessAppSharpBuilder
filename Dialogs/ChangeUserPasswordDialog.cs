@@ -32,7 +32,7 @@ namespace FrontEnd.Dialogs
             if (PART_OldPassword == null) throw new Exception($"Failed to fetch {PART_OldPassword}");
                 if (!CurrentUser.Password.Equals(PART_OldPassword.Password))
                 {
-                    Failure.Throw("The old Password does not match the current Password.", "Wrong Input");
+                    Failure.Allert("The old Password does not match the current Password.", "Wrong Input");
                     PART_OldPassword.Password = string.Empty;
                     return;
                 }
