@@ -155,7 +155,7 @@ Assuming you have a SQLite database in the Data folder, you must create a Model 
 
 Assuming your database has a table called Employee structure as follow:
 
-| Field       | Description    |
+| Fields      | Description    |
 |-------------|----------------|
 | EmployeeID  | PK NN AI       |
 | FirstName   | Text           |
@@ -165,3 +165,22 @@ Assuming your database has a table called Employee structure as follow:
 | DepartmentID| FK INT         |
 | JobTitleID  | FK INT         |
 | Email       | Text           |
+
+An AbstractModel can represent the Table through a set of attributes.
+Let's start by defining the backup properties first:
+
+ ```csharp
+  long _employeeid;
+  string _firstName=string.Empty;
+  string _lastName = string.Empty;
+  DateTime? _dob;
+  string _email = string.Empty;
+ ```
+
+**What about the Foreign Keys?**
+Since Foreign Keys are fields representing a relationship between one Table and another, you will need to create Model classes to represent each of those. Therefore:
+```csharp
+  JobTitle? _jobTitle;
+  Gender? _gender;
+  Department? _department;
+```
