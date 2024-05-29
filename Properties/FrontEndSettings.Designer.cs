@@ -26,18 +26,6 @@ namespace FrontEnd.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string EmailUserName {
-            get {
-                return ((string)(this["EmailUserName"]));
-            }
-            set {
-                this["EmailUserName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ReportDefaultDirectory {
             get {
                 return ((string)(this["ReportDefaultDirectory"]));
