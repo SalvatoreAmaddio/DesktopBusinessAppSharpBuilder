@@ -187,34 +187,34 @@ Since Foreign Keys are fields representing a relationship between one Table and 
 
 Now we can define the properties for each backup variable.
 ```csharp
-[PK]
+[PK] //This attribute tells this property represents the Primary Key of the Employee Table.
 public long EmployeeID { get => _employeeid; set => UpdateProperty(ref value, ref _employeeid); }
 
-[Mandatory]
-[Field]
+[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+[Field] //This attribute tells this property represents a Field of the Employee Table.
 public string FirstName { get => _firstName; set => UpdateProperty(ref value, ref _firstName); }
 
-[Mandatory]
-[Field]
+[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+[Field] //This attribute tells this property represents a Field of the Employee Table.
 public string LastName { get => _lastName; set => UpdateProperty(ref value, ref _lastName); }
 
-[Mandatory]
-[Field]
+[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+[Field] //This attribute tells this property represents a Field of the Employee Table.
 public DateTime? DOB { get => _dob; set => UpdateProperty(ref value, ref _dob); }
 
-[Mandatory]
-[FK]
+[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+[FK] //This attribute tells this property represents a Foreign Key of the Employee Table.
 public Gender? Gender { get => _gender; set => UpdateProperty(ref value, ref _gender); }
 
-[Mandatory]
-[FK]
+[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+[FK] //This attribute tells this property represents a Foreign Key of the Employee Table.
 public Department? Department { get => _department; set => UpdateProperty(ref value, ref _department); }
 
-[Mandatory]
-[FK]
+[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+[FK] //This attribute tells this property represents a Foreign Key of the Employee Table.
 public JobTitle? JobTitle { get => _jobTitle; set => UpdateProperty(ref value, ref _jobTitle); }
 
-[Mandatory]
-[Field]
+[Mandatory] //This attribute tells this property cannot be null or empty if it is a string.
+[Field] //This attribute tells this property represents a Field of the Employee Table.
 public string Email { get => _email; set => UpdateProperty(ref value, ref _email); }
 ```
