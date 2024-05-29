@@ -103,3 +103,9 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 ```
 
 - Structure your project as follow:
+    - View
+    - Controller
+    - Model
+    - Themes
+    - Data
+    - App.xaml
