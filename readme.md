@@ -136,6 +136,10 @@ Assuming you have a SQLite database in the Data folder, you must create a Model 
 - Create a constructor that takes **DbDataReader** reader as argument.
 
  ```csharp
+    ﻿using Backend.Model;
+    using FrontEnd.Model;
+    using System.Data.Common;
+
     namespace MyApplication.Model
     {
          public class Employee : AbstractModel
