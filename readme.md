@@ -1,4 +1,4 @@
-# DesktopBusinessAppSharpBuilder
+﻿# DesktopBusinessAppSharpBuilder
 <div align="center">
   <img src="https://salvatoreamaddio.co.uk/img/csharp.png" width="200" height="200"/>
   <img src="https://salvatoreamaddio.co.uk/img/sql.png" width="190" height="190" />
@@ -116,7 +116,7 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 
 Create your first Form Window:
 
-- Create a new Window File in View
+- Create a new Window File in View. Call this file as MainWindow.
 - Add the following namespace:
 ```xml
   xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"
@@ -254,7 +254,27 @@ public App()
     DatabaseManager.Add(new SQLiteDatabase(new Gender())); //Add the database object responsible for dealing with this table.
     DatabaseManager.Add(new SQLiteDatabase(new Department())); //Add the database object responsible for dealing with this table.
     DatabaseManager.Add(new SQLiteDatabase(new JobTitle())); //Add the database object responsible for dealing with this table.
-    DatabaseManager.Add(new SQLiteDatabase(new Payslip())); //Add the database object responsible for dealing with this table.
     DatabaseManager.Add(new SQLiteDatabase(new User())); //Add the database object responsible for dealing with this table.
 }
+```
+
+The fetching of the data is an Asyncronous Task managed by the LoadingForm control. You can define your LoadingForm control by creating a new Window.xaml file in your view folder:
+
+```xml
+﻿<Window x:Class="MyApplication.View.LoadingForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyApplication.View"
+        xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"
+        mc:Ignorable="d"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Title="Welcome" Height="450" Width="450">
+
+    <fr:LoadingMask MainWindow="MainWindow">
+        <Image Stretch="Fill" Source="your image path"/>
+    </fr:LoadingMask>
+</Window>
 ```
