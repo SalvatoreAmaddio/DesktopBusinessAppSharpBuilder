@@ -26,13 +26,13 @@ allowing programmers to work more efficiently and effectively on their projects 
 various aspects of Windows Presentation Foundation (WPF).
 
 ## Key Features:
-• Custom ORM:
--	Includes a custom Object-Relational Mapping (ORM) system. Automatically builds queries based on 
-	the defined models, simplifying database operations.
+- Custom ORM:
+	-	Includes a custom Object-Relational Mapping (ORM) system. Automatically 
+		builds queries based on the defined models, simplifying database operations.
 
-•	Database Management:
--	Supports MySQL and SQLite databases.
--	Provides a set of classes to manage database operations seamlessly.
+-	Database Management:
+	-	Supports MySQL and SQLite databases.
+	-	Provides a set of classes to manage database operations seamlessly.
 
 
 
