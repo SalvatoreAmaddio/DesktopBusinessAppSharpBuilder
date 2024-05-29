@@ -128,4 +128,22 @@ Create your first Form Window:
 - Define your first Model:
     - Create a C# file in the Model folder.
     - Extends **AbstractModel**.
+    - Each Model has to have a Parameterless constructors.
     - Create a constructor that takes **DbDataReader** reader as argument.
+
+    ```csharp
+    namespace MyApplication.Model
+    {
+         public class Employee : AbstractModel
+         {
+            public Employee() { }
+            public Employee(DbDataReader reader)
+            {
+                ....
+            }
+
+            public override ISQLModel Read(DbDataReader reader) => new Employee(reader);
+
+         }
+    }
+    ```
