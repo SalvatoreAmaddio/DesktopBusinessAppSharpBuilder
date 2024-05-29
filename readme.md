@@ -124,3 +124,8 @@ Create your first Form Window:
         <!--Put your content here, like a Grid or a StackPanel-->
   </fr:Form>
 ```
+
+- Define your first Model:
+    - Create a C# file in the Model folder.
+    - Extends **AbstractModel**.
+    - Create a constructor that takes **DbDataReader** reader as argument.
