@@ -103,13 +103,15 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 ```
 
 - Structure your project as follow:
-    - View
-    - Controller
-    - Model
-    - Themes (optional)
-    - Data
-    - Images (optional)
-    - App.xaml
+
+| Folders/File | Description                                                |
+| View         | Folder for xaml files.                                     |
+| Controller   | Folder for classes extending AbstractController<M>         |
+| Model        | Folder for classes extending AbstractModel                 |
+| Themes       | Folder for styling xaml files (optional)                   |
+| Data         | Folder for the Database (in this example a SQLite database)|
+| Images       | Folder for images to be used (optional)                    |
+| App.xaml     | The file which is the entry point of every WPF Application |
 
 Create your first Form Window:
 
@@ -149,3 +151,13 @@ Assuming you have a SQLite database in the Data folder, you must create a Model 
          }
     }
 ```
+
+Assuming your database has a table called Employee structure as follow:
+- EmployeeID PK
+- FirstName
+- LastName
+- DOB
+- GenderID
+- DepartmentID FK
+- JobTitleID FK
+- Email
