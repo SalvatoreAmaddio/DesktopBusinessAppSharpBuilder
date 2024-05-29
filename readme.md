@@ -34,5 +34,10 @@ various aspects of Windows Presentation Foundation (WPF).
 	-	Supports MySQL and SQLite databases.
 	-	Provides a set of classes to manage database operations seamlessly.
 
+-	MVC Pattern:
+	-   Implements the Model-View-Controller (MVC) pattern.
+	-	Abstract classes and interfaces designed to manage the Model and Controller components effectively.
+
+
 
 
