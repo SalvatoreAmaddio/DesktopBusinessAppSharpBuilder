@@ -355,4 +355,11 @@ Now, we are ready to structure our GUI by adding and binding controls.
 </Window>
 ```
 
-When you click on Run, once the Loading is completed, you will have a Window display a Form.
+When you click on Run, once the Loading is completed, you will have a Window displaying a Form.
+Here you can:
+- Navigate from one record to anoter.
+- Add new records.
+- Update a record.
+- Delete a record.
+
+All of this operations are handled by the Framework through the EmployeeController class. Each change to the records are reflected onto the Database.
