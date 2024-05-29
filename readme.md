@@ -84,3 +84,6 @@ Picture 1 below shows the MCV pattern handled by the Framework.
 
 ## Demo Project:
 You can download a Demo of this Framework in action [here](https://github.com/SalvatoreAmaddio/MyApplicationDemo)
+
+## Demo exe:
+You can download a executable of the Demo [here](https://drive.google.com/file/d/1uMlZIEcip69ItPvh13N4pCltF4sF0QTr/view?usp=drive_link)
