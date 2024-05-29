@@ -127,7 +127,25 @@ Create your first Form Window:
 
 ## Define your first Model:
 Assuming you have a SQLite database in the Data folder, you must create a Model class for each Table in your database.
-    - Create a C# file in the Model folder.
-    - Extends **AbstractModel**.
-    - Each Model has to have a Parameterless constructors.
-    - Create a constructor that takes **DbDataReader** reader as argument.
+
+- Create a C# file in the Model folder.
+- Extends **AbstractModel**.
+- Each Model has to have a Parameterless constructors.
+- Create a constructor that takes **DbDataReader** reader as argument.
+
+ ```csharp
+    namespace MyApplication.Model
+    {
+         public class Employee : AbstractModel
+         {
+            public Employee() { }
+            public Employee(DbDataReader reader)
+            {
+                ....
+            }
+
+            public override ISQLModel Read(DbDataReader reader) => new Employee(reader);
+
+         }
+    }
+```
