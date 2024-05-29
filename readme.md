@@ -218,3 +218,5 @@ public JobTitle? JobTitle { get => _jobTitle; set => UpdateProperty(ref value, r
 [Field] //This attribute tells this property represents a Field of the Employee Table.
 public string Email { get => _email; set => UpdateProperty(ref value, ref _email); }
 ```
+
+The ```csharp UpdateProperty(ref value, ref _var); ``` method raise the INotifyPropertyChange event.
