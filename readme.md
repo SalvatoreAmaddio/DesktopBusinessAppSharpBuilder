@@ -299,11 +299,10 @@ namespace MyApplication.Controller
 {
     public class EmployeeController : AbstractFormController<Employee>
     {
-        public RecordSource Genders { get; private set; } = new(DatabaseManager.Find<Gender>()!);
-        public RecordSource Departments { get; private set; } = new(DatabaseManager.Find<Department>()!);
-        public RecordSource Titles { get; private set; } = new(DatabaseManager.Find<JobTitle>()!);
-        public PayslipListController Payslips { get; } = new();
-        public override int DatabaseIndex => 0;
+        public RecordSource Genders { get; private set; } = new(DatabaseManager.Find<Gender>()!); //Fetch the data to be displayed in a ComboBox control.
+        public RecordSource Departments { get; private set; } = new(DatabaseManager.Find<Department>()!); //Fetch the data to be displayed in a ComboBox control.
+        public RecordSource Titles { get; private set; } = new(DatabaseManager.Find<JobTitle>()!); //Fetch the data to be displayed in a ComboBox control.
+        public override int DatabaseIndex => 0; // This tells the controller to use the first Database that was defined in the DatabaseManager class.
     }
 }
 ```
