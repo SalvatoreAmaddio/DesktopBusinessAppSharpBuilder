@@ -87,3 +87,7 @@ You can download a Demo of this Framework in action [here](https://github.com/Sa
 
 ## Demo exe:
 You can download a executable of the Demo [here](https://drive.google.com/file/d/1uMlZIEcip69ItPvh13N4pCltF4sF0QTr/view?usp=drive_link)
+
+## Getting Started:
+- Download the NuGet package 
+- Open your App.xaml file
