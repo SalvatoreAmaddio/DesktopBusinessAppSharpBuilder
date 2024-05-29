@@ -106,6 +106,7 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
     - View
     - Controller
     - Model
-    - Themes
+    - Themes //optional
     - Data
+    - Images //optional
     - App.xaml
