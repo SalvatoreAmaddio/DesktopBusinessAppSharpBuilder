@@ -184,6 +184,20 @@ Since Foreign Keys are fields representing a relationship between one Table and 
   Gender? _gender; //Gender is a class extending AbstractModel
   Department? _department; //Department is a class extending AbstractModel
 ```
+Update your constructor to fetch the data from the Database.
+```csharp
+public Employee(DbDataReader reader)
+{
+    _employeeid = reader.GetInt64(0);
+    _firstName = reader.GetString(1);
+    _lastName = reader.GetString(2);
+    _dob = reader.GetDateTime(3);
+    _gender = new(reader.GetInt64(4)); //notice a ForeignKey Model was defined with a constructor taking a long as argument.
+    _department = new(reader.GetInt64(5)); //notice a ForeignKey Model was defined with a constructor taking a long as argument.
+    _jobTitle = new(reader.GetInt64(6)); //notice a ForeignKey Model was defined with a constructor taking a long as argument.
+    _email = reader.GetString(7);
+}
+```
 
 Now we can define the properties for each backup variable.
 ```csharp
@@ -220,3 +234,12 @@ public string Email { get => _email; set => UpdateProperty(ref value, ref _email
 ```
 
 The ```UpdateProperty(ref value, ref _var); ``` method raise the INotifyPropertyChange event.
+
+Also, you remember to add the ```[Table]``` attribute at the beginning of your class. This attribute specify the name of the table.
+```csharp
+ [Table(nameof(Employee))]
+ public class Employee : AbstractModel
+ {
+    ...
+ }
+```
