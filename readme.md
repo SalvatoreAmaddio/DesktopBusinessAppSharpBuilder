@@ -4,7 +4,7 @@
   <img src="https://salvatoreamaddio.co.uk/img/mysql.svg" width="100" height="100" />
   <img src="https://salvatoreamaddio.co.uk/img/sqlite.png" width="100" height="100" />
   <img src="https://salvatoreamaddio.co.uk/img/wpf.png" width="100" height="100" />
-  <img src="https://raw.githubusercontent.com/SalvatoreAmaddio/DesktopBusinessAppSharpBuilder/master/Win32.png" width="100" height="100" />
+  <img src="https://raw.githubusercontent.com/SalvatoreAmaddio/DesktopBusinessAppSharpBuilder/master/Win32.png" width="150" height="100" />
 </div>
 
 
