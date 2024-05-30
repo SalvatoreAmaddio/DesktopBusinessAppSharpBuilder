@@ -114,7 +114,7 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 | App.xaml      | The file which is the entry point of every WPF Application        |
 
 ## Define your first Model:
-Assuming you have a database in the Data folder, you must create a Model class for each Table in your database.
+Assuming you have a database in the Data folder, you have to create a Model class for each Table in your database.
 
 Let's say your Database has a table called Employee structure as follow:
 
