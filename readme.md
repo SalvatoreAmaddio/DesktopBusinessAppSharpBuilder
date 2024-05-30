@@ -2,6 +2,7 @@
 <div align="center">
   <img src="https://salvatoreamaddio.co.uk/img/csharp.png" width="100" height="100"/>
   <img src="https://salvatoreamaddio.co.uk/img/mysql.svg" width="100" height="100" />
+  <img src="https://salvatoreamaddio.co.uk/img/sqlite.png" width="100" height="100" />
   <img src="https://salvatoreamaddio.co.uk/img/wpf.png" width="100" height="100" />
 </div>
 
