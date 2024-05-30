@@ -238,7 +238,7 @@ Also, remember to add the ```[Table]``` attribute at the beginning of your class
      }
 ```
 
-At this point, we are ready to get the data from the Database. To do so, open your **App.xaml.cs** file and add the following constructor:
+At this point, we are ready to tell the Application which Models it will have to manage. To do so, open your **App.xaml.cs** file and add the following constructor:
 
 ```csharp
     public App() 
