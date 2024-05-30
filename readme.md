@@ -252,7 +252,7 @@ At this point, we are ready to tell the Application which Models it will have to
     }
 ```
 
-At this stage, the application knows where and how to get the data. Yet, before retrieving those data we have to degine a UI and a Controller. 
+At this stage, the application knows where and how to get the data. Yet, before retrieving the data we have to degine a UI and a Controller. 
 
 ## Define your first Controller:
 At this point, the application interrogates the SQLite Database in the Data folder and retrieves the data. However, to display the data on a Form, we must first define a Controller object.
