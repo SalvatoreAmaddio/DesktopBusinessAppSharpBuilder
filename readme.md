@@ -80,7 +80,7 @@ Picture 1 below shows the MCV pattern handled by the Framework.
 
 **AbstractController** is a class that accepts a generic parameter of type M, where M must be an instance of AbstractModel. This class serves as the intermediary between the GUI and the AbstractModel. It manages the communication, ensuring that user inputs from the GUI are properly handled and that the AbstractModel is updated accordingly. Additionally, it performs database queries and updates, facilitating seamless interaction between the user interface and the underlying data.
 
-**Windows Presentation Foundation (WPF)** is a GUI framework used for building rich desktop applications on Windows. This Framework further enrich WPF by bringing a set of Custom controls such as Form, FormList, SubForm, and ReportViewer are designed to communicate with the AbstractController through their DataContext property. This design ensures that the controls can seamlessly interact with the controller, facilitating data binding and user interface updates.
+**Windows Presentation Foundation (WPF)** is a graphical subsystem, by Microsoft, for rendering user interfaces in Windows-based applications. It uses XAML for its design language and provides a unified model for building rich desktop applications. DesktopBusinessAppSharpBuilder further enriches WPF by adding a set of Custom controls such as Form, FormList, SubForm, and ReportViewer. They are designed to communicate with the AbstractController through their DataContext property. This design ensures that the controls can seamlessly interact with the controller, facilitating data binding and user interface updates.
 
 ## Demo Project:
 You can download a Demo of this Framework in action [here](https://github.com/SalvatoreAmaddio/MyApplicationDemo)
