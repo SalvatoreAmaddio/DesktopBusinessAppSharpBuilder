@@ -321,7 +321,7 @@ public MainWindow()
 }
 ```
 
-Now, we are ready to structure our UI by adding and binding controls.
+Now, we are ready to design our UI by adding and binding controls.
 
 ```xml
 ﻿<Window x:Class="MyApplication.View.MainWindow"
