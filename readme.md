@@ -113,20 +113,6 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 | Images        | Folder for images to be used (optional)                    |
 | App.xaml      | The file which is the entry point of every WPF Application |
 
-Create your first Form Window:
-
-- Create a new Window File in View. Call this file as MainWindow.
-- Add the following namespace:
-```xml
-  xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"
-```
-- Add a Form Control:
-```xml
-  <fr:Form>
-        <!--Put your content here, like a Grid or a StackPanel-->
-  </fr:Form>
-```
-
 ## Define your first Model:
 Assuming you have a SQLite database in the Data folder, you must create a Model class for each Table in your database.
 
@@ -264,33 +250,7 @@ At this point, we are ready to get the data from the Database. To do so, open yo
     }
 ```
 
-The fetching of the data is an **Asyncronous Task** managed by the LoadingForm control. You can define your LoadingForm control by creating a new Window.xaml file in your view folder:
-
-```xml
-    ﻿<Window x:Class="MyApplication.View.LoadingForm"
-            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:local="clr-namespace:MyApplication.View"
-            xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"
-            mc:Ignorable="d"
-            ResizeMode="NoResize"
-            WindowStartupLocation="CenterScreen"
-            Title="Welcome" Height="450" Width="450">
-
-        <fr:LoadingMask MainWindow="MainWindow">
-            <Image Stretch="Fill" Source="your image path"/>
-        </fr:LoadingMask>
-    </Window>
-```
-
-In your App.xaml file, change the StartupUri property as follow:
-```xml
-    StartupUri="View/LoadingForm.xaml"
-```
-
-Now, when you click on Run, a Window will open loading the data in the background. Once this Task has completed, the window will close and the MainWindow will open.
+At this stage, the application knows where and how to get the data. Yet, before retrieving those data we have to degine a UI and a Controller. 
 
 ## Define your first Controller:
 At this point, the application interrogates the SQLite Database in the Data folder and retrieves the data. However, to display the data on a Form, we must first define a Controller object.
@@ -311,17 +271,55 @@ namespace MyApplication.Controller
 }
 ```
 
-Now, you must associate this controller to your View File. Open the MainWindow.xaml.cs. Change the constructor as follow:
+## Create your first Form Window:
+
+The fetching of the data is an **Asyncronous Task** managed by the LoadingForm control. 
+To define a LoadingForm control:
+
+- Create a Window.xaml file in your View folder.
+- Ensure your import the following namespace: **xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"**
+
+```xml
+    ﻿<Window x:Class="MyApplication.View.LoadingForm"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:local="clr-namespace:MyApplication.View"
+            xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"
+            mc:Ignorable="d"
+            ResizeMode="NoResize"
+            WindowStartupLocation="CenterScreen"
+            Title="Welcome" Height="450" Width="450">
+
+        <fr:LoadingMask MainWindow="MainWindow">
+            <Image Stretch="Fill" Source="your image path"/>
+        </fr:LoadingMask>
+    </Window>
+```
+
+The **MainWindow** property tells the Framework which Window must be open once the Task has completed.  
+
+In your App.xaml file, change the StartupUri property as follow:
+```xml
+    StartupUri="View/LoadingForm.xaml"
+```
+# Create the MainWindow.
+
+- Create a Window.xaml file in View. Name it MainWindow.
+- Ensure your import the following namespace: **xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"**
+- Open the MainWindow.xaml.cs and associate the Controller to your View File.  Change the constructor as follow:
+
 ```csharp
 public MainWindow() 
 {
     InitializeComponent();
-    DataContext = new EmployeeController();
-    ((EmployeeController)DataContext).Window = this;
+    DataContext = new EmployeeController(); //the Controller.
+    ((EmployeeController)DataContext).Window = this; //tell the Controller which Window it is supposed to manage.
 }
 ```
 
-Now, we are ready to structure our GUI by adding and binding controls.
+Now, we are ready to structure our UI by adding and binding controls.
 
 ```xml
 ﻿<Window x:Class="MyApplication.View.MainWindow"
@@ -338,7 +336,7 @@ Now, we are ready to structure our GUI by adding and binding controls.
         SizeToContent="WidthAndHeight"
         d:DataContext="{d:DesignInstance Type=controller:EmployeeControllerList, IsDesignTimeCreatable=False}" Height="490" Width="475"
         >
-    <fr:Form>
+    <fr:Form> <!-- This is a Form Control -->
         <Grid Margin="10" fr:Definition.RowDefinitions="30,30,30,30,30,30,30,200" fr:Definition.ColumnDefinitions="80,150,30,150">
             <Label Content="First Name"/>
             <fr:Text Text="{Binding CurrentRecord.FirstName}" Grid.Row="0" Grid.Column="1"/>
@@ -359,7 +357,8 @@ Now, we are ready to structure our GUI by adding and binding controls.
 </Window>
 ```
 
-When you click on Run, once the Loading is completed, you will have a Window displaying a Form.
+When you click on Run, a Loading Window will open fetching the data in the background. Once the Loading Taks is completed, the MainWindow will open.
+
 Here you can:
 - Navigate from one record to anoter.
 - Add new records.
