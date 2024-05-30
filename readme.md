@@ -132,7 +132,7 @@ Let's say your Database has a table called Employee structure as follow:
 - Create a C# file in the Model folder.
 - Extends **AbstractModel**.
 - Each Model has to have a Parameterless constructors.
-- Create a constructor that takes **DbDataReader** reader as argument.
+- Create a constructor that takes **DbDataReader** object as argument.
 
  ```csharp
     ﻿using Backend.Model;
