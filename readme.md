@@ -114,7 +114,20 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 | App.xaml      | The file which is the entry point of every WPF Application |
 
 ## Define your first Model:
-Assuming you have a SQLite database in the Data folder, you must create a Model class for each Table in your database.
+Assuming you have a database in the Data folder, you must create a Model class for each Table in your database.
+
+Let's say your Database has a table called Employee structure as follow:
+
+| Fields      | Description    |
+|-------------|----------------|
+| EmployeeID  | PK NN AI       |
+| FirstName   | Text           |
+| LastName    | Text           |
+| DOB         | Text           |
+| GenderID    | FK INT         |
+| DepartmentID| FK INT         |
+| JobTitleID  | FK INT         |
+| Email       | Text           |
 
 - Create a C# file in the Model folder.
 - Extends **AbstractModel**.
@@ -142,20 +155,7 @@ Assuming you have a SQLite database in the Data folder, you must create a Model 
     }
 ```
 
-Assuming your database has a table called Employee structure as follow:
-
-| Fields      | Description    |
-|-------------|----------------|
-| EmployeeID  | PK NN AI       |
-| FirstName   | Text           |
-| LastName    | Text           |
-| DOB         | Text           |
-| GenderID    | FK INT         |
-| DepartmentID| FK INT         |
-| JobTitleID  | FK INT         |
-| Email       | Text           |
-
-An AbstractModel can represent the Table through a set of attributes.
+An AbstractModel can represent the Table' structure through a set of attributes.
 Let's start by defining the backup variables first:
 
  ```csharp
