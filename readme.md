@@ -103,15 +103,15 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 ```
 - Structure your project as follow:
 
-| Folders/Files | Description                                                |
-|---------------|------------------------------------------------------------|
-| View          | Folder for xaml files.                                     |
-| Controller    | Folder for classes extending AbstractController<M>         |
-| Model         | Folder for classes extending AbstractModel                 |
-| Themes        | Folder for styling xaml files (optional)                   |
-| Data          | Folder for the Database (in this example a SQLite database)|
-| Images        | Folder for images to be used (optional)                    |
-| App.xaml      | The file which is the entry point of every WPF Application |
+| Folders/Files | Description                                                       |
+|---------------|-------------------------------------------------------------------|
+| View          | Folder for UI's xaml files.                                       |
+| Controller    | Folder for classes extending AbstractController<M>                |
+| Model         | Folder for classes extending AbstractModel                        |
+| Themes        | Folder for styling xaml files (optional)                          |
+| Data          | Folder for the database file (in this example a SQLite database)  |
+| Images        | Folder for images to be used (optional)                           |
+| App.xaml      | The file which is the entry point of every WPF Application        |
 
 ## Define your first Model:
 Assuming you have a database in the Data folder, you must create a Model class for each Table in your database.
