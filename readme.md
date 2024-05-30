@@ -227,9 +227,9 @@ Define the properties for each backing field. These are the properties that will
     public string Email { get => _email; set => UpdateProperty(ref value, ref _email); }
 ```
 
-The ```UpdateProperty(ref value, ref _var); ``` method raise the INotifyPropertyChange event.
+The ```UpdateProperty(ref value, ref _var); ``` method raises the INotifyPropertyChange event.
 
-Also, you remember to add the ```[Table]``` attribute at the beginning of your class. This attribute specify the name of the table.
+Also, remember to add the ```[Table]``` attribute at the beginning of your class. This attribute specify the name of the table.
 ```csharp
      [Table(nameof(Employee))]
      public class Employee : AbstractModel
