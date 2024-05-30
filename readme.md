@@ -185,9 +185,9 @@ Update your constructor to fetch the data from the Database.
         _firstName = reader.GetString(1);
         _lastName = reader.GetString(2);
         _dob = reader.GetDateTime(3);
-        _gender = new(reader.GetInt64(4)); //notice this Model was defined with an additional constructor taking long as argument.
-        _department = new(reader.GetInt64(5)); //notice this Model was defined with an additional constructor taking long as argument.
-        _jobTitle = new(reader.GetInt64(6)); //notice this Model was defined with an additional constructor taking long as argument.
+        _gender = new(reader.GetInt64(4)); //notice the Gender Model was defined with an additional constructor taking long as argument.
+        _department = new(reader.GetInt64(5)); //notice the Department Model was defined with an additional constructor taking long as argument.
+        _jobTitle = new(reader.GetInt64(6)); //notice the JobTitle Model was defined with an additional constructor taking long as argument.
         _email = reader.GetString(7);
     }
 ```
