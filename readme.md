@@ -157,6 +157,7 @@ Let's say your Database has a table called Employee structure as follow:
 
 An AbstractModel can represent the Table' structure through a set of attributes.
 Let's start by defining the backup variables first:
+
 **NB**: PrimaryKey fields in your Model must be of type long or Int64.
 
  ```csharp
