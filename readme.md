@@ -156,7 +156,7 @@ Let's say your Database has a table called Employee structure as follow:
 ```
 
 An AbstractModel can represent the Table' structure through a set of attributes.
-Let's start by defining the backup variables first:
+Let's start by defining the backing fields:
 
 **NB**: PrimaryKey fields in your Model Class must be of type long or Int64.
 
@@ -192,7 +192,7 @@ Update your constructor to fetch the data from the Database.
     }
 ```
 
-Now we can define the properties for each backup variable.
+Define the properties for each backing field. These are the properties that will interact with the UI:
 
 ```csharp
     [PK] //This attribute tells this property represents the Primary Key of the Employee Table.
