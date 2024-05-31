@@ -33,6 +33,12 @@ namespace FrontEnd.FilterSource
         }
 
         /// <summary>
+        /// Returns all selected options.
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{IFilterOption}"/></returns>
+        public IEnumerable<ISQLModel> Selected() => this.Where(s => s.IsSelected).Select(s=>s.Record);
+
+        /// <summary>
         /// It loops through the List and builds the SQL logic to filter the Select the statement.
         /// </summary>
         /// <param name="filterQueryBuilder"></param>
