@@ -199,7 +199,7 @@ namespace FrontEnd.Controller
             throw new NotImplementedException("You have not override the OnSubFormFilter() method in the Controller class that handles the SubForm.");
         }
 
-        public void OnWindowClosing(object? sender, CancelEventArgs e)
+        public virtual void OnWindowClosing(object? sender, CancelEventArgs e)
         {
             bool dirty = AsRecordSource().Any(s => ((M)s).IsDirty);
             e.Cancel = dirty; // if the record is not dirty, there is nothing to check, close the window.
