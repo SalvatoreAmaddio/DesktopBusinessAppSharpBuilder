@@ -27,10 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Page Remove="Themes\controls.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="logo.ico" />
   </ItemGroup>
 
@@ -39,11 +35,9 @@
 	<PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
   </ItemGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\Backend_BusinessAppSharpBuilder\Backend.csproj" />
   </ItemGroup>
-
 
 <ItemGroup>
     <Resource Include="images\clear_filter.png" />
