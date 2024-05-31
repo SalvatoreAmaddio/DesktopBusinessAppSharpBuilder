@@ -113,6 +113,17 @@ namespace FrontEnd.Forms
                 ScrollIntoView(lastSelectedObject); //usefull for a large list where the user is selecting a record which is out of the current view. Scroll to it to make it visible
         }
 
+        private bool AttemptSave(bool isTabItem) 
+        {
+            bool? updateResult = Controller?.PerformUpdate(); //perform the update.
+            if (!updateResult!.Value) //The update failed due to conditions not met defined in the record AllowUpdate() method.
+            {
+                Refocus(isTabItem); //force the user to stay on the Record and do not switch.
+                return false; // cannot switch.
+            }
+            return true;
+        }
+
         /// <summary>
         /// Performs some record's integrity checks before allowing the user to switch.
         /// </summary>
@@ -124,17 +135,15 @@ namespace FrontEnd.Forms
             if (record is null) return true; //record is null, nothing to check, exit the method.
             if (!record.IsDirty && !record.IsNewRecord()) return true; //The user is on a record which has not been changed and it is not a new Record. No need for checking.
 
+            if (Controller.AllowAutoSave) 
+                return AttemptSave(isTabItem);
+
             //The user is attempting to switch to another Record without saving the changes to the previous record.
             DialogResult result = UnsavedDialog.Ask();
 
             if (result == DialogResult.Yes) //The user has decided to save the record before switching.
             {
-                bool? updateResult = Controller?.PerformUpdate(); //perform the update.
-                if (!updateResult!.Value) //The update failed due to conditions not met defined in the record AllowUpdate() method.
-                {
-                    Refocus(isTabItem); //force the user to stay on the Record and do not switch.
-                    return false; // cannot switch.
-                }
+                return AttemptSave(isTabItem);
             }
             else //The user has decided NOT to save the record. rollback to the previous selecteditem.
             {
@@ -148,7 +157,6 @@ namespace FrontEnd.Forms
                 Controller?.GoAt(oldModel); // tell the controller to select the previous selection.
                 return false; // cannot switch because the user decided to abort the new Record.
             }
-            return true; //switch allowed.
         }
 
         /// <summary>
