@@ -35,6 +35,8 @@ namespace FrontEnd.Controller
                     _window.Closing += OnWindowClosing;
             }
         }
+        public bool AllowAutoSave { get; set; } = false;
+
         public AbstractModel? ParentRecord { get; private set; }
         public override ISQLModel? CurrentModel
         {
@@ -201,22 +203,27 @@ namespace FrontEnd.Controller
 
         public virtual void OnWindowClosing(object? sender, CancelEventArgs e)
         {
-            bool dirty = AsRecordSource().Any(s => ((M)s).IsDirty);
-            e.Cancel = dirty; // if the record is not dirty, there is nothing to check, close the window.
-
-            if (dirty) //the record has been changed, check its integrity before closing.
+            bool dirty = AsRecordSource().Any(s => s.IsDirty);
+            if (!dirty) return; // if the record is not dirty, there is nothing to check, close the window.
+            e.Cancel = dirty; 
+            
+            if (AllowAutoSave) 
             {
-                DialogResult result = UnsavedDialog.Ask("Do you want to save your changes before closing?");
-                if (result == DialogResult.No) //the user has decided to undo its changes to the record. 
-                {
-                    CurrentRecord?.Undo(); //set the record's property to how they were before changing.
-                    e.Cancel = false; //can close the window.
-                }
-                else //the user has decided to apply its changes to the record. 
-                {
-                    bool updateResult = PerformUpdate(); //perform an update against the Database.
-                    e.Cancel = !updateResult; //if the update fails, force the User to stay on the Windwow. If the update was successful, close the window.
-                }
+                e.Cancel = !PerformUpdate();
+                return;
+            }
+
+            //the record has been changed, check its integrity before closing.
+            DialogResult result = UnsavedDialog.Ask("Do you want to save your changes before closing?");
+            if (result == DialogResult.No) //the user has decided to undo its changes to the record. 
+            {
+                CurrentRecord?.Undo(); //set the record's property to how they were before changing.
+                e.Cancel = false; //can close the window.
+            }
+            else //the user has decided to apply its changes to the record. 
+            {
+                bool updateResult = PerformUpdate(); //perform an update against the Database.
+                e.Cancel = !updateResult; //if the update fails, force the User to stay on the Windwow. If the update was successful, close the window.
             }
         }
 

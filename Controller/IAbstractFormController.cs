@@ -41,6 +41,8 @@ namespace FrontEnd.Controller
         /// </code>
         /// </summary>
         public void OnWindowClosing(object? sender, CancelEventArgs e);
+
+        public bool AllowAutoSave { get; set; }
     }
 
     /// <summary>
@@ -71,5 +73,6 @@ namespace FrontEnd.Controller
         public ICommand RequeryCMD { get; set; }
 
         public RecordSource<M> AsRecordSource();
+
     }
 }
