@@ -36,7 +36,7 @@ namespace FrontEnd.Controller
             }
         }
         public bool AllowAutoSave { get; set; } = false;
-
+        public IEnumerable<M>? MasterSource => DatabaseManager.Find<M>()?.MasterSource.Cast<M>();
         public AbstractModel? ParentRecord { get; private set; }
         public override ISQLModel? CurrentModel
         {

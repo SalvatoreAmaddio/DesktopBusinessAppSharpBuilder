@@ -5,6 +5,7 @@ using FrontEnd.Source;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using Backend.Database;
 
 namespace FrontEnd.Controller
 {
@@ -51,6 +52,11 @@ namespace FrontEnd.Controller
     /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
     public interface IAbstractFormController<M> : IAbstractFormController where M : AbstractModel, new()
     {
+        /// <summary>
+        /// Gets the <see cref="IAbstractDatabase.MasterSource"/> as an <see cref="IEnumerable{T}"/> 
+        /// </summary>
+        public IEnumerable<M>? MasterSource { get; }
+
         /// <summary>
         /// A more concrete version of <see cref="IAbstractSQLModelController.CurrentModel"/>
         /// </summary>
