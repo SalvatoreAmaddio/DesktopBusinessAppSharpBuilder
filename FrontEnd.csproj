@@ -35,16 +35,15 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="BackendBusinessAppSharpBuilder" Version="1.0.2" />
 	<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
 	<PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
   </ItemGroup>
 
-<!--
+
   <ItemGroup>
     <ProjectReference Include="..\Backend_BusinessAppSharpBuilder\Backend.csproj" />
   </ItemGroup>
--->
+
 
 <ItemGroup>
     <Resource Include="images\clear_filter.png" />
