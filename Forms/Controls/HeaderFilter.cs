@@ -192,7 +192,7 @@ namespace FrontEnd.Forms
                     clearButton.Click -= OnClearButtonClicked;
 
                 foreach (IFilterOption option in ItemsSource)
-                    option.OnSelectionChanged -= OnOptionSelected;
+                    option.Dispose();
 
                 ItemsSource = [];
             }

@@ -10,7 +10,7 @@ namespace FrontEnd.FilterSource
     /// <para/>
     /// This class works in conjunction with the <see cref="HeaderFilter"/> GUI Control.
     /// </summary>
-    public class FilterOption : IFilterOption, IDisposable
+    public class FilterOption : IFilterOption
     {
         protected bool _disposed = false;
         private bool _isSelected = false;

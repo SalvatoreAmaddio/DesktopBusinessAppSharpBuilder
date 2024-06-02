@@ -5,6 +5,7 @@ using FrontEnd.Controller;
 using FrontEnd.Model;
 using FrontEnd.Source;
 using MvvmHelpers;
+using System.Collections;
 using System.Text;
 
 namespace FrontEnd.FilterSource
@@ -18,13 +19,17 @@ namespace FrontEnd.FilterSource
     /// <param name="displayProperty">The Record's property to display in the option list.</param>
     public class SourceOption : ObservableRangeCollection<IFilterOption>, IChildSource
     {
-        private readonly string _displayProperty;
+        private readonly string _displayProperty = string.Empty;
         /// <summary>
         /// A list of <see cref="IUIControl"/> associated to this <see cref="RecordSource"/>.
         /// </summary>
         private List<IUIControl>? UIControls;
 
         public IParentSource? ParentSource { get; set; }
+
+        public SourceOption(IEnumerable<IFilterOption> source) : base(source)
+        {
+        }
 
         public SourceOption(IRecordSource source, string displayProperty) : base(source.Cast<AbstractModel>().Select(s => new FilterOption(s, displayProperty)))
         {

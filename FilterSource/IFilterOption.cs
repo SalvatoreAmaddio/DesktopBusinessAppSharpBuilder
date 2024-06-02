@@ -11,7 +11,7 @@ namespace FrontEnd.FilterSource
     /// <para/>
     /// This interface works in conjunction with the <see cref="HeaderFilter"/> GUI Control.
     /// </summary>
-    public interface IFilterOption : INotifyPropertyChanged
+    public interface IFilterOption : INotifyPropertyChanged, IDisposable
     {
         /// <summary>
         /// Gets and sets a boolean indicating if an option has been selected. This property triggers the <see cref="OnSelectionChanged"/> event.
