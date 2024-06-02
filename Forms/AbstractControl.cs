@@ -8,10 +8,16 @@ namespace FrontEnd.Forms
         protected bool _disposed = false;
         static AbstractControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(AbstractControl), new FrameworkPropertyMetadata(typeof(AbstractControl)));
 
-        public AbstractControl() => DataContextChanged += OnDataContextChanged;
+        public AbstractControl() 
+        {
+            DataContextChanged += OnDataContextChanged;
+            Unloaded += UnsubscribeEvents;
+        }
         protected virtual void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
         }
+
+        protected virtual void UnsubscribeEvents(object sender, RoutedEventArgs e) => Dispose(true);
 
         public virtual void Dispose()
         {
@@ -25,8 +31,8 @@ namespace FrontEnd.Forms
 
             if (disposing)
             {
-                // Unsubscribe from events
                 DataContextChanged -= OnDataContextChanged;
+                Unloaded -= UnsubscribeEvents;
             }
 
             _disposed = true;

@@ -198,6 +198,7 @@ namespace FrontEnd.Forms
         }
 
         ~HeaderFilter() => Dispose(false);
+
     }
 
 }
