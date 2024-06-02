@@ -1,8 +1,4 @@
-﻿using Backend.Controller;
-using Backend.Database;
-using FrontEnd.Controller;
-using FrontEnd.Model;
-using FrontEnd.Source;
+﻿using FrontEnd.Model;
 
 namespace FrontEnd.Events
 {

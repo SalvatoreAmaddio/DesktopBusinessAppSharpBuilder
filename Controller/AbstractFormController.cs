@@ -143,12 +143,13 @@ namespace FrontEnd.Controller
         /// </summary>
         /// <param name="model">The record that must be deleted</param>
         /// <returns>true if the operation was successful</returns>
-        protected virtual void Delete(M? model)
+        protected virtual bool Delete(M? model)
         {
             DialogResult result = ConfirmDialog.Ask("Are you sure you want to delete this record?");
-            if (result == DialogResult.No) return;
+            if (result == DialogResult.No) return false;
             CurrentRecord = model;
             DeleteRecord();
+            return true;
         }
 
         public override bool GoNew()
