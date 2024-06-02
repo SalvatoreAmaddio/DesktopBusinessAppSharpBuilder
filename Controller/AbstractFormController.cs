@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows;
 using FrontEnd.Source;
+using System.Windows.Controls;
 
 namespace FrontEnd.Controller
 {
@@ -24,17 +25,23 @@ namespace FrontEnd.Controller
         private bool _isloading = false;
         protected ISQLModel? _currentModel;
         private string _records = string.Empty;
+        private UIElement? _uiElement;
         private Window? _window;
-        public Window? Window
+        public UIElement? UI
         {
-            get => _window;
+            get => _uiElement;
             set
             {
-                _window = value;
-                if (_window != null)
-                    _window.Closing += OnWindowClosing;
+                if (value is not Window || value is not Page)
+                    throw new Exception("UI Element is meant to be either a Window or a Page");
+                _uiElement = value;
+                if (_uiElement is Window _win)
+                    _win.Closing += OnWindowClosing;
+                if (_uiElement is Page _page)
+                    _page.Unloaded += OnPageUnloaded;
             }
         }
+
         public bool AllowAutoSave { get; set; } = false;
         public IEnumerable<M>? MasterSource => DatabaseManager.Find<M>()?.MasterSource.Cast<M>();
         public AbstractModel? ParentRecord { get; private set; }
@@ -201,6 +208,8 @@ namespace FrontEnd.Controller
             throw new NotImplementedException("You have not override the OnSubFormFilter() method in the Controller class that handles the SubForm.");
         }
 
+        private void OnPageUnloaded(object sender, RoutedEventArgs e) => Dispose();
+
         public virtual void OnWindowClosing(object? sender, CancelEventArgs e)
         {
             bool dirty = AsRecordSource().Any(s => s.IsDirty);
@@ -238,8 +247,10 @@ namespace FrontEnd.Controller
 
             if (disposing)
             {
-                if (_window != null)
-                    _window.Closing -= OnWindowClosing;
+                if (_uiElement is Window _win)
+                    _win.Closing -= OnWindowClosing;
+                if (_uiElement is Page _page)
+                    _page.Unloaded -= OnPageUnloaded;
                 AfterUpdate = null;
                 BeforeUpdate = null;
                 NewRecordEvent = null;

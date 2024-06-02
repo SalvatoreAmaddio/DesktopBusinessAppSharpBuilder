@@ -4,6 +4,7 @@ using FrontEnd.Notifier;
 using FrontEnd.Source;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Backend.Database;
 
@@ -15,10 +16,11 @@ namespace FrontEnd.Controller
     public interface IAbstractFormController : IAbstractSQLModelController, INotifier
     {
         /// <summary>
-        /// Gets and sets a reference to a <see cref="Window"/> object that the Controller is associated to. 
-        /// When this property is set, the Window's Closing event gets subscribed to the  <see cref="OnWindowClosing(object?, CancelEventArgs)"/> method.
+        /// Gets and sets a reference to a <see cref="Window"/> or <see cref="Page"/> object that the Controller is associated to. <para/>
+        /// If the element is a Window, its Closing event gets subscribed to the  <see cref="OnWindowClosing(object?, CancelEventArgs)"/>.<para/>
+        /// Whereas, a Page gets its Unloaded event subscribed. Both subscriptions aim at calling <see cref="IDisposable.Dispose"/> 
         /// </summary>
-        public Window? Window { get; set; }
+        public UIElement? UI { get; set; }
 
         /// <summary>
         /// Notify the GUI that a process involving an instance of <see cref="AbstractForm"/> is running.
