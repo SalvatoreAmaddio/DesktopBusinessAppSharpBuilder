@@ -135,10 +135,11 @@ namespace FrontEnd.Forms
         private void BindEvents(object new_source)
         {
             if (new_source == null) return;
-            SourceOption source = (SourceOption)new_source;
-            source.AddUIControlReference(this);
-            foreach (IFilterOption option in source)
-                option.OnSelectionChanged += OnOptionSelected;
+            SourceOption? source = new_source as SourceOption;
+            source?.AddUIControlReference(this);
+            if (source is SourceOption)
+                foreach (IFilterOption option in source)
+                    option.OnSelectionChanged += OnOptionSelected;
         }
 
         private void OnOptionSelected(object? sender, EventArgs e)

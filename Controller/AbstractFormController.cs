@@ -32,7 +32,7 @@ namespace FrontEnd.Controller
             get => _uiElement;
             set
             {
-                if (value is not Window || value is not Page)
+                if (value is not Window && value is not Page)
                     throw new Exception("UI Element is meant to be either a Window or a Page");
                 _uiElement = value;
                 if (_uiElement is Window _win)
