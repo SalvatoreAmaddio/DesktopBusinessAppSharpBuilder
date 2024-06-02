@@ -61,24 +61,21 @@ namespace FrontEnd.Forms
         /// olds a reference to the previously selected object.
         /// </summary>
         private object? OldSelection;
-        RoutedEventHandler? OnListViewItemGotFocusHandler;
-        KeyboardFocusChangedEventHandler? ListViewItemKeyboardFocusChangedHandler;
         public Lista()
         {
-            OnListViewItemGotFocusHandler = new(OnListViewItemGotFocus);
-            ListViewItemKeyboardFocusChangedHandler = new(ListViewItemKeyboardFocusChanged);
             Style listaItem = (Style)styleDictionary["ListaItemStyle"];
             listaItem.Setters.Add(new EventSetter
             {
                 Event = ListViewItem.GotFocusEvent,
-                Handler = OnListViewItemGotFocusHandler
+                Handler = new RoutedEventHandler(OnListViewItemGotFocus)
             });
 
             listaItem.Setters.Add(new EventSetter
             {
                 Event = ListViewItem.LostKeyboardFocusEvent,
-                Handler = ListViewItemKeyboardFocusChangedHandler
+                Handler = new KeyboardFocusChangedEventHandler(ListViewItemKeyboardFocusChanged)
             });
+
             ItemContainerStyle = listaItem;
             Style = (Style)styleDictionary["ListaStyle"];
             Unloaded += OnUnloaded;
@@ -144,7 +141,7 @@ namespace FrontEnd.Forms
             if (record is null) return true; //record is null, nothing to check, exit the method.
             if (!record.IsDirty && !record.IsNewRecord()) return true; //The user is on a record which has not been changed and it is not a new Record. No need for checking.
 
-            if (Controller.AllowAutoSave) 
+            if (Controller.AllowAutoSave)
                 return AttemptSave(isTabItem);
 
             //The user is attempting to switch to another Record without saving the changes to the previous record.
@@ -213,8 +210,7 @@ namespace FrontEnd.Forms
         public void Dispose()
         {
             Unloaded -= OnUnloaded;
-            OnListViewItemGotFocusHandler = null;
-            ListViewItemKeyboardFocusChangedHandler = null;
+            GC.SuppressFinalize(this);
         }
 
         ~Lista()

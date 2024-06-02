@@ -34,12 +34,11 @@ namespace FrontEnd.Forms
             {
                 // Unsubscribe from events
                 DataContextChanged -= OnDataContextChanged;
+                Unloaded -= UnsubscribeEvents;
             }
 
             _disposed = true;
         }
-
-        ~AbstractContentControl() => Dispose(false);
 
     }
 }

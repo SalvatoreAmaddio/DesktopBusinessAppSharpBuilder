@@ -119,6 +119,7 @@ namespace FrontEnd.Model
             PropertyChanged = null;
             AfterUpdate = null;
             BeforeUpdate = null;
+            GC.SuppressFinalize(this);
         }
     }
 }
