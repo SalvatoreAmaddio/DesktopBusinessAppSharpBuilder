@@ -198,10 +198,9 @@ namespace FrontEnd.Controller
             if (ParentRecord != null) 
             {
                 if (ParentRecord.IsNewRecord())
-                {
                     Records = "NO RECORDS";
-                }
             }
+            else Records = "NO RECORDS";
         }
 
         public virtual void OnSubFormFilter()
