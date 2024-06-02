@@ -66,7 +66,10 @@ namespace FrontEnd.Forms
             ClearButtonVisibilityMultiBinding.Bindings.Add(TextPropertyBinding);
             ClearButtonVisibilityMultiBinding.Bindings.Add(IsKeyboardFocusWithinBinding);
             SetBinding(ClearButtonVisibilityProperty, ClearButtonVisibilityMultiBinding);
+            Unloaded += OnUnloaded;
         }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
 
         public override void OnApplyTemplate()
         {
@@ -126,6 +129,7 @@ namespace FrontEnd.Forms
 
             if (disposing)
             {
+                Unloaded -= OnUnloaded;
                 if (ClearButton != null)
                     ClearButton.Click -= OnClearButtonClicked;
             }

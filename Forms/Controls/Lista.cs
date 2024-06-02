@@ -15,7 +15,7 @@ namespace FrontEnd.Forms
     /// <para/>
     /// Its ItemsSource property should be a IEnumerable&lt;<see cref="AbstractModel"/>&gt; such as a <see cref="Backend.Source.RecordSource"/>
     /// </summary>
-    public class Lista : ListView
+    public class Lista : ListView, IDisposable
     {
         /// <summary>
         /// Flag used to bypass the GotFocusEvent of a ListViewItem object.
@@ -61,25 +61,32 @@ namespace FrontEnd.Forms
         /// olds a reference to the previously selected object.
         /// </summary>
         private object? OldSelection;
-    
+        RoutedEventHandler? OnListViewItemGotFocusHandler;
+        KeyboardFocusChangedEventHandler? ListViewItemKeyboardFocusChangedHandler;
         public Lista()
         {
+            OnListViewItemGotFocusHandler = new(OnListViewItemGotFocus);
+            ListViewItemKeyboardFocusChangedHandler = new(ListViewItemKeyboardFocusChanged);
             Style listaItem = (Style)styleDictionary["ListaItemStyle"];
             listaItem.Setters.Add(new EventSetter
             {
                 Event = ListViewItem.GotFocusEvent,
-                Handler = new RoutedEventHandler(OnListViewItemGotFocus)
+                Handler = OnListViewItemGotFocusHandler
             });
 
             listaItem.Setters.Add(new EventSetter
             {
                 Event = ListViewItem.LostKeyboardFocusEvent,
-                Handler = new KeyboardFocusChangedEventHandler(ListViewItemKeyboardFocusChanged)
+                Handler = ListViewItemKeyboardFocusChangedHandler
             });
             ItemContainerStyle = listaItem;
             Style = (Style)styleDictionary["ListaStyle"];
+            Unloaded += OnUnloaded;
         }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
         
+
         /// <summary>
         /// Handles the switching from one row to another by clicking on them.
         /// </summary>
@@ -201,9 +208,16 @@ namespace FrontEnd.Forms
             }
         }
 
+        public void Dispose()
+        {
+            Unloaded -= OnUnloaded;
+            OnListViewItemGotFocusHandler = null;
+            ListViewItemKeyboardFocusChangedHandler = null;
+        }
+
         ~Lista()
         {
-
+            Dispose();
         }
     }
 }

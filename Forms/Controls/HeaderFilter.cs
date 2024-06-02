@@ -27,6 +27,7 @@ namespace FrontEnd.Forms
     /// </summary>
     public class HeaderFilter : AbstractControl, IUIControl
     {
+        private Button? PART_ClearButton;
         private Button? PART_DropDownButton;
         private ListBox? PART_ListBox;
 
@@ -81,8 +82,9 @@ namespace FrontEnd.Forms
             PART_DropDownButton.Click += OnDropdownButtonClicked;
             ResetDropDownButtonAppereance();
 
-            if (GetTemplateChild("PART_ClearButton") is Button clearButton)
-                clearButton.Click += OnClearButtonClicked;
+            PART_ClearButton = (Button?)GetTemplateChild(nameof(PART_ClearButton));
+            if (PART_ClearButton != null)
+                PART_ClearButton.Click += OnClearButtonClicked;
 
             PART_ListBox = (ListBox)GetTemplateChild(nameof(PART_ListBox));
             System.Diagnostics.PresentationTraceSources.SetTraceLevel(PART_ListBox.ItemContainerGenerator, System.Diagnostics.PresentationTraceLevel.High);
@@ -188,8 +190,8 @@ namespace FrontEnd.Forms
                 if (PART_DropDownButton != null)
                     PART_DropDownButton.Click -= OnDropdownButtonClicked;
 
-                if (GetTemplateChild("PART_ClearButton") is Button clearButton)
-                    clearButton.Click -= OnClearButtonClicked;
+                if (PART_ClearButton != null)
+                    PART_ClearButton.Click -= OnClearButtonClicked;
 
                 foreach (IFilterOption option in ItemsSource)
                     option.Dispose();
