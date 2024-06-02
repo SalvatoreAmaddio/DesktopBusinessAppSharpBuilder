@@ -1,8 +1,6 @@
 ﻿using Backend.Source;
 using FrontEnd.Model;
 using FrontEnd.Events;
-using Backend.Controller;
-using FrontEnd.Controller;
 
 namespace FrontEnd.Source
 {

@@ -20,8 +20,8 @@ namespace FrontEnd.Controller
     /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
     public abstract class AbstractFormController<M> : AbstractSQLModelController, ISubFormController, IDisposable, IAbstractFormController<M> where M : AbstractModel, new()
     {
-        string _search = string.Empty;
-        bool _isloading = false;
+        private string _search = string.Empty;
+        private bool _isloading = false;
         protected ISQLModel? _currentModel;
         private string _records = string.Empty;
         private Window? _window;
@@ -225,6 +225,11 @@ namespace FrontEnd.Controller
                 bool updateResult = PerformUpdate(); //perform an update against the Database.
                 e.Cancel = !updateResult; //if the update fails, force the User to stay on the Windwow. If the update was successful, close the window.
             }
+
+            if (!e.Cancel) 
+            { 
+                Dispose();
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -238,6 +243,8 @@ namespace FrontEnd.Controller
                 AfterUpdate = null;
                 BeforeUpdate = null;
                 NewRecordEvent = null;
+                CurrentRecord?.Dispose();
+                AsRecordSource().Dispose();
             }
 
             _disposed = true;

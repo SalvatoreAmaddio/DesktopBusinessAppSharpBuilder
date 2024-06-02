@@ -152,6 +152,7 @@ namespace FrontEnd.Source
             navigator = null;
             RunFilter = null;
             GC.SuppressFinalize(this);
+            Clear();
         }
 
         ~RecordSource()

@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace FrontEnd.Model
 {
-    public interface IAbstractModel : ISQLModel, INotifier 
+    public interface IAbstractModel : ISQLModel, INotifier, IDisposable 
     {
         /// <summary>
         /// It gets and sets a value that indicates if any property, which uses <see cref="UpdateProperty{T}(ref T, ref T, string)"/>, of a object extending <see cref="AbstractNotifier"/> has changed.
@@ -102,6 +102,7 @@ namespace FrontEnd.Model
 
             IsDirty = false;
         }
+
         public override bool AllowUpdate()
         {
             bool result = base.AllowUpdate();
@@ -111,6 +112,12 @@ namespace FrontEnd.Model
 
             return result;
         }
+
+        public void Dispose()
+        {
+            PropertyChanged = null;
+            AfterUpdate = null;
+            BeforeUpdate = null;
+        }
     }
 }
-
