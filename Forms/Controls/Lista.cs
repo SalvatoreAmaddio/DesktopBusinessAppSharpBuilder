@@ -92,13 +92,15 @@ namespace FrontEnd.Forms
         /// </summary>
         private void ListViewItemKeyboardFocusChanged(object sender, KeyboardFocusChangedEventArgs e)
         {
+            
             // do not proceed if the newly Focused Element is not a FramewWork element, also VERY IMPORTANT if the OldFocus is an AbstractButton then exit.
             if (e.NewFocus is not FrameworkElement newlyFocusedElement || e.OldFocus is AbstractButton) return;
             bool isTabItem = (newlyFocusedElement is Frame frame && frame.Parent is TabItem); //check if the Lista is within a TabControl
 
             if (isTabItem || (newlyFocusedElement.DataContext is IAbstractFormController && newlyFocusedElement is not AbstractButton)) //Only if the DataContext of the List is an instance of IAbstractFormController we can continue. Also, very important the newlyFocusedElement must not be an AbstractButton
             {
-                AbstractModel ListViewItemDataContext = (AbstractModel)((ListViewItem)sender).DataContext; //get the Record displayed by ListViewItem.
+                ListViewItem? item = sender as ListViewItem;
+                AbstractModel? ListViewItemDataContext = item?.DataContext as AbstractModel;//get the Record displayed by ListViewItem.
                 OnListViewItemLostFocus(ListViewItemDataContext, isTabItem); // perform record's integrity checks before switching to a new record.
             }
             e.Handled = true;
@@ -120,7 +122,7 @@ namespace FrontEnd.Forms
                 ScrollIntoView(lastSelectedObject); //usefull for a large list where the user is selecting a record which is out of the current view. Scroll to it to make it visible
         }
 
-        private bool AttemptSave(bool isTabItem) 
+        private bool AttemptSave(bool isTabItem)
         {
             bool? updateResult = Controller?.PerformUpdate(); //perform the update.
             if (!updateResult!.Value) //The update failed due to conditions not met defined in the record AllowUpdate() method.

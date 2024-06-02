@@ -236,9 +236,7 @@ namespace FrontEnd.Controller
             }
 
             if (!e.Cancel) 
-            { 
                 Dispose();
-            }
         }
 
         protected override void Dispose(bool disposing)
@@ -254,7 +252,6 @@ namespace FrontEnd.Controller
                 AfterUpdate = null;
                 BeforeUpdate = null;
                 NewRecordEvent = null;
-                CurrentRecord?.Dispose();
                 AsRecordSource().Dispose();
             }
 

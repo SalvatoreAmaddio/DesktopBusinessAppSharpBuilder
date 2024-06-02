@@ -196,7 +196,7 @@ namespace FrontEnd.Forms
                 foreach (IFilterOption option in ItemsSource)
                     option.Dispose();
 
-                ItemsSource = [];
+                ((SourceOption)ItemsSource).Dispose();
             }
         }
 

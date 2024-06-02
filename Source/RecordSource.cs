@@ -10,7 +10,7 @@ using FrontEnd.Controller;
 
 namespace FrontEnd.Source
 {
-    public class RecordSource<M> : ObservableRangeCollection<M>, IRecordSource<M>, IChildSource, IUISource, IDisposable where M : AbstractModel, new()
+    public class RecordSource<M> : ObservableRangeCollection<M>, IRecordSource<M>, IChildSource, IUISource where M : AbstractModel, new()
     {
         /// <summary>
         /// This delegate works as a bridge between the <see cref="Controller.IAbstractSQLModelController"/> and this <see cref="Backend.Source.RecordSource"/>.
@@ -147,6 +147,7 @@ namespace FrontEnd.Source
 
         public void Dispose()
         {
+            Controller?.Dispose();
             ParentSource?.RemoveChild(this);
             UIControls?.Clear();
             navigator = null;
