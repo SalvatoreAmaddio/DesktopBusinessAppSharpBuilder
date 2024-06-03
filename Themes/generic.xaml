@@ -20,6 +20,7 @@
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Dialogs.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Curtain.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Walkthrough.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/PhotoFrame.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

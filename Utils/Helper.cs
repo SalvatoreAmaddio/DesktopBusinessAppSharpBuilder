@@ -127,10 +127,10 @@ namespace FrontEnd.Utils
         /// </summary>
         /// <param name="path">The path to the image</param>
         /// <returns>A BitmapImage</returns>
-        /// <exception cref="Exception">Path cannot be null</exception>
-        public static BitmapImage LoadImg(string? path) 
+        /// <exception cref="ArgumentException">Path cannot be null</exception>
+        public static BitmapImage LoadImg(string? path)
         {
-            if (string.IsNullOrEmpty(path)) throw new Exception("Path cannot be empty");
+            if (string.IsNullOrEmpty(path)) throw new ArgumentException("Path cannot be empty");
             BitmapImage bitmap = new();
             bitmap.BeginInit();
             bitmap.UriSource = new Uri(path);
