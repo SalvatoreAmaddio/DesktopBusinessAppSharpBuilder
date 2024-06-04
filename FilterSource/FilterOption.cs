@@ -74,6 +74,8 @@ namespace FrontEnd.FilterSource
             _disposed = true;
         }
 
+        public override string ToString() => $"{Record} - {Value}";
+
         ~FilterOption() => Dispose(false);
     }
 }

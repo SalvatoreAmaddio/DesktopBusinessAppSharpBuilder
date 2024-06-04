@@ -109,8 +109,11 @@ namespace FrontEnd.FilterSource
                     break;
                 case CRUD.UPDATE:
                     int index = IndexOf(option);
-                    IFilterOption oldValue = this[index];
-                    oldValue.Copy(option);
+                    if (index >=0) 
+                    {
+                        IFilterOption oldValue = this[index];
+                        oldValue.Copy(option);
+                    }
                     NotifyUIControl([]);
                     break;
                 case CRUD.DELETE:

@@ -2,6 +2,7 @@
 using FrontEnd.FilterSource;
 using FrontEnd.Source;
 using FrontEnd.Utils;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -58,13 +59,31 @@ namespace FrontEnd.Forms
 
         private static void OnIsWithinListPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            bool isWithinList = (bool)e.NewValue;
-            if (isWithinList)
-                ((HeaderFilter)d).SetBinding(DataContextProperty, new Binding(nameof(DataContext))
+            var headerFilter = (HeaderFilter)d;
+            //handle LazyLoading drawbacks
+            if (headerFilter.IsLoaded)
+                headerFilter.UpdateDataContextBinding();
+            else
+                headerFilter.Loaded += OnLoaded;
+        }
+
+        private static void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            HeaderFilter control = (HeaderFilter)sender;
+            control.UpdateDataContextBinding();
+        }
+
+        private void UpdateDataContextBinding()
+        {
+            if (IsWithinList)
+            {
+                SetBinding(DataContextProperty, new Binding("DataContext")
                 {
                     RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(Lista), 1)
                 });
-            else BindingOperations.ClearBinding(d, DataContextProperty);
+            }
+            else
+                BindingOperations.ClearBinding(this, DataContextProperty);
         }
         #endregion
 
@@ -206,7 +225,7 @@ namespace FrontEnd.Forms
                 if (PART_ClearButton != null)
                     PART_ClearButton.Click -= OnClearButtonClicked;
 
-                if (ItemsSource != null)
+                if (ItemsSource!=null)
                     foreach (IFilterOption option in ItemsSource)
                         option.Dispose();
 
@@ -215,6 +234,8 @@ namespace FrontEnd.Forms
                 Window? window = Helper.GetActiveWindow();
                 if (window != null)
                     window.Closing -= OnClosing;
+
+                Loaded -= OnLoaded;
             }
         }
 
