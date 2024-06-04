@@ -44,7 +44,14 @@ namespace FrontEnd.Forms
 
         public Curtain() 
         {
-            HeaderTitle = $"Ciao {CurrentUser.UserName}!";
+            try 
+            {
+                HeaderTitle = $"Ciao {CurrentUser.UserName}!";
+            }
+            catch 
+            {
+                HeaderTitle = $"Ciao!";
+            }
         }
 
         #region SoftwareInfo

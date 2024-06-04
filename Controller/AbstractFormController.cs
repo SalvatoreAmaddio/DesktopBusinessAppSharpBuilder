@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows;
 using FrontEnd.Source;
 using System.Windows.Controls;
+using FrontEnd.Utils;
 
 namespace FrontEnd.Controller
 {
@@ -26,7 +27,6 @@ namespace FrontEnd.Controller
         protected ISQLModel? _currentModel;
         private string _records = string.Empty;
         private UIElement? _uiElement;
-        private Window? _window;
         public UIElement? UI
         {
             get => _uiElement;
@@ -37,8 +37,13 @@ namespace FrontEnd.Controller
                 _uiElement = value;
                 if (_uiElement is Window _win)
                     _win.Closing += OnWindowClosing;
-                if (_uiElement is Page _page)
-                    _page.Unloaded += OnPageUnloaded;
+                if (_uiElement is Page _page) 
+                {
+                    Window? win = Helper.GetActiveWindow();
+                    if (win != null)
+                        win.Closing += OnWindowClosing;
+                }
+                    
             }
         }
 
@@ -208,8 +213,6 @@ namespace FrontEnd.Controller
             throw new NotImplementedException("You have not override the OnSubFormFilter() method in the Controller class that handles the SubForm.");
         }
 
-        private void OnPageUnloaded(object sender, RoutedEventArgs e) => Dispose();
-
         public virtual void OnWindowClosing(object? sender, CancelEventArgs e)
         {
             bool dirty = AsRecordSource().Any(s => s.IsDirty);
@@ -247,12 +250,16 @@ namespace FrontEnd.Controller
             {
                 if (_uiElement is Window _win)
                     _win.Closing -= OnWindowClosing;
-                if (_uiElement is Page _page)
-                    _page.Unloaded -= OnPageUnloaded;
+                if (_uiElement is Page _page) 
+                {
+                    Window? win = Helper.GetActiveWindow();
+                    if (win!=null)
+                        win.Closing -= OnWindowClosing;
+                }
                 AfterUpdate = null;
                 BeforeUpdate = null;
                 NewRecordEvent = null;
-                AsRecordSource().Dispose();
+                AsRecordSource().Dispose(false);
             }
 
             _disposed = true;

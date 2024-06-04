@@ -38,7 +38,7 @@ namespace FrontEnd.Utils
                     if (e.Cancel) //if the method changed the e.Cancel property to true, the user attempted to exit the program breaking data integrity rules.
                     {
                         tabControl.SelectedItem = item; //force the user to stay in the Tab.
-                        break;//The window cannot close until the user fix the Data Integrity issues in the given tab.
+                        return;//The window cannot close until the user fix the Data Integrity issues in the given tab.
                     }
                 }
             };
@@ -65,7 +65,7 @@ namespace FrontEnd.Utils
         /// </summary>
         /// <param name="name">The name of the dictionary</param>
         /// <returns>A ResourceDictionary</returns>
-        public static ResourceDictionary GetDictionary(string name) => 
+        public static ResourceDictionary GetDictionary(string name) =>
         new() 
         {
             Source = new Uri($"pack://application:,,,/FrontEnd;component/Themes/{name}.xaml")

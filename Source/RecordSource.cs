@@ -145,9 +145,15 @@ namespace FrontEnd.Source
             };
         }
 
+        public void Dispose(bool disposeController)
+        {
+            if (disposeController)
+                Controller?.Dispose();
+            Dispose();
+        }
+
         public void Dispose()
         {
-            Controller?.Dispose();
             ParentSource?.RemoveChild(this);
             UIControls?.Clear();
             navigator = null;
