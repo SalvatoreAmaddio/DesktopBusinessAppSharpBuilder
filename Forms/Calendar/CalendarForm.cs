@@ -284,8 +284,6 @@ namespace FrontEnd.Forms.Calendar
 
         internal class DateAnalyser(DateTime date, int displayMode = 0) : IDisposable
         {
-            private static readonly CultureInfo cultureInfo = CultureInfo.CurrentCulture;
-            private static System.Globalization.Calendar Calendar => cultureInfo.Calendar;
             public int DisplayMode { get; } = displayMode;
             public DateTime Date { get; } = date;
             public List<DateTime?> Mondays { get; private set; } = [];
@@ -406,18 +404,6 @@ namespace FrontEnd.Forms.Calendar
                 }
 
                 return Task.FromResult(days);
-            }
-
-            private static int GetWeekOfMonth(DateTime date)
-            {
-                CalendarWeekRule calendarWeekRule = cultureInfo.DateTimeFormat.CalendarWeekRule;
-                DayOfWeek firstDayOfWeek = cultureInfo.DateTimeFormat.FirstDayOfWeek;
-
-                int weekOfYear = Calendar.GetWeekOfYear(date, calendarWeekRule, firstDayOfWeek);
-                DateTime firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
-                int firstWeekOfYear = Calendar.GetWeekOfYear(firstDayOfMonth, calendarWeekRule, firstDayOfWeek);
-
-                return weekOfYear - firstWeekOfYear + 1;
             }
 
             public static (DateTime, DateTime) GetWeekRange(DateTime date)
