@@ -1,8 +1,10 @@
 ﻿using FrontEnd.Events;
 using FrontEnd.Model;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System;
 
 namespace FrontEnd.Forms.Calendar
 {
@@ -37,6 +39,30 @@ namespace FrontEnd.Forms.Calendar
         DependencyProperty.Register(nameof(CurrentDate), typeof(DateTime), typeof(CalendarForm), new PropertyMetadata(DateTime.Today));
         #endregion
 
+        #region DisplayMode
+        public int DisplayMode
+        {
+            get => (int)GetValue(DisplayModeProperty);
+            set => SetValue(DisplayModeProperty, value);
+        }
+
+        public static readonly DependencyProperty DisplayModeProperty =
+        DependencyProperty.Register(nameof(DisplayMode), typeof(int), typeof(CalendarForm), new PropertyMetadata(0, OnDisplayModePropertyChanged));
+
+        private static async void OnDisplayModePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+        await ((CalendarForm)(d)).OnDateUpdate();
+        #endregion
+
+        #region EnableWeekButton
+        public bool EnableWeekButton
+        {
+            get => (bool)GetValue(EnableWeekButtonProperty);
+            set => SetValue(EnableWeekButtonProperty, value);
+        }
+
+        public static readonly DependencyProperty EnableWeekButtonProperty =
+            DependencyProperty.Register(nameof(EnableWeekButton), typeof(bool), typeof(CalendarForm), new PropertyMetadata(false));
+        #endregion
         static CalendarForm() => DefaultStyleKeyProperty.OverrideMetadata(typeof(CalendarForm), new FrameworkPropertyMetadata(typeof(CalendarForm)));
 
         #region OnDayClickEvent
@@ -61,12 +87,7 @@ namespace FrontEnd.Forms.Calendar
         }
         #endregion
 
-        public CalendarForm() 
-        {
-            Unloaded += OnUnloaded;
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
+        public CalendarForm() => Unloaded += OnUnloaded;
 
         public override async void OnApplyTemplate()
         {
@@ -109,90 +130,41 @@ namespace FrontEnd.Forms.Calendar
             await OnDateUpdate();
         }
 
-        private async void OnRequeryClick(object sender, RoutedEventArgs e)
-        {
-            await OnDateUpdate(); 
-        }
-
+        #region Events
+        private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
+        private async void OnRequeryClick(object sender, RoutedEventArgs e) => await OnDateUpdate(); 
         private async void OnTodayClicked(object sender, RoutedEventArgs e)
         {
             CurrentDate = DateTime.Today;
             await OnDateUpdate();
         }
-
         private async void OnPreviousMonthClicked(object sender, RoutedEventArgs e) 
         {
             CurrentDate = CurrentDate.AddMonths(-1);
             await OnDateUpdate();
         }
-
         private async void OnNextMonthClicked(object sender, RoutedEventArgs e) 
         {
             CurrentDate = CurrentDate.AddMonths(1);
             await OnDateUpdate();
         }
-
         private async void OnPreviousYearClicked(object sender, RoutedEventArgs e) 
         {
             CurrentDate = CurrentDate.AddYears(-1);
             await OnDateUpdate();
         } 
-
         private async void OnNextYearClicked(object sender, RoutedEventArgs e) 
         {
             CurrentDate = CurrentDate.AddYears(1);
             await OnDateUpdate();
         }
-
-        private async Task OnDateUpdate()
-        {
-            DateAnalyser dateAnalyser = new(CurrentDate);
-            await Task.Run(dateAnalyser.Analyse);
-
-            ClearCalendar();
-
-            FillSlots(dateAnalyser.Mondays, dateAnalyser.Date, PART_Mondays);
-            FillSlots(dateAnalyser.Tuesdays, dateAnalyser.Date, PART_Tuesdays);
-            FillSlots(dateAnalyser.Wednesdays, dateAnalyser.Date, PART_Wednesdays);
-            FillSlots(dateAnalyser.Thursdays, dateAnalyser.Date, PART_Thursdays);
-            FillSlots(dateAnalyser.Fridays, dateAnalyser.Date, PART_Fridays);
-            FillSlots(dateAnalyser.Saturdays, dateAnalyser.Date, PART_Saturdays, true);
-            FillSlots(dateAnalyser.Sundays, dateAnalyser.Date, PART_Sundays, true);
-        }
-
-        private void FillSlots(List<int> days, DateTime date, StackPanel? column, bool weekends = false)
-        {
-            foreach (int day in days)
-            {
-                if (day == 0)
-                    column?.Children.Add(new CalendarSlot());
-                else 
-                {
-                    CalendarDaySlot c = new(day, date) { IsFestive = weekends };
-                    c.MouseUp += C_MouseUp;
-                    c.Unloaded += C_Unloaded;
-                    c.Model = RaiseOnPreparing(c.Date);
-                    CurrentSlots.Add(c);
-                    column?.Children.Add(c);
-                }
-            }
-        }
-
-        private AbstractModel? RaiseOnPreparing(DateTime date) 
-        {
-            OnPreparingCalendarFormEventArgs args = new(date, OnPreparingEvent, this);
-            RaiseEvent(args);
-            return args.Model;
-        }
-
-        private void C_Unloaded(object sender, RoutedEventArgs e)
+        private void OnCalendarDaySlotUnloaded(object sender, RoutedEventArgs e)
         {
             CalendarDaySlot currentSlot = (CalendarDaySlot)sender;
-            currentSlot.Unloaded -= C_Unloaded;
-            currentSlot.MouseUp -= C_MouseUp;
+            currentSlot.Unloaded -= OnCalendarDaySlotUnloaded;
+            currentSlot.MouseUp -= OnCalendarDaySlotMouseUp;
         }
-
-        private void C_MouseUp(object sender, MouseButtonEventArgs e)
+        private void OnCalendarDaySlotMouseUp(object sender, MouseButtonEventArgs e)
         {
             CalendarDaySlot? prevSelectedSlot = CurrentSlots.FirstOrDefault(s => s.IsSelected);
             if (prevSelectedSlot != null) prevSelectedSlot.IsSelected = false;
@@ -206,6 +178,49 @@ namespace FrontEnd.Forms.Calendar
                 RoutedEvent = OnDayClickEvent,
                 Source = this
             });
+        }
+        #endregion
+
+        private async Task OnDateUpdate()
+        {
+            EnableWeekButton = (DisplayMode == 0) ? false : true;
+            DateAnalyser dateAnalyser = new(CurrentDate, DisplayMode);
+            await Task.Run(dateAnalyser.Analyse);
+
+            ClearCalendar();
+
+            FillSlots(dateAnalyser.Mondays, PART_Mondays);
+            FillSlots(dateAnalyser.Tuesdays, PART_Tuesdays);
+            FillSlots(dateAnalyser.Wednesdays, PART_Wednesdays);
+            FillSlots(dateAnalyser.Thursdays, PART_Thursdays);
+            FillSlots(dateAnalyser.Fridays, PART_Fridays);
+            FillSlots(dateAnalyser.Saturdays, PART_Saturdays, true);
+            FillSlots(dateAnalyser.Sundays, PART_Sundays, true);
+        }
+
+        private void FillSlots(List<DateTime?> days, StackPanel? column, bool weekends = false)
+        {
+            foreach (DateTime? date in days)
+            {
+                if (date is null)
+                    column?.Children.Add(new CalendarSlot());
+                else 
+                {
+                    CalendarDaySlot c = new(date.Value) { IsFestive = weekends };
+                    c.MouseUp += OnCalendarDaySlotMouseUp;
+                    c.Unloaded += OnCalendarDaySlotUnloaded;
+                    c.Model = RaiseOnPreparing(c.Date);
+                    CurrentSlots.Add(c);
+                    column?.Children.Add(c);
+                }
+            }
+        }
+
+        private AbstractModel? RaiseOnPreparing(DateTime date) 
+        {
+            OnPreparingCalendarFormEventArgs args = new(date, OnPreparingEvent, this);
+            RaiseEvent(args);
+            return args.Model;
         }
 
         public void ClearCalendar()
@@ -242,32 +257,52 @@ namespace FrontEnd.Forms.Calendar
                 PART_Requery.Click -= OnRequeryClick;
 
             CurrentSlots.Clear();
+            GC.SuppressFinalize(this);
         }
 
-        internal class DateAnalyser(DateTime date) : IDisposable
+        internal class DateAnalyser(DateTime date, int displayMode = 0) : IDisposable
         {
+            private readonly CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+            private System.Globalization.Calendar Calendar => cultureInfo.Calendar;
+            public int DisplayMode { get; } = displayMode;
             public DateTime Date { get; } = date;
-            public List<int> Mondays { get; private set; } = [];
-            public List<int> Tuesdays { get; private set; } = [];
-            public List<int> Wednesdays { get; private set; } = [];
-            public List<int> Thursdays { get; private set; } = [];
-            public List<int> Fridays { get; private set; } = [];
-            public List<int> Saturdays { get; private set; } = [];
-            public List<int> Sundays { get; private set; } = [];
+            public List<DateTime?> Mondays { get; private set; } = [];
+            public List<DateTime?> Tuesdays { get; private set; } = [];
+            public List<DateTime?> Wednesdays { get; private set; } = [];
+            public List<DateTime?> Thursdays { get; private set; } = [];
+            public List<DateTime?> Fridays { get; private set; } = [];
+            public List<DateTime?> Saturdays { get; private set; } = [];
+            public List<DateTime?> Sundays { get; private set; } = [];
             private DayOfWeek MonthStartOn => new DateTime(this.Date.Year, this.Date.Month, 1).DayOfWeek;
             private int TotalDays => DateTime.DaysInMonth(this.Date.Year, this.Date.Month);
 
             public async Task Analyse()
             {
                 Dispose();
-                List<Task<List<int>>> tasks = [];
-                tasks.Add(GetDays(DayOfWeek.Monday));
-                tasks.Add(GetDays(DayOfWeek.Tuesday));
-                tasks.Add(GetDays(DayOfWeek.Wednesday));
-                tasks.Add(GetDays(DayOfWeek.Thursday));
-                tasks.Add(GetDays(DayOfWeek.Friday));
-                tasks.Add(GetDays(DayOfWeek.Saturday));
-                tasks.Add(GetDays(DayOfWeek.Sunday));
+                List<Task<List<DateTime?>>> tasks = [];
+                if (DisplayMode == 0) 
+                {
+                    tasks.Add(GetDays(DayOfWeek.Monday));
+                    tasks.Add(GetDays(DayOfWeek.Tuesday));
+                    tasks.Add(GetDays(DayOfWeek.Wednesday));
+                    tasks.Add(GetDays(DayOfWeek.Thursday));
+                    tasks.Add(GetDays(DayOfWeek.Friday));
+                    tasks.Add(GetDays(DayOfWeek.Saturday));
+                    tasks.Add(GetDays(DayOfWeek.Sunday));
+                }
+                else 
+                {
+                    int weekOfMonth = GetWeekOfMonth(Date);
+                    (DateTime startOfWeek, DateTime endOfWeek) = GetWeekRange(Date, weekOfMonth);
+                    Sundays.Add(endOfWeek);
+                    Saturdays.Add(endOfWeek.AddDays(-1));
+                    Fridays.Add(endOfWeek.AddDays(-2));
+                    Thursdays.Add(endOfWeek.AddDays(-3));
+                    Wednesdays.Add(endOfWeek.AddDays(-4));
+                    Tuesdays.Add(endOfWeek.AddDays(-5));
+                    Mondays.Add(endOfWeek.AddDays(-6));
+                    return;
+                }
 
                 var results = await Task.WhenAll(tasks);
 
@@ -281,57 +316,55 @@ namespace FrontEnd.Forms.Calendar
 
                 await FillVoids();
             }
-
             private async Task FillVoids()
             {
                 List<Task> tasks = [];
 
                 if (StartsOnTuesday())
-                    tasks.Add(Task.Run(Mondays.AddZero));
+                    tasks.Add(Task.Run(Mondays.AddNull));
 
                 if (StartsOnWednesday())
                 {
-                    tasks.Add(Task.Run(Mondays.AddZero));
-                    tasks.Add(Task.Run(Tuesdays.AddZero));
+                    tasks.Add(Task.Run(Mondays.AddNull));
+                    tasks.Add(Task.Run(Tuesdays.AddNull));
                 }
 
                 if (StartsOnThursday())
                 {
-                    tasks.Add(Task.Run(Mondays.AddZero));
-                    tasks.Add(Task.Run(Tuesdays.AddZero));
-                    tasks.Add(Task.Run(Wednesdays.AddZero));
+                    tasks.Add(Task.Run(Mondays.AddNull));
+                    tasks.Add(Task.Run(Tuesdays.AddNull));
+                    tasks.Add(Task.Run(Wednesdays.AddNull));
                 }
 
                 if (StartsOnFriday())
                 {
-                    tasks.Add(Task.Run(Mondays.AddZero));
-                    tasks.Add(Task.Run(Tuesdays.AddZero));
-                    tasks.Add(Task.Run(Wednesdays.AddZero));
-                    tasks.Add(Task.Run(Thursdays.AddZero));
+                    tasks.Add(Task.Run(Mondays.AddNull));
+                    tasks.Add(Task.Run(Tuesdays.AddNull));
+                    tasks.Add(Task.Run(Wednesdays.AddNull));
+                    tasks.Add(Task.Run(Thursdays.AddNull));
                 }
 
                 if (StartsOnSaturday())
                 {
-                    tasks.Add(Task.Run(Mondays.AddZero));
-                    tasks.Add(Task.Run(Tuesdays.AddZero));
-                    tasks.Add(Task.Run(Wednesdays.AddZero));
-                    tasks.Add(Task.Run(Thursdays.AddZero));
-                    tasks.Add(Task.Run(Fridays.AddZero));
+                    tasks.Add(Task.Run(Mondays.AddNull));
+                    tasks.Add(Task.Run(Tuesdays.AddNull));
+                    tasks.Add(Task.Run(Wednesdays.AddNull));
+                    tasks.Add(Task.Run(Thursdays.AddNull));
+                    tasks.Add(Task.Run(Fridays.AddNull));
                 }
 
                 if (StartsOnSunday())
                 {
-                    tasks.Add(Task.Run(Mondays.AddZero));
-                    tasks.Add(Task.Run(Tuesdays.AddZero));
-                    tasks.Add(Task.Run(Wednesdays.AddZero));
-                    tasks.Add(Task.Run(Thursdays.AddZero));
-                    tasks.Add(Task.Run(Fridays.AddZero));
-                    tasks.Add(Task.Run(Saturdays.AddZero));
+                    tasks.Add(Task.Run(Mondays.AddNull));
+                    tasks.Add(Task.Run(Tuesdays.AddNull));
+                    tasks.Add(Task.Run(Wednesdays.AddNull));
+                    tasks.Add(Task.Run(Thursdays.AddNull));
+                    tasks.Add(Task.Run(Fridays.AddNull));
+                    tasks.Add(Task.Run(Saturdays.AddNull));
                 }
 
                 await Task.WhenAll(tasks);
             }
-
             public bool StartsOnTuesday() => MonthStartOn == DayOfWeek.Tuesday;
             public bool StartsOnWednesday() => MonthStartOn == DayOfWeek.Wednesday;
             public bool StartsOnThursday() => MonthStartOn == DayOfWeek.Thursday;
@@ -339,21 +372,53 @@ namespace FrontEnd.Forms.Calendar
             public bool StartsOnSaturday() => MonthStartOn == DayOfWeek.Saturday;
             public bool StartsOnSunday() => MonthStartOn == DayOfWeek.Sunday;
 
-            private Task<List<int>> GetDays(DayOfWeek dayName)
+            private Task<List<DateTime?>> GetDays(DayOfWeek dayName)
             {
-                List<int> days = [];
+                List<DateTime?> days = [];
                 DateTime date = new(this.Date.Year, this.Date.Month, 1);
 
                 for (int i = 1; i <= TotalDays; i++)
                 {
                     DayOfWeek dayOfWeek = date.DayOfWeek;
                     if (dayOfWeek == dayName)
-                        days.Add(i);
+                        days.Add(date);
 
                     date = date.AddDays(1);
                 }
 
                 return Task.FromResult(days);
+            }
+
+            private int GetWeekOfMonth(DateTime date)
+            {
+                CalendarWeekRule calendarWeekRule = cultureInfo.DateTimeFormat.CalendarWeekRule;
+                DayOfWeek firstDayOfWeek = cultureInfo.DateTimeFormat.FirstDayOfWeek;
+
+                int weekOfYear = Calendar.GetWeekOfYear(date, calendarWeekRule, firstDayOfWeek);
+                DateTime firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+                int firstWeekOfYear = Calendar.GetWeekOfYear(firstDayOfMonth, calendarWeekRule, firstDayOfWeek);
+
+                return weekOfYear - firstWeekOfYear + 1;
+            }
+
+            private (DateTime, DateTime) GetWeekRange(DateTime date, int weekOfMonth)
+            {
+                DayOfWeek firstDayOfWeek = cultureInfo.DateTimeFormat.FirstDayOfWeek;
+
+                DateTime firstDayOfMonth = new(date.Year, date.Month, 1);
+                int dayOffset = ((int)firstDayOfMonth.DayOfWeek - (int)firstDayOfWeek + 7) % 7;
+                DateTime startOfFirstWeek = firstDayOfMonth.AddDays(-dayOffset);
+
+                DateTime startOfWeek = startOfFirstWeek.AddDays((weekOfMonth - 1) * 7);
+                DateTime endOfWeek = startOfWeek.AddDays(6);
+
+                if (startOfWeek.Month != date.Month)
+                    startOfWeek = new DateTime(date.Year, date.Month, 1);
+
+                if (endOfWeek.Month != date.Month)
+                    endOfWeek = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
+
+                return (startOfWeek, endOfWeek);
             }
 
             public void Dispose()
@@ -373,7 +438,7 @@ namespace FrontEnd.Forms.Calendar
 
     public static class CalendarListExtension
     {
-        public static void AddZero(this List<int> list) => list.Insert(0, 0);
+        public static void AddNull(this List<DateTime?> list) => list.Insert(0, null);
     }
 
 }

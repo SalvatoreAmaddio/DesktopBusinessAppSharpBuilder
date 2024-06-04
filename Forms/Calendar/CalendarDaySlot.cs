@@ -58,11 +58,11 @@ namespace FrontEnd.Forms.Calendar
         public bool IsToday { get => this.Date == DateTime.Now; }
 
         public CalendarDaySlot() { }
-        public CalendarDaySlot(int day, DateTime date) 
-        { 
-            this.Date = new DateTime(date.Year,date.Month,day);
+        public CalendarDaySlot(DateTime date) 
+        {
+            this.Date = date;
             if (this.Date == DateTime.Today) IsSelected = true;
-            Content = $"{day})";
+            Content = $"{Date.Day})";
         }
 
       

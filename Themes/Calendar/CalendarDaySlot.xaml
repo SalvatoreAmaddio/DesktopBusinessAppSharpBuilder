@@ -23,6 +23,7 @@
                 <ControlTemplate TargetType="{x:Type calendar:CalendarDaySlot}">
                     <Border BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="10"
                             Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
                         <Grid>
                             <ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>

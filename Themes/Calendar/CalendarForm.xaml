@@ -13,7 +13,7 @@
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="BorderBrush" Value="Black"/>
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderThickness" Value=".5"/>
         <Setter Property="Background" Value="{StaticResource DefaultWhite}"/>
     </Style>
     
@@ -42,16 +42,16 @@
                                         </StackPanel.Resources>
                                         <Button x:Name="PART_PreviousYear" Content="{StaticResource year_back}" ToolTip="Previous Year"/>
                                         <Button x:Name="PART_PreviousMonth" Content="{StaticResource first}" ToolTip="Previous Month"/>
-                                        <Button x:Name="PART_PreviousWeek" Content="{StaticResource previous}" ToolTip="Previous Week"/>
-                                        <Label Content="{TemplateBinding CurrentDate}" ContentStringFormat="{}{0:dd/MM/yyyy}" BorderBrush="Black" BorderThickness=".1" Background="White"/>
-                                        <Button x:Name="PART_NextWeek" Content="{StaticResource next}" ToolTip="Next Week"/>
+                                        <Button x:Name="PART_PreviousWeek" Content="{StaticResource previous}" IsEnabled="{TemplateBinding EnableWeekButton}" ToolTip="Previous Week"/>
+                                        <Label Content="{TemplateBinding CurrentDate}" ContentStringFormat="{}{0:dd/MM/yyyy}" BorderBrush="Black" BorderThickness=".5" Background="White"/>
+                                        <Button x:Name="PART_NextWeek" Content="{StaticResource next}" IsEnabled="{TemplateBinding EnableWeekButton}" ToolTip="Next Week"/>
                                         <Button x:Name="PART_NextMonth" Content="{StaticResource last}" ToolTip="Next Month"/>
                                         <Button x:Name="PART_NextYear" Content="{StaticResource year_forward}" ToolTip="Next Year"/>
                                         <Separator/>
                                         <Button x:Name="PART_Today" Content="Today" Width="45"/>
                                         <Separator/>
                                         <Label Content="Show as"/>
-                                        <ComboBox SelectedIndex="0" VerticalContentAlignment="Center">
+                                        <ComboBox SelectedIndex="{Binding DisplayMode, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" VerticalContentAlignment="Center">
                                             <ComboBoxItem>Month</ComboBoxItem>
                                             <ComboBoxItem>Week</ComboBoxItem>
                                         </ComboBox>
