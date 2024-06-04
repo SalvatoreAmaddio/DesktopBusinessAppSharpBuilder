@@ -225,11 +225,13 @@ namespace FrontEnd.Forms
                 if (PART_ClearButton != null)
                     PART_ClearButton.Click -= OnClearButtonClicked;
 
-                if (ItemsSource!=null)
+                if (ItemsSource!=null) 
+                {
                     foreach (IFilterOption option in ItemsSource)
                         option.Dispose();
 
-                ((SourceOption?)ItemsSource)?.Dispose();
+                    ((SourceOption?)ItemsSource)?.Dispose();
+                }
 
                 Window? window = Helper.GetActiveWindow();
                 if (window != null)

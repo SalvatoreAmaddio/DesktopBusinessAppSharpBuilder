@@ -109,11 +109,8 @@ namespace FrontEnd.FilterSource
                     break;
                 case CRUD.UPDATE:
                     int index = IndexOf(option);
-                    if (index >=0) 
-                    {
-                        IFilterOption oldValue = this[index];
-                        oldValue.Copy(option);
-                    }
+                    IFilterOption oldValue = this[index];
+                    oldValue.Copy(option);
                     NotifyUIControl([]);
                     break;
                 case CRUD.DELETE:
@@ -124,6 +121,7 @@ namespace FrontEnd.FilterSource
 
         public void Dispose() 
         {
+            Source?.ParentSource?.RemoveChild(this);
             UIControls?.Clear();
             Clear();
             Source?.Dispose();
