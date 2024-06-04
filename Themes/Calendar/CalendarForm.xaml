@@ -14,20 +14,22 @@
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{StaticResource DefaultWhite}"/>
     </Style>
     
     <Style TargetType="{x:Type calendar:CalendarForm}">
+        <Setter Property="Background" Value="{StaticResource DefaultWhite}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type calendar:CalendarForm}">
-                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}" SnapsToDevicePixels="True">
-                            <Grid>
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}" SnapsToDevicePixels="True">
+                            <Grid Background="{TemplateBinding Background}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="40"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
-                                <Border x:Name="PART_Commands" BorderBrush="Black" BorderThickness="1" Padding="5">
+                                <Border x:Name="PART_Commands" Background="{TemplateBinding Background}" BorderBrush="Black" BorderThickness="1" Padding="5">
                                     <StackPanel Orientation="Horizontal">
                                         <StackPanel.Resources>
                                             <Style TargetType="Button">
@@ -41,7 +43,7 @@
                                         <Button x:Name="PART_PreviousYear" Content="{StaticResource year_back}" ToolTip="Previous Year"/>
                                         <Button x:Name="PART_PreviousMonth" Content="{StaticResource first}" ToolTip="Previous Month"/>
                                         <Button x:Name="PART_PreviousWeek" Content="{StaticResource previous}" ToolTip="Previous Week"/>
-                                        <Label Content="{TemplateBinding CurrentDate}" ContentStringFormat="{}{0:dd/MM/yyyy}" BorderBrush="Black" BorderThickness=".1"/>
+                                        <Label Content="{TemplateBinding CurrentDate}" ContentStringFormat="{}{0:dd/MM/yyyy}" BorderBrush="Black" BorderThickness=".1" Background="White"/>
                                         <Button x:Name="PART_NextWeek" Content="{StaticResource next}" ToolTip="Next Week"/>
                                         <Button x:Name="PART_NextMonth" Content="{StaticResource last}" ToolTip="Next Month"/>
                                         <Button x:Name="PART_NextYear" Content="{StaticResource year_forward}" ToolTip="Next Year"/>
