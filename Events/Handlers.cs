@@ -1,6 +1,7 @@
 ﻿using FrontEnd.Forms.Calendar;
 using FrontEnd.Model;
 using System.Windows;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FrontEnd.Events
 {
@@ -23,11 +24,18 @@ namespace FrontEnd.Events
     /// <param name="e"></param>
     public delegate void FilterEventHandler(object? sender, FilterEventArgs e);
 
-    public class OnPreparingCalendarFormEventArgs(DateTime date) : RoutedEventArgs
+    public class OnPreparingCalendarFormEventArgs : RoutedEventArgs
     {
         public AbstractModel? Model { get; set; }
 
-        public DateTime Date { get; } = date;
+        public DateTime Date { get; }
+
+        public OnPreparingCalendarFormEventArgs(DateTime date, RoutedEvent evt, object source)
+        {
+            Date = date;
+            RoutedEvent = evt;
+            Source = source;
+        }
     }
 
     public class FilterEventArgs() : EventArgs 

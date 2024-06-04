@@ -153,15 +153,9 @@ namespace FrontEnd.Forms.Calendar
 
         private AbstractModel? RaiseOnPreparing(DateTime date) 
         {
-            OnPreparingCalendarFormEventArgs m = new(date)
-            {
-                RoutedEvent = OnPreparingEvent,
-                Source = this
-            };
-
-            RaiseEvent(m);
-
-            return m.Model;
+            OnPreparingCalendarFormEventArgs args = new(date, OnPreparingEvent, this);
+            RaiseEvent(args);
+            return args.Model;
         }
 
         private void C_Unloaded(object sender, RoutedEventArgs e)
