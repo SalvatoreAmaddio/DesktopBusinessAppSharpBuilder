@@ -235,6 +235,7 @@ namespace FrontEnd.Forms.Calendar
         private void OnCalendarDaySlotUnloaded(object sender, RoutedEventArgs e)
         {
             CalendarDaySlot currentSlot = (CalendarDaySlot)sender;
+            currentSlot.Models = null;
             currentSlot.Unloaded -= OnCalendarDaySlotUnloaded;
             currentSlot.MouseUp -= OnCalendarDaySlotMouseUp;
         }
