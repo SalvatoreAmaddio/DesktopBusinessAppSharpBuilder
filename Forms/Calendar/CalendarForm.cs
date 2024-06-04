@@ -231,37 +231,7 @@ namespace FrontEnd.Forms.Calendar
         }
 
         #region Events
-        private async void OnPreviousWeekClick(object sender, RoutedEventArgs e)
-        {
-            (DateTime startOfWeek, DateTime endOfWeek) = DateAnalyser.GetWeekRange(CurrentDate);
-            startOfWeek = startOfWeek.AddDays(-1);
-            CurrentDate = startOfWeek;
-            await OnDateUpdate();
-        }
-
-        private async void OnNextWeekClick(object sender, RoutedEventArgs e)
-        {
-            (DateTime startOfWeek, DateTime endOfWeek) = DateAnalyser.GetWeekRange(CurrentDate);
-            endOfWeek = endOfWeek.AddDays(1);
-            CurrentDate = endOfWeek;
-            await OnDateUpdate();
-        }
         private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
-        private async void OnPreviousMonthClicked(object sender, RoutedEventArgs e) 
-        {
-            CurrentDate = CurrentDate.AddMonths(-1);
-            await OnDateUpdate();
-        }
-        private async void OnNextMonthClicked(object sender, RoutedEventArgs e) 
-        {
-            CurrentDate = CurrentDate.AddMonths(1);
-            await OnDateUpdate();
-        }
-        private async void OnNextYearClicked(object sender, RoutedEventArgs e) 
-        {
-            CurrentDate = CurrentDate.AddYears(1);
-            await OnDateUpdate();
-        }
         private void OnCalendarDaySlotUnloaded(object sender, RoutedEventArgs e)
         {
             CalendarDaySlot currentSlot = (CalendarDaySlot)sender;
