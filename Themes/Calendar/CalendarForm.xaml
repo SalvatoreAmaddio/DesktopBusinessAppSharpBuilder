@@ -50,7 +50,7 @@
                                         <Separator/>
                                         <Button x:Name="PART_Today" Content="Today" Width="45"/>
                                         <Separator/>
-                                        <Label Content="Show as"/>
+                                        <Label Content="View as"/>
                                         <ComboBox SelectedIndex="{Binding DisplayMode, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" VerticalContentAlignment="Center">
                                             <ComboBoxItem>Month</ComboBoxItem>
                                             <ComboBoxItem>Week</ComboBoxItem>
