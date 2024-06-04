@@ -4,8 +4,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using FrontEnd.Controller;
 
 namespace FrontEnd.Forms.Calendar
 {
@@ -20,14 +19,94 @@ namespace FrontEnd.Forms.Calendar
         private StackPanel? PART_Fridays;
         private StackPanel? PART_Saturdays;
         private StackPanel? PART_Sundays;
-        private Button? PART_PreviousYear;
-        private Button? PART_NextYear;
-        private Button? PART_PreviousMonth;
-        private Button? PART_NextMonth;
-        private Button? PART_NextWeek;
-        private Button? PART_PreviousWeek;
-        private Button? PART_Today;
-        private Button? PART_Requery;
+
+        #region RequeryCMD
+        public static readonly DependencyProperty RequeryCMDProperty =
+        DependencyProperty.Register(nameof(RequeryCMD), typeof(ICommand), typeof(CalendarForm), new PropertyMetadata());
+
+        public ICommand RequeryCMD 
+        {
+            get => (ICommand) GetValue(RequeryCMDProperty);
+            private set => SetValue(RequeryCMDProperty, value);
+        }
+        #endregion
+
+        #region TodayCMD
+        public static readonly DependencyProperty TodayCMDProperty =
+        DependencyProperty.Register(nameof(TodayCMD), typeof(ICommand), typeof(CalendarForm), new PropertyMetadata());
+
+        public ICommand TodayCMD
+        {
+            get => (ICommand)GetValue(TodayCMDProperty);
+            private set => SetValue(TodayCMDProperty, value);
+        }
+        #endregion
+
+        #region PreviousYearCMD
+        public static readonly DependencyProperty PreviousYearCMDProperty =
+        DependencyProperty.Register(nameof(PreviousYearCMD), typeof(ICommand), typeof(CalendarForm), new PropertyMetadata());
+
+        public ICommand PreviousYearCMD
+        {
+            get => (ICommand)GetValue(PreviousYearCMDProperty);
+            private set => SetValue(PreviousYearCMDProperty, value);
+        }
+        #endregion
+
+        #region NextYearCMD
+        public static readonly DependencyProperty NextYearCMDProperty =
+        DependencyProperty.Register(nameof(NextYearCMD), typeof(ICommand), typeof(CalendarForm), new PropertyMetadata());
+
+        public ICommand NextYearCMD
+        {
+            get => (ICommand)GetValue(NextYearCMDProperty);
+            private set => SetValue(NextYearCMDProperty, value);
+        }
+        #endregion
+
+        #region NextMonthCMD
+        public static readonly DependencyProperty NextMonthCMDProperty =
+        DependencyProperty.Register(nameof(NextMonthCMD), typeof(ICommand), typeof(CalendarForm), new PropertyMetadata());
+
+        public ICommand NextMonthCMD
+        {
+            get => (ICommand)GetValue(NextMonthCMDProperty);
+            private set => SetValue(NextMonthCMDProperty, value);
+        }
+        #endregion
+
+        #region PreviousMonthCMD
+        public static readonly DependencyProperty PreviousMonthCMDProperty =
+        DependencyProperty.Register(nameof(PreviousMonthCMD), typeof(ICommand), typeof(CalendarForm), new PropertyMetadata());
+
+        public ICommand PreviousMonthCMD
+        {
+            get => (ICommand)GetValue(PreviousMonthCMDProperty);
+            private set => SetValue(PreviousMonthCMDProperty, value);
+        }
+        #endregion
+
+        #region PreviousWeekCMD
+        public static readonly DependencyProperty PreviousWeekCMDProperty =
+        DependencyProperty.Register(nameof(PreviousWeekCMD), typeof(ICommand), typeof(CalendarForm), new PropertyMetadata());
+
+        public ICommand PreviousWeekCMD
+        {
+            get => (ICommand)GetValue(PreviousWeekCMDProperty);
+            private set => SetValue(PreviousWeekCMDProperty, value);
+        }
+        #endregion
+
+        #region NextWeekCMD
+        public static readonly DependencyProperty NextWeekCMDProperty =
+        DependencyProperty.Register(nameof(NextWeekCMD), typeof(ICommand), typeof(CalendarForm), new PropertyMetadata());
+
+        public ICommand NextWeekCMD
+        {
+            get => (ICommand)GetValue(NextWeekCMDProperty);
+            private set => SetValue(NextWeekCMDProperty, value);
+        }
+        #endregion
 
         #region CurrentDate
         public DateTime CurrentDate
@@ -88,7 +167,18 @@ namespace FrontEnd.Forms.Calendar
         }
         #endregion
 
-        public CalendarForm() => Unloaded += OnUnloaded;
+        public CalendarForm()
+        {
+            RequeryCMD = new CMDAsync(OnDateUpdate);
+            TodayCMD = new CMDAsync(() => Go(TimeTravel.TODAY));
+            PreviousYearCMD = new CMDAsync(()=>Go(TimeTravel.PREV_YEAR));
+            NextYearCMD = new CMDAsync(() => Go(TimeTravel.NEXT_YEAR));
+            NextMonthCMD = new CMDAsync(() => Go(TimeTravel.NEXT_MONTH));
+            PreviousMonthCMD = new CMDAsync(() => Go(TimeTravel.PREV_MONTH));
+            PreviousWeekCMD = new CMDAsync(()=>Go(TimeTravel.PREV_WEEK));
+            NextWeekCMD = new CMDAsync(() => Go(TimeTravel.NEXT_WEEK));
+            Unloaded += OnUnloaded;
+        }
 
         public override async void OnApplyTemplate()
         {
@@ -100,39 +190,42 @@ namespace FrontEnd.Forms.Calendar
             PART_Fridays = (StackPanel?)GetTemplateChild(nameof(PART_Fridays));
             PART_Saturdays = (StackPanel?)GetTemplateChild(nameof(PART_Saturdays));
             PART_Sundays = (StackPanel?)GetTemplateChild(nameof(PART_Sundays));
+            await OnDateUpdate();
+        }
 
-            PART_PreviousMonth = (Button?)GetTemplateChild(nameof(PART_PreviousMonth));
-            PART_NextMonth = (Button?)GetTemplateChild(nameof(PART_NextMonth));
-            PART_PreviousYear = (Button?)GetTemplateChild(nameof(PART_PreviousYear));
-            PART_NextYear = (Button?)GetTemplateChild(nameof(PART_NextYear));
-            PART_NextWeek = (Button?)GetTemplateChild(nameof(PART_NextWeek));
-            PART_PreviousWeek = (Button?)GetTemplateChild(nameof(PART_PreviousWeek));
-            PART_Today = (Button?) GetTemplateChild(nameof(PART_Today));
-            PART_Requery = (Button?)GetTemplateChild(nameof(PART_Requery));
-
-            if (PART_Requery!=null)
-                PART_Requery.Click += OnRequeryClick;
-
-            if (PART_NextYear!=null)
-               PART_NextYear.Click += OnNextYearClicked;
-
-            if (PART_PreviousYear != null)
-                PART_PreviousYear.Click += OnPreviousYearClicked;
-
-            if (PART_NextMonth != null)
-                PART_NextMonth.Click += OnNextMonthClicked;
-
-            if (PART_PreviousMonth != null)
-                PART_PreviousMonth.Click += OnPreviousMonthClicked;
-
-            if (PART_Today != null)
-                PART_Today.Click += OnTodayClicked;
-
-            if (PART_NextWeek != null)
-                PART_NextWeek.Click += OnNextWeekClick;
-
-            if (PART_PreviousWeek != null)
-                PART_PreviousWeek.Click += OnPreviousWeekClick;
+        private async Task Go(TimeTravel timeTravel) 
+        {
+            DateTime startOfWeek; 
+            DateTime endOfWeek;
+            
+            switch (timeTravel)
+            {
+                case TimeTravel.TODAY:
+                    CurrentDate = DateTime.Today;
+                    break;
+                case TimeTravel.PREV_YEAR:
+                    CurrentDate = CurrentDate.AddYears(-1);
+                    break;
+                case TimeTravel.PREV_MONTH:
+                    CurrentDate = CurrentDate.AddMonths(-1);
+                    break;
+                case TimeTravel.PREV_WEEK:
+                    (startOfWeek, endOfWeek) = DateAnalyser.GetWeekRange(CurrentDate);
+                    startOfWeek = startOfWeek.AddDays(-1);
+                    CurrentDate = startOfWeek;
+                    break;
+                case TimeTravel.NEXT_YEAR:
+                    CurrentDate = CurrentDate.AddYears(1);
+                    break;
+                case TimeTravel.NEXT_MONTH:
+                    CurrentDate = CurrentDate.AddMonths(1);
+                    break;
+                case TimeTravel.NEXT_WEEK:
+                    (startOfWeek, endOfWeek) = DateAnalyser.GetWeekRange(CurrentDate);
+                    endOfWeek = endOfWeek.AddDays(1);
+                    CurrentDate = endOfWeek;
+                    break;
+            }
 
             await OnDateUpdate();
         }
@@ -154,12 +247,6 @@ namespace FrontEnd.Forms.Calendar
             await OnDateUpdate();
         }
         private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
-        private async void OnRequeryClick(object sender, RoutedEventArgs e) => await OnDateUpdate(); 
-        private async void OnTodayClicked(object sender, RoutedEventArgs e)
-        {
-            CurrentDate = DateTime.Today;
-            await OnDateUpdate();
-        }
         private async void OnPreviousMonthClicked(object sender, RoutedEventArgs e) 
         {
             CurrentDate = CurrentDate.AddMonths(-1);
@@ -170,11 +257,6 @@ namespace FrontEnd.Forms.Calendar
             CurrentDate = CurrentDate.AddMonths(1);
             await OnDateUpdate();
         }
-        private async void OnPreviousYearClicked(object sender, RoutedEventArgs e) 
-        {
-            CurrentDate = CurrentDate.AddYears(-1);
-            await OnDateUpdate();
-        } 
         private async void OnNextYearClicked(object sender, RoutedEventArgs e) 
         {
             CurrentDate = CurrentDate.AddYears(1);
@@ -254,30 +336,6 @@ namespace FrontEnd.Forms.Calendar
         public void Dispose()
         {
             Unloaded -= OnUnloaded;
-            if (PART_NextYear != null)
-                PART_NextYear.Click -= OnNextYearClicked;
-
-            if (PART_PreviousYear != null)
-                PART_PreviousYear.Click -= OnPreviousYearClicked;
-
-            if (PART_NextMonth != null)
-                PART_NextMonth.Click -= OnNextMonthClicked;
-
-            if (PART_PreviousMonth != null)
-                PART_PreviousMonth.Click -= OnPreviousMonthClicked;
-
-            if (PART_Today != null)
-                PART_Today.Click -= OnTodayClicked;
-
-            if (PART_Requery != null)
-                PART_Requery.Click -= OnRequeryClick;
-
-            if (PART_NextWeek != null)
-                PART_NextWeek.Click -= OnNextWeekClick;
-
-            if (PART_PreviousWeek != null)
-                PART_PreviousWeek.Click -= OnPreviousWeekClick;
-
             CurrentSlots.Clear();
             GC.SuppressFinalize(this);
         }
@@ -435,6 +493,16 @@ namespace FrontEnd.Forms.Calendar
 
     }
 
+    public enum TimeTravel 
+    {
+        PREV_YEAR = 0,
+        PREV_MONTH = 1,
+        PREV_WEEK = 2,
+        NEXT_YEAR = 3,
+        NEXT_MONTH = 4,
+        NEXT_WEEK = 5,
+        TODAY = 6,
+    }
 
     public static class CalendarListExtension
     {

@@ -40,15 +40,15 @@
                                                 <Setter Property="Width" Value="40"/>
                                             </Style>
                                         </StackPanel.Resources>
-                                        <Button x:Name="PART_PreviousYear" Content="{StaticResource year_back}" ToolTip="Previous Year"/>
-                                        <Button x:Name="PART_PreviousMonth" Content="{StaticResource first}" ToolTip="Previous Month"/>
-                                        <Button x:Name="PART_PreviousWeek" Content="{StaticResource previous}" IsEnabled="{TemplateBinding EnableWeekButton}" ToolTip="Previous Week"/>
+                                        <Button x:Name="PART_PreviousYear" Content="{StaticResource year_back}" ToolTip="Previous Year" Command="{TemplateBinding PreviousYearCMD}"/>
+                                        <Button x:Name="PART_PreviousMonth" Content="{StaticResource first}" ToolTip="Previous Month" Command="{TemplateBinding PreviousMonthCMD}"/>
+                                        <Button x:Name="PART_PreviousWeek" Content="{StaticResource previous}" IsEnabled="{TemplateBinding EnableWeekButton}" ToolTip="Previous Week" Command="{TemplateBinding PreviousWeekCMD}"/>
                                         <Label Content="{TemplateBinding CurrentDate}" ContentStringFormat="{}{0:dd/MM/yyyy}" BorderBrush="Black" BorderThickness=".5" Background="White"/>
-                                        <Button x:Name="PART_NextWeek" Content="{StaticResource next}" IsEnabled="{TemplateBinding EnableWeekButton}" ToolTip="Next Week"/>
-                                        <Button x:Name="PART_NextMonth" Content="{StaticResource last}" ToolTip="Next Month"/>
-                                        <Button x:Name="PART_NextYear" Content="{StaticResource year_forward}" ToolTip="Next Year"/>
+                                        <Button x:Name="PART_NextWeek" Content="{StaticResource next}" IsEnabled="{TemplateBinding EnableWeekButton}" ToolTip="Next Week" Command="{TemplateBinding NextWeekCMD}"/>
+                                        <Button x:Name="PART_NextMonth" Content="{StaticResource last}" ToolTip="Next Month" Command="{TemplateBinding NextMonthCMD}"/>
+                                        <Button x:Name="PART_NextYear" Content="{StaticResource year_forward}" ToolTip="Next Year" Command="{TemplateBinding NextYearCMD}"/>
                                         <Separator/>
-                                        <Button x:Name="PART_Today" Content="Today" Width="45"/>
+                                        <Button x:Name="PART_Today" Content="Today" Width="45" Command="{TemplateBinding TodayCMD}"/>
                                         <Separator/>
                                         <Label Content="View as"/>
                                         <ComboBox SelectedIndex="{Binding DisplayMode, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" VerticalContentAlignment="Center">
@@ -56,7 +56,7 @@
                                             <ComboBoxItem>Week</ComboBoxItem>
                                         </ComboBox>
                                         <Separator/>
-                                        <Button x:Name="PART_Requery" ToolTip="Requery" Background="Transparent" BorderThickness="0">
+                                        <Button x:Name="PART_Requery" ToolTip="Requery" Background="Transparent" BorderThickness="0" Command="{TemplateBinding RequeryCMD}">
                                         <Button.Content>
                                             <Image Source="{StaticResource requery}"/>
                                         </Button.Content>
