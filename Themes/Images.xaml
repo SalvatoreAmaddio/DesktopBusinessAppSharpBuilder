@@ -22,4 +22,6 @@
     <BitmapImage x:Key="send" UriSource="pack://application:,,,/FrontEnd;component/Images/send.png"/>
     <BitmapImage x:Key="root_dir" UriSource="pack://application:,,,/FrontEnd;component/Images/root_directory.png"/>
     <BitmapImage x:Key="logout" UriSource="pack://application:,,,/FrontEnd;component/Images/logout.png"/>
+    <BitmapImage x:Key="task" UriSource="pack://application:,,,/FrontEnd;component/Images/task.png"/>
+
 </ResourceDictionary>

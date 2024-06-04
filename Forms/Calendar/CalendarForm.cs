@@ -171,7 +171,7 @@ namespace FrontEnd.Forms.Calendar
                     CalendarDaySlot c = new(day, date) { IsFestive = weekends };
                     c.MouseUp += C_MouseUp;
                     c.Unloaded += C_Unloaded;
-                    c.Model = RaiseOnPreparing(date);
+                    c.Model = RaiseOnPreparing(c.Date);
                     CurrentSlots.Add(c);
                     column?.Children.Add(c);
                 }

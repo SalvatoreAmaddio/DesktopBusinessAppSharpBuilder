@@ -27,6 +27,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\task.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="logo.ico" />
   </ItemGroup>
 
@@ -60,6 +64,7 @@
 	<Resource Include="images\redlight.png" />
 	<Resource Include="images\send.png" />
 	<Resource Include="images\stopIcon.png" />
+	<Resource Include="images\task.png" />
 	<Resource Include="images\thumbup.png" />
 	<Resource Include="Themes\Controls.xaml" />
   </ItemGroup>

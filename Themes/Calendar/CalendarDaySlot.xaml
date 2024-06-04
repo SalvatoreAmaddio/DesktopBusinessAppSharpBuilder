@@ -5,6 +5,7 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Colors.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Images.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type calendar:CalendarDaySlot}">
@@ -23,8 +24,11 @@
                     <Border BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        <Grid>
+                            <ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                            <Image HorizontalAlignment="Right" Visibility="{TemplateBinding HasAppointment}" Source="{StaticResource task}"/>
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

@@ -9,6 +9,17 @@ namespace FrontEnd.Forms.Calendar
 
         public DateTime Date { get; set; }
 
+        #region HasAppointment
+        public Visibility HasAppointment
+        {
+            get => (Visibility)GetValue(HasAppointmentProperty);
+            set => SetValue(HasAppointmentProperty, value);
+        }
+
+        public static readonly DependencyProperty HasAppointmentProperty =
+            DependencyProperty.Register(nameof(HasAppointment), typeof(Visibility), typeof(CalendarDaySlot), new PropertyMetadata(Visibility.Hidden));
+        #endregion
+
         #region IsSelected
         public bool IsSelected
         {
@@ -31,7 +42,19 @@ namespace FrontEnd.Forms.Calendar
             DependencyProperty.Register(nameof(IsFestive), typeof(bool), typeof(CalendarDaySlot), new PropertyMetadata(false, null));
         #endregion
 
-        public AbstractModel? Model { get; set; }
+        private AbstractModel? _model;
+        public AbstractModel? Model 
+        { 
+            get => _model;
+            set 
+            { 
+                _model = value;
+                if (_model != null) 
+                {
+                    HasAppointment = Visibility.Visible;
+                }
+            } 
+        }
         public bool IsToday { get => this.Date == DateTime.Now; }
 
         public CalendarDaySlot() { }
