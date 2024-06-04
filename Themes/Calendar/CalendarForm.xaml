@@ -5,6 +5,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Strings.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Colors.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Images.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="Label" x:Key="DayColumn">
@@ -52,6 +53,12 @@
                                             <ComboBoxItem>Month</ComboBoxItem>
                                             <ComboBoxItem>Week</ComboBoxItem>
                                         </ComboBox>
+                                        <Separator/>
+                                        <Button x:Name="PART_Requery" ToolTip="Requery" Background="Transparent" BorderThickness="0">
+                                        <Button.Content>
+                                            <Image Source="{StaticResource requery}"/>
+                                        </Button.Content>
+                                        </Button>
                                     </StackPanel>
                                 </Border>
                                 

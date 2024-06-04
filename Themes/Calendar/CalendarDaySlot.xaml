@@ -30,19 +30,18 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
+            <Trigger Property="IsFestive" Value="True">
+                <Setter Property="Foreground" Value="Red"/>
+                <Setter Property="BorderBrush" Value="Red"/>
+            </Trigger>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="{StaticResource HappyBlue}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource HappyBlue}"/>
                 <Setter Property="Foreground" Value="White"/>
             </Trigger>
-            <Trigger Property="IsFestive" Value="True">
-                <Setter Property="Foreground" Value="Red"/>
-                <Setter Property="BorderBrush" Value="Red"/>
-            </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{StaticResource HappyBlue}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource HappyBlue}"/>
-                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="{StaticResource OverBlue}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource OverBlue}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -4,5 +4,6 @@
     <SolidColorBrush x:Name="b" x:Key="DefaultWhite" Color="#EDF1FF"/>
     <SolidColorBrush x:Key="DefaultGrey" Color="{x:Static SystemColors.MenuColor}"/>
     <SolidColorBrush x:Key="HappyBlue" Color="#0096FF"/>
+    <SolidColorBrush x:Key="OverBlue" Color="#d8efff"/>
 
 </ResourceDictionary>

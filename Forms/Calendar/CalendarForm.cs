@@ -24,6 +24,7 @@ namespace FrontEnd.Forms.Calendar
         private Button? PART_NextWeek;
         private Button? PART_PreviousWeek;
         private Button? PART_Today;
+        private Button? PART_Requery;
 
         #region CurrentDate
         public DateTime CurrentDate
@@ -33,22 +34,19 @@ namespace FrontEnd.Forms.Calendar
         }
 
         public static readonly DependencyProperty CurrentDateProperty =
-        DependencyProperty.Register(nameof(CurrentDate), typeof(DateTime), typeof(CalendarForm), new PropertyMetadata(OnCurrentDatePropertyChanged));
-
-        private static async void OnCurrentDatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-        await ((CalendarForm)d).OnDateUpdate();
+        DependencyProperty.Register(nameof(CurrentDate), typeof(DateTime), typeof(CalendarForm), new PropertyMetadata(DateTime.Today));
         #endregion
 
         static CalendarForm() => DefaultStyleKeyProperty.OverrideMetadata(typeof(CalendarForm), new FrameworkPropertyMetadata(typeof(CalendarForm)));
 
-        #region MyClickEvent
-        public static readonly RoutedEvent MyClickEvent = EventManager.RegisterRoutedEvent(
-        nameof(MyClick), RoutingStrategy.Bubble, typeof(MouseButtonEventHandler), typeof(CalendarForm));
+        #region OnDayClickEvent
+        public static readonly RoutedEvent OnDayClickEvent = EventManager.RegisterRoutedEvent(
+        nameof(OnDayClick), RoutingStrategy.Bubble, typeof(MouseButtonEventHandler), typeof(CalendarForm));
 
-        public event MouseButtonEventHandler MyClick
+        public event MouseButtonEventHandler OnDayClick
         {
-            add { AddHandler(MyClickEvent, value); }
-            remove { RemoveHandler(MyClickEvent, value); }
+            add { AddHandler(OnDayClickEvent, value); }
+            remove { RemoveHandler(OnDayClickEvent, value); }
         }
         #endregion
 
@@ -70,7 +68,7 @@ namespace FrontEnd.Forms.Calendar
 
         private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
 
-        public override void OnApplyTemplate()
+        public override async void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             PART_Mondays = (StackPanel?)GetTemplateChild(nameof(PART_Mondays));
@@ -88,7 +86,11 @@ namespace FrontEnd.Forms.Calendar
             PART_NextWeek = (Button?)GetTemplateChild(nameof(PART_NextWeek));
             PART_PreviousWeek = (Button?)GetTemplateChild(nameof(PART_PreviousWeek));
             PART_Today = (Button?) GetTemplateChild(nameof(PART_Today));
-            
+            PART_Requery = (Button?)GetTemplateChild(nameof(PART_Requery));
+
+            if (PART_Requery!=null)
+                PART_Requery.Click += OnRequeryClick;
+
             if (PART_NextYear!=null)
                PART_NextYear.Click += OnNextYearClicked;
 
@@ -104,23 +106,48 @@ namespace FrontEnd.Forms.Calendar
             if (PART_Today != null)
                 PART_Today.Click += OnTodayClicked;
 
-            CurrentDate = DateTime.Today;
+            await OnDateUpdate();
         }
 
-        private void OnTodayClicked(object sender, RoutedEventArgs e) => CurrentDate = DateTime.Today;
+        private async void OnRequeryClick(object sender, RoutedEventArgs e)
+        {
+            await OnDateUpdate(); 
+        }
 
-        private void OnPreviousMonthClicked(object sender, RoutedEventArgs e) => CurrentDate = CurrentDate.AddMonths(-1);        
+        private async void OnTodayClicked(object sender, RoutedEventArgs e)
+        {
+            CurrentDate = DateTime.Today;
+            await OnDateUpdate();
+        }
 
-        private void OnNextMonthClicked(object sender, RoutedEventArgs e) => CurrentDate = CurrentDate.AddMonths(1);
+        private async void OnPreviousMonthClicked(object sender, RoutedEventArgs e) 
+        {
+            CurrentDate = CurrentDate.AddMonths(-1);
+            await OnDateUpdate();
+        }
 
-        private void OnPreviousYearClicked(object sender, RoutedEventArgs e) => CurrentDate = CurrentDate.AddYears(-1);
+        private async void OnNextMonthClicked(object sender, RoutedEventArgs e) 
+        {
+            CurrentDate = CurrentDate.AddMonths(1);
+            await OnDateUpdate();
+        }
 
-        private void OnNextYearClicked(object sender, RoutedEventArgs e) => CurrentDate = CurrentDate.AddYears(1);
+        private async void OnPreviousYearClicked(object sender, RoutedEventArgs e) 
+        {
+            CurrentDate = CurrentDate.AddYears(-1);
+            await OnDateUpdate();
+        } 
+
+        private async void OnNextYearClicked(object sender, RoutedEventArgs e) 
+        {
+            CurrentDate = CurrentDate.AddYears(1);
+            await OnDateUpdate();
+        }
 
         private async Task OnDateUpdate()
         {
             DateAnalyser dateAnalyser = new(CurrentDate);
-            await dateAnalyser.Analyse();
+            await Task.Run(dateAnalyser.Analyse);
 
             ClearCalendar();
 
@@ -172,10 +199,11 @@ namespace FrontEnd.Forms.Calendar
 
             CalendarDaySlot selectedSlot = (CalendarDaySlot)sender;
             selectedSlot.IsSelected = true;
+            CurrentDate = selectedSlot.Date;
 
             RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, e.ChangedButton)
             {
-                RoutedEvent = MyClickEvent,
+                RoutedEvent = OnDayClickEvent,
                 Source = this
             });
         }
@@ -209,6 +237,9 @@ namespace FrontEnd.Forms.Calendar
 
             if (PART_Today != null)
                 PART_Today.Click -= OnTodayClicked;
+
+            if (PART_Requery != null)
+                PART_Requery.Click -= OnRequeryClick;
 
             CurrentSlots.Clear();
         }
