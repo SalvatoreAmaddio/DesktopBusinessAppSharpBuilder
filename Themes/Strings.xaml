@@ -2,10 +2,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
                     xmlns:clr="clr-namespace:System;assembly=mscorlib">
 
+    <clr:String x:Key="year_back">◀◀◀</clr:String>
     <clr:String x:Key="first">◀◀</clr:String>
     <clr:String x:Key="previous">◀</clr:String>
     <clr:String x:Key="next">▶</clr:String>
     <clr:String x:Key="last">▶▶</clr:String>
+    <clr:String x:Key="year_forward">▶▶▶</clr:String>
     <clr:String x:Key="editing">🖋️</clr:String>
     <clr:String x:Key="editing2">🖊️</clr:String>
     <clr:String x:Key="memo">📝</clr:String>

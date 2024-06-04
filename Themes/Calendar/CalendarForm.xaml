@@ -1,0 +1,114 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:calendar="clr-namespace:FrontEnd.Forms.Calendar"
+                    >
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Strings.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Colors.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="Label" x:Key="DayColumn">
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    
+    <Style TargetType="{x:Type calendar:CalendarForm}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type calendar:CalendarForm}">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}" SnapsToDevicePixels="True">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <Border x:Name="PART_Commands" BorderBrush="Black" BorderThickness="1" Padding="5">
+                                    <StackPanel Orientation="Horizontal">
+                                        <StackPanel.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="MinWidth" Value="30"/>
+                                            </Style>
+                                            <Style TargetType="Separator">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="Width" Value="40"/>
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <Button x:Name="PART_PreviousYear" Content="{StaticResource year_back}" ToolTip="Previous Year"/>
+                                        <Button x:Name="PART_PreviousMonth" Content="{StaticResource first}" ToolTip="Previous Month"/>
+                                        <Button x:Name="PART_PreviousWeek" Content="{StaticResource previous}" ToolTip="Previous Week"/>
+                                        <Label Content="{TemplateBinding CurrentDate}" ContentStringFormat="{}{0:dd/MM/yyyy}" BorderBrush="Black" BorderThickness=".1"/>
+                                        <Button x:Name="PART_NextWeek" Content="{StaticResource next}" ToolTip="Next Week"/>
+                                        <Button x:Name="PART_NextMonth" Content="{StaticResource last}" ToolTip="Next Month"/>
+                                        <Button x:Name="PART_NextYear" Content="{StaticResource year_forward}" ToolTip="Next Year"/>
+                                        <Separator/>
+                                        <Button x:Name="PART_Today" Content="Today" Width="45"/>
+                                        <Separator/>
+                                        <Label Content="Show as"/>
+                                        <ComboBox SelectedIndex="0" VerticalContentAlignment="Center">
+                                            <ComboBoxItem>Month</ComboBoxItem>
+                                            <ComboBoxItem>Week</ComboBoxItem>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Padding="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="100"/>
+                                        </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                        <StackPanel>
+                                            <Label Content="Monday" Style="{StaticResource DayColumn}"/>
+                                            <StackPanel x:Name="PART_Mondays"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1">
+                                            <Label Content="Tuesday" Style="{StaticResource DayColumn}"/>
+                                            <StackPanel x:Name="PART_Tuesdays"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2">
+                                            <Label Content="Wednesday" Style="{StaticResource DayColumn}"/>
+                                            <StackPanel x:Name="PART_Wednesdays"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="3">
+                                            <Label Content="Thursday" Style="{StaticResource DayColumn}"/>
+                                            <StackPanel x:Name="PART_Thursdays"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="4">
+                                            <Label Content="Friday" Style="{StaticResource DayColumn}"/>
+                                            <StackPanel x:Name="PART_Fridays"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="5">
+                                            <Label Content="Saturday" Style="{StaticResource DayColumn}" Foreground="Red"/>
+                                            <StackPanel x:Name="PART_Saturdays"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="6">
+                                            <Label Content="Sunday" Style="{StaticResource DayColumn}" Foreground="Red"/>
+                                            <StackPanel x:Name="PART_Sundays"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

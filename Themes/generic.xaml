@@ -21,6 +21,9 @@
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Curtain.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Walkthrough.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/PhotoFrame.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Calendar/CalendarSlot.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Calendar/CalendarDaySlot.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Calendar/CalendarForm.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

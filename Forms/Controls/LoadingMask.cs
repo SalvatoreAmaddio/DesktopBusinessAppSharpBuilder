@@ -45,8 +45,14 @@ namespace FrontEnd.Forms
 
         public static readonly DependencyProperty MainWindowProperty = DependencyProperty.Register(nameof(MainWindow), typeof(string), typeof(LoadingMask), new PropertyMetadata(string.Empty));
 
-        public LoadingMask() => Loaded += OnLoading;
-        
+        public LoadingMask() 
+        {
+            Loaded += OnLoading;
+            Unloaded += OnUnloaded;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
+
         protected virtual async void OnLoading(object sender, RoutedEventArgs e)
         {
             string? assemblyName = Sys.AppName;
@@ -75,6 +81,7 @@ namespace FrontEnd.Forms
             if (disposing)
             {
                 Loaded -= OnLoading;
+                Unloaded -= OnUnloaded;
             }
 
             _disposed = true;
