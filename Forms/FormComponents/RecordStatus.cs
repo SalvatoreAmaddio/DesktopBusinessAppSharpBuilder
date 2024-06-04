@@ -2,7 +2,6 @@
 using System.Windows.Data;
 using System.Globalization;
 using FrontEnd.Controller;
-using FrontEnd.Model;
 using FrontEnd.Utils;
 
 namespace FrontEnd.Forms.FormComponents

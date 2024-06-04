@@ -1,7 +1,10 @@
-﻿using FrontEnd.Model;
+﻿using FrontEnd.Forms.Calendar;
+using FrontEnd.Model;
+using System.Windows;
 
 namespace FrontEnd.Events
 {
+    public delegate void OnPreparingCalendarFormEventHandler(object sender, OnPreparingCalendarFormEventArgs e);
     public delegate void NewRecordEventHandler(object? sender, EventArgs e);
     public delegate void ParentRecordChangedEventHandler(object? sender, ParentRecordChangedArgs e);
     public delegate void AfterUpdateEventHandler(object? sender, AfterUpdateArgs e);
@@ -19,7 +22,14 @@ namespace FrontEnd.Events
     /// <param name="sender"></param>
     /// <param name="e"></param>
     public delegate void FilterEventHandler(object? sender, FilterEventArgs e);
-    
+
+    public class OnPreparingCalendarFormEventArgs(DateTime date) : RoutedEventArgs
+    {
+        public AbstractModel? Model { get; set; }
+
+        public DateTime Date { get; } = date;
+    }
+
     public class FilterEventArgs() : EventArgs 
     {
     }

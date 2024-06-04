@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using FrontEnd.Model;
+using System.Windows;
 
 namespace FrontEnd.Forms.Calendar
 {
@@ -31,34 +31,17 @@ namespace FrontEnd.Forms.Calendar
             DependencyProperty.Register(nameof(IsFestive), typeof(bool), typeof(CalendarDaySlot), new PropertyMetadata(false, null));
         #endregion
 
+        public AbstractModel? Model { get; set; }
         public bool IsToday { get => this.Date == DateTime.Now; }
-        private RoutedEvent? evt;
 
         public CalendarDaySlot() { }
-        public CalendarDaySlot(int day, DateTime date, RoutedEvent RoutedEvent) 
+        public CalendarDaySlot(int day, DateTime date) 
         { 
             this.Date = new DateTime(date.Year,date.Month,day);
             if (this.Date == DateTime.Today) IsSelected = true;
             Content = $"{day})";
-            this.evt = RoutedEvent;
-            MouseUp += OnMouseUp;
-            Unloaded += OnUnloaded;
         }
 
-        private void OnMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, e.ChangedButton)
-            {
-                RoutedEvent = evt,
-                Source = this
-            });
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            evt = null;
-            Unloaded -= OnUnloaded;
-            MouseUp -= OnMouseUp;
-        }
+      
     }
 }

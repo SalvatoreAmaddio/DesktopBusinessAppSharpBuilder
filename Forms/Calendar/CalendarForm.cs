@@ -1,12 +1,15 @@
-﻿using System.Windows;
+﻿using FrontEnd.Events;
+using FrontEnd.Model;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace FrontEnd.Forms.Calendar
 {
-    public delegate void MyClickHandler(object sender, MouseButtonEventArgs e);
     public class CalendarForm : Control, IDisposable
     {
+        public CalendarDaySlot SelectedSlot { get => CurrentSlots.First(s => s.IsSelected); }
+        private readonly List<CalendarDaySlot> CurrentSlots = [];
         private StackPanel? PART_Mondays;
         private StackPanel? PART_Tuesdays;
         private StackPanel? PART_Wednesdays;
@@ -37,6 +40,28 @@ namespace FrontEnd.Forms.Calendar
         #endregion
 
         static CalendarForm() => DefaultStyleKeyProperty.OverrideMetadata(typeof(CalendarForm), new FrameworkPropertyMetadata(typeof(CalendarForm)));
+
+        #region MyClickEvent
+        public static readonly RoutedEvent MyClickEvent = EventManager.RegisterRoutedEvent(
+        nameof(MyClick), RoutingStrategy.Bubble, typeof(MouseButtonEventHandler), typeof(CalendarForm));
+
+        public event MouseButtonEventHandler MyClick
+        {
+            add { AddHandler(MyClickEvent, value); }
+            remove { RemoveHandler(MyClickEvent, value); }
+        }
+        #endregion
+
+        #region OnPreparingEvent
+        public static readonly RoutedEvent OnPreparingEvent = EventManager.RegisterRoutedEvent(
+        nameof(OnPreparing), RoutingStrategy.Bubble, typeof(OnPreparingCalendarFormEventHandler), typeof(CalendarForm));
+
+        public event OnPreparingCalendarFormEventHandler OnPreparing
+        {
+            add { AddHandler(OnPreparingEvent, value); }
+            remove { RemoveHandler(OnPreparingEvent, value); }
+        }
+        #endregion
 
         public CalendarForm() 
         {
@@ -82,32 +107,17 @@ namespace FrontEnd.Forms.Calendar
             CurrentDate = DateTime.Today;
         }
 
-        private void OnTodayClicked(object sender, RoutedEventArgs e)
-        {
-            CurrentDate = DateTime.Today;
-        }
+        private void OnTodayClicked(object sender, RoutedEventArgs e) => CurrentDate = DateTime.Today;
 
-        private void OnPreviousMonthClicked(object sender, RoutedEventArgs e)
-        {
-            CurrentDate = CurrentDate.AddMonths(-1);
-        }
+        private void OnPreviousMonthClicked(object sender, RoutedEventArgs e) => CurrentDate = CurrentDate.AddMonths(-1);        
 
-        private void OnNextMonthClicked(object sender, RoutedEventArgs e)
-        {
-            CurrentDate = CurrentDate.AddMonths(1);
-        }
+        private void OnNextMonthClicked(object sender, RoutedEventArgs e) => CurrentDate = CurrentDate.AddMonths(1);
 
-        private void OnPreviousYearClicked(object sender, RoutedEventArgs e)
-        {
-            CurrentDate = CurrentDate.AddYears(-1);
-        }
+        private void OnPreviousYearClicked(object sender, RoutedEventArgs e) => CurrentDate = CurrentDate.AddYears(-1);
 
-        private void OnNextYearClicked(object sender, RoutedEventArgs e)
-        {
-            CurrentDate = CurrentDate.AddYears(1);
-        }
+        private void OnNextYearClicked(object sender, RoutedEventArgs e) => CurrentDate = CurrentDate.AddYears(1);
 
-        private async Task OnDateUpdate() 
+        private async Task OnDateUpdate()
         {
             DateAnalyser dateAnalyser = new(CurrentDate);
             await dateAnalyser.Analyse();
@@ -129,9 +139,51 @@ namespace FrontEnd.Forms.Calendar
             {
                 if (day == 0)
                     column?.Children.Add(new CalendarSlot());
-                else
-                    column?.Children.Add(new CalendarDaySlot(day, date, null) { IsFestive = weekends });
+                else 
+                {
+                    CalendarDaySlot c = new(day, date) { IsFestive = weekends };
+                    c.MouseUp += C_MouseUp;
+                    c.Unloaded += C_Unloaded;
+                    c.Model = RaiseOnPreparing(date);
+                    CurrentSlots.Add(c);
+                    column?.Children.Add(c);
+                }
             }
+        }
+
+        private AbstractModel? RaiseOnPreparing(DateTime date) 
+        {
+            OnPreparingCalendarFormEventArgs m = new(date)
+            {
+                RoutedEvent = OnPreparingEvent,
+                Source = this
+            };
+
+            RaiseEvent(m);
+
+            return m.Model;
+        }
+
+        private void C_Unloaded(object sender, RoutedEventArgs e)
+        {
+            CalendarDaySlot currentSlot = (CalendarDaySlot)sender;
+            currentSlot.Unloaded -= C_Unloaded;
+            currentSlot.MouseUp -= C_MouseUp;
+        }
+
+        private void C_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            CalendarDaySlot? prevSelectedSlot = CurrentSlots.FirstOrDefault(s => s.IsSelected);
+            if (prevSelectedSlot != null) prevSelectedSlot.IsSelected = false;
+
+            CalendarDaySlot selectedSlot = (CalendarDaySlot)sender;
+            selectedSlot.IsSelected = true;
+
+            RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, e.ChangedButton)
+            {
+                RoutedEvent = MyClickEvent,
+                Source = this
+            });
         }
 
         public void ClearCalendar()
@@ -143,6 +195,7 @@ namespace FrontEnd.Forms.Calendar
             PART_Fridays?.Children.Clear();
             PART_Saturdays?.Children.Clear();
             PART_Sundays?.Children.Clear();
+            CurrentSlots.Clear();
         }
 
         public void Dispose()
@@ -162,132 +215,136 @@ namespace FrontEnd.Forms.Calendar
 
             if (PART_Today != null)
                 PART_Today.Click -= OnTodayClicked;
+
+            CurrentSlots.Clear();
         }
+
+        internal class DateAnalyser(DateTime date) : IDisposable
+        {
+            public DateTime Date { get; } = date;
+            public List<int> Mondays { get; private set; } = [];
+            public List<int> Tuesdays { get; private set; } = [];
+            public List<int> Wednesdays { get; private set; } = [];
+            public List<int> Thursdays { get; private set; } = [];
+            public List<int> Fridays { get; private set; } = [];
+            public List<int> Saturdays { get; private set; } = [];
+            public List<int> Sundays { get; private set; } = [];
+            private DayOfWeek MonthStartOn => new DateTime(this.Date.Year, this.Date.Month, 1).DayOfWeek;
+            private int TotalDays => DateTime.DaysInMonth(this.Date.Year, this.Date.Month);
+
+            public async Task Analyse()
+            {
+                Dispose();
+                List<Task<List<int>>> tasks = [];
+                tasks.Add(GetDays(DayOfWeek.Monday));
+                tasks.Add(GetDays(DayOfWeek.Tuesday));
+                tasks.Add(GetDays(DayOfWeek.Wednesday));
+                tasks.Add(GetDays(DayOfWeek.Thursday));
+                tasks.Add(GetDays(DayOfWeek.Friday));
+                tasks.Add(GetDays(DayOfWeek.Saturday));
+                tasks.Add(GetDays(DayOfWeek.Sunday));
+
+                var results = await Task.WhenAll(tasks);
+
+                Mondays = results[0];
+                Tuesdays = results[1];
+                Wednesdays = results[2];
+                Thursdays = results[3];
+                Fridays = results[4];
+                Saturdays = results[5];
+                Sundays = results[6];
+
+                await FillVoids();
+            }
+
+            private async Task FillVoids()
+            {
+                List<Task> tasks = [];
+
+                if (StartsOnTuesday())
+                    tasks.Add(Task.Run(Mondays.AddZero));
+
+                if (StartsOnWednesday())
+                {
+                    tasks.Add(Task.Run(Mondays.AddZero));
+                    tasks.Add(Task.Run(Tuesdays.AddZero));
+                }
+
+                if (StartsOnThursday())
+                {
+                    tasks.Add(Task.Run(Mondays.AddZero));
+                    tasks.Add(Task.Run(Tuesdays.AddZero));
+                    tasks.Add(Task.Run(Wednesdays.AddZero));
+                }
+
+                if (StartsOnFriday())
+                {
+                    tasks.Add(Task.Run(Mondays.AddZero));
+                    tasks.Add(Task.Run(Tuesdays.AddZero));
+                    tasks.Add(Task.Run(Wednesdays.AddZero));
+                    tasks.Add(Task.Run(Thursdays.AddZero));
+                }
+
+                if (StartsOnSaturday())
+                {
+                    tasks.Add(Task.Run(Mondays.AddZero));
+                    tasks.Add(Task.Run(Tuesdays.AddZero));
+                    tasks.Add(Task.Run(Wednesdays.AddZero));
+                    tasks.Add(Task.Run(Thursdays.AddZero));
+                    tasks.Add(Task.Run(Fridays.AddZero));
+                }
+
+                if (StartsOnSunday())
+                {
+                    tasks.Add(Task.Run(Mondays.AddZero));
+                    tasks.Add(Task.Run(Tuesdays.AddZero));
+                    tasks.Add(Task.Run(Wednesdays.AddZero));
+                    tasks.Add(Task.Run(Thursdays.AddZero));
+                    tasks.Add(Task.Run(Fridays.AddZero));
+                    tasks.Add(Task.Run(Saturdays.AddZero));
+                }
+
+                await Task.WhenAll(tasks);
+            }
+
+            public bool StartsOnTuesday() => MonthStartOn == DayOfWeek.Tuesday;
+            public bool StartsOnWednesday() => MonthStartOn == DayOfWeek.Wednesday;
+            public bool StartsOnThursday() => MonthStartOn == DayOfWeek.Thursday;
+            public bool StartsOnFriday() => MonthStartOn == DayOfWeek.Friday;
+            public bool StartsOnSaturday() => MonthStartOn == DayOfWeek.Saturday;
+            public bool StartsOnSunday() => MonthStartOn == DayOfWeek.Sunday;
+
+            private Task<List<int>> GetDays(DayOfWeek dayName)
+            {
+                List<int> days = [];
+                DateTime date = new(this.Date.Year, this.Date.Month, 1);
+
+                for (int i = 1; i <= TotalDays; i++)
+                {
+                    DayOfWeek dayOfWeek = date.DayOfWeek;
+                    if (dayOfWeek == dayName)
+                        days.Add(i);
+
+                    date = date.AddDays(1);
+                }
+
+                return Task.FromResult(days);
+            }
+
+            public void Dispose()
+            {
+                Mondays.Clear();
+                Tuesdays.Clear();
+                Wednesdays.Clear();
+                Thursdays.Clear();
+                Fridays.Clear();
+                Saturdays.Clear();
+                Sundays.Clear();
+            }
+        }
+
     }
 
-    public class DateAnalyser(DateTime date) : IDisposable
-    {
-        public DateTime Date { get; } = date;
-        public List<int> Mondays { get; private set; } = [];
-        public List<int> Tuesdays { get; private set; } = [];
-        public List<int> Wednesdays { get; private set; } = [];
-        public List<int> Thursdays { get; private set; } = [];
-        public List<int> Fridays { get; private set; } = [];
-        public List<int> Saturdays { get; private set; } = [];
-        public List<int> Sundays { get; private set; } = [];
-        private DayOfWeek MonthStartOn => new DateTime(this.Date.Year, this.Date.Month, 1).DayOfWeek;
-        private int TotalDays => DateTime.DaysInMonth(this.Date.Year, this.Date.Month);
-
-        public async Task Analyse()
-        {
-            Dispose();
-            List<Task<List<int>>> tasks = [];
-            tasks.Add(GetDays(DayOfWeek.Monday));
-            tasks.Add(GetDays(DayOfWeek.Tuesday));
-            tasks.Add(GetDays(DayOfWeek.Wednesday));
-            tasks.Add(GetDays(DayOfWeek.Thursday));
-            tasks.Add(GetDays(DayOfWeek.Friday));
-            tasks.Add(GetDays(DayOfWeek.Saturday));
-            tasks.Add(GetDays(DayOfWeek.Sunday));
-
-            var results = await Task.WhenAll(tasks);
-
-            Mondays = results[0];
-            Tuesdays = results[1];
-            Wednesdays = results[2];
-            Thursdays = results[3];
-            Fridays = results[4];
-            Saturdays = results[5];
-            Sundays = results[6];
-
-            await FillVoids();
-        }
-
-        private async Task FillVoids()
-        {
-            List<Task> tasks = [];
-
-            if (StartsOnTuesday())
-                tasks.Add(Task.Run(Mondays.AddZero));
-
-            if (StartsOnWednesday())
-            {
-                tasks.Add(Task.Run(Mondays.AddZero));
-                tasks.Add(Task.Run(Tuesdays.AddZero));
-            }
-
-            if (StartsOnThursday())
-            {
-                tasks.Add(Task.Run(Mondays.AddZero));
-                tasks.Add(Task.Run(Tuesdays.AddZero));
-                tasks.Add(Task.Run(Wednesdays.AddZero));
-            }
-
-            if (StartsOnFriday())
-            {
-                tasks.Add(Task.Run(Mondays.AddZero));
-                tasks.Add(Task.Run(Tuesdays.AddZero));
-                tasks.Add(Task.Run(Wednesdays.AddZero));
-                tasks.Add(Task.Run(Thursdays.AddZero));
-            }
-
-            if (StartsOnSaturday())
-            {
-                tasks.Add(Task.Run(Mondays.AddZero));
-                tasks.Add(Task.Run(Tuesdays.AddZero));
-                tasks.Add(Task.Run(Wednesdays.AddZero));
-                tasks.Add(Task.Run(Thursdays.AddZero));
-                tasks.Add(Task.Run(Fridays.AddZero));
-            }
-
-            if (StartsOnSunday())
-            {
-                tasks.Add(Task.Run(Mondays.AddZero));
-                tasks.Add(Task.Run(Tuesdays.AddZero));
-                tasks.Add(Task.Run(Wednesdays.AddZero));
-                tasks.Add(Task.Run(Thursdays.AddZero));
-                tasks.Add(Task.Run(Fridays.AddZero));
-                tasks.Add(Task.Run(Saturdays.AddZero));
-            }
-
-            await Task.WhenAll(tasks);
-        }
-
-        public bool StartsOnTuesday() => MonthStartOn == DayOfWeek.Tuesday;
-        public bool StartsOnWednesday() => MonthStartOn == DayOfWeek.Wednesday;
-        public bool StartsOnThursday() => MonthStartOn == DayOfWeek.Thursday;
-        public bool StartsOnFriday() => MonthStartOn == DayOfWeek.Friday;
-        public bool StartsOnSaturday() => MonthStartOn == DayOfWeek.Saturday;
-        public bool StartsOnSunday() => MonthStartOn == DayOfWeek.Sunday;
-
-        private Task<List<int>> GetDays(DayOfWeek dayName)
-        {
-            List<int> days = [];
-            DateTime date = new(this.Date.Year, this.Date.Month, 1);
-
-            for (int i = 1; i <= TotalDays; i++)
-            {
-                DayOfWeek dayOfWeek = date.DayOfWeek;
-                if (dayOfWeek == dayName)
-                    days.Add(i);
-
-                date = date.AddDays(1);
-            }
-
-            return Task.FromResult(days);
-        }
-
-        public void Dispose()
-        {
-            Mondays.Clear();
-            Tuesdays.Clear();
-            Wednesdays.Clear();
-            Thursdays.Clear();
-            Fridays.Clear();
-            Saturdays.Clear();
-            Sundays.Clear();
-        }
-    }
 
     public static class CalendarListExtension
     {
