@@ -2,6 +2,7 @@
 using FrontEnd.Events;
 using System.ComponentModel;
 using FrontEnd.Forms;
+using System.Reflection;
 
 namespace FrontEnd.FilterSource
 {
@@ -33,8 +34,8 @@ namespace FrontEnd.FilterSource
         public FilterOption(ISQLModel record, string displayProperty)
         {
             Record = record;
-            ITableField Field = Record.GetTableFields().First(s => s.Name.Equals(displayProperty));
-            Value = Field.GetValue();
+            PropertyInfo Field = Record.GetProperties().First(s => s.Name.Equals(displayProperty));
+            Value = Field.GetValue(Record);
         }
 
         public void Deselect()

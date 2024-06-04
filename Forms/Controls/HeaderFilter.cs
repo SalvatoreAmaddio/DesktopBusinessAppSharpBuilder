@@ -68,9 +68,18 @@ namespace FrontEnd.Forms
         }
         #endregion
 
+        public HeaderFilter() 
+        {
+            Window? window = Helper.GetActiveWindow();
+            if (window != null) 
+                window.Closing += OnClosing;
+        }
+
+        private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e) => Dispose();
+
         private void ResetDropDownButtonAppereance()
         {
-            if (PART_DropDownButton == null) throw new Exception("DropDownButton is null");
+            if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
             PART_DropDownButton.Content = Filter;
             ToolTip = "Filter";
         }
@@ -182,10 +191,14 @@ namespace FrontEnd.Forms
         }
         #endregion
 
+        protected override void UnsubscribeEvents(object sender, RoutedEventArgs e)
+        {
+        }
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if (disposing) 
+            if (disposing)
             {
                 if (PART_DropDownButton != null)
                     PART_DropDownButton.Click -= OnDropdownButtonClicked;
@@ -193,10 +206,15 @@ namespace FrontEnd.Forms
                 if (PART_ClearButton != null)
                     PART_ClearButton.Click -= OnClearButtonClicked;
 
-                foreach (IFilterOption option in ItemsSource)
-                    option.Dispose();
+                if (ItemsSource != null)
+                    foreach (IFilterOption option in ItemsSource)
+                        option.Dispose();
 
-                ((SourceOption)ItemsSource).Dispose();
+                ((SourceOption?)ItemsSource)?.Dispose();
+
+                Window? window = Helper.GetActiveWindow();
+                if (window != null)
+                    window.Closing -= OnClosing;
             }
         }
 
