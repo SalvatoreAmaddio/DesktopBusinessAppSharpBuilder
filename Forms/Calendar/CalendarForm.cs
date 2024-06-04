@@ -282,11 +282,11 @@ namespace FrontEnd.Forms.Calendar
             CalendarDaySlot slot = new(date) { IsFestive = weekends };
             slot.MouseUp += OnCalendarDaySlotMouseUp;
             slot.Unloaded += OnCalendarDaySlotUnloaded;
-            slot.Model = RaiseOnPreparing(slot.Date);
+            slot.Models = RaiseOnPreparing(slot.Date);
             CurrentSlots.Add(slot);
             return slot;
         }
-        private AbstractModel? RaiseOnPreparing(DateTime date) 
+        private IEnumerable<AbstractModel>? RaiseOnPreparing(DateTime date) 
         {
             OnPreparingCalendarFormEventArgs args = new(date, OnPreparingEvent, this);
             RaiseEvent(args);

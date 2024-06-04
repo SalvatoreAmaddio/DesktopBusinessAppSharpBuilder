@@ -42,14 +42,14 @@ namespace FrontEnd.Forms.Calendar
             DependencyProperty.Register(nameof(IsFestive), typeof(bool), typeof(CalendarDaySlot), new PropertyMetadata(false, null));
         #endregion
 
-        private AbstractModel? _model;
-        public AbstractModel? Model 
+        private IEnumerable<AbstractModel>? _model;
+        public IEnumerable<AbstractModel>? Models
         { 
             get => _model;
             set 
             { 
                 _model = value;
-                if (_model != null) 
+                if (_model != null || _model?.Count() == 0) 
                 {
                     HasAppointment = Visibility.Visible;
                 }
