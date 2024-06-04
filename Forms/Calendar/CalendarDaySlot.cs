@@ -49,10 +49,8 @@ namespace FrontEnd.Forms.Calendar
             set 
             { 
                 _model = value;
-                if (_model != null || _model?.Count() == 0) 
-                {
+                if (_model?.Count() > 0)
                     HasAppointment = Visibility.Visible;
-                }
             } 
         }
         public bool IsToday { get => this.Date == DateTime.Now; }
