@@ -1,7 +1,5 @@
-﻿using FrontEnd.Forms.Calendar;
-using FrontEnd.Model;
+﻿using FrontEnd.Model;
 using System.Windows;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FrontEnd.Events
 {
