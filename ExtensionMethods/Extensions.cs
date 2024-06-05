@@ -19,6 +19,11 @@ namespace FrontEnd.ExtensionMethods
             win.Close();
         }
 
+        public static void SetController(this Window win, IAbstractFormController controller) => win.DataContext = controller;
+        public static C GetController<C>(this Window win) where C : IAbstractFormController => (C)win.DataContext;
+        public static void SetController(this Page page, IAbstractFormController controller) => page.DataContext = controller;
+        public static C GetController<C>(this Page page) where C : IAbstractFormController => (C)page.DataContext;
+
         /// <summary>
         /// Gets the Generic of the <see cref="CurrentTabController(TabControl)"/>.
         /// </summary>
