@@ -77,7 +77,7 @@ namespace FrontEnd.Forms
         {
             if (IsWithinList)
             {
-                SetBinding(DataContextProperty, new Binding("DataContext")
+                SetBinding(DataContextProperty, new Binding(nameof(DataContext))
                 {
                     RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(Lista), 1)
                 });
