@@ -168,6 +168,15 @@ namespace FrontEnd.Controller
             }
         }
 
+        protected async void OnSearchPropertyRequery(object? sender) 
+        {
+            var results = await Task.Run(SearchRecordAsync);
+            AsRecordSource().ReplaceRecords(results);
+
+            if (sender is not FilterEventArgs filterEvtArgs)
+                GoFirst();
+        }
+
         ~AbstractFormListController() => Dispose(false);
 
     }

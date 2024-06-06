@@ -145,6 +145,12 @@ namespace FrontEnd.Source
             };
         }
 
+        public void ReplaceRecords(IEnumerable<M> newSource)
+        {
+            Clear();
+            ReplaceRange(newSource);
+        }
+
         public void Dispose(bool disposeController)
         {
             if (disposeController)
