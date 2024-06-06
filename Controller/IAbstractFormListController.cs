@@ -28,7 +28,7 @@ namespace FrontEnd.Controller
         /// }
         /// </code>
         /// </summary>
-        public void OnOptionFilter(FilterEventArgs e);
+        public void OnOptionFilterClicked(FilterEventArgs e);
 
         /// <summary>
         /// Gets and Sets the Search Query to be used. This property works in conjunction with a <see cref="FilterQueryBuilder"/> object.
