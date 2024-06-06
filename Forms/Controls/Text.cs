@@ -79,7 +79,11 @@ namespace FrontEnd.Forms
             ClearButton.Content = ClearImg;
         }
 
-        private void OnClearButtonClicked(object sender, RoutedEventArgs e) => Text = string.Empty;
+        private void OnClearButtonClicked(object sender, RoutedEventArgs e) 
+        {
+            if (IsReadOnly) return;
+            Text = string.Empty;
+        }
 
         #region Placeholder
         /// <summary>
