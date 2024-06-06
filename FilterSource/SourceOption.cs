@@ -48,32 +48,36 @@ namespace FrontEnd.FilterSource
         /// </summary>
         /// <param name="filterQueryBuilder"></param>
         /// <returns>A string</returns>
-        public string Conditions(FilterQueryBuilder filterQueryBuilder)
+        public void Conditions(SelectBuilder filterQueryBuilder)
         {
-            StringBuilder sb = new();
             int i = 0;
+            int selectedCount = Selected().Count();
+            if (selectedCount > 0)
+            {
+                if (filterQueryBuilder.HasWhereConditons()) 
+                {
+                    filterQueryBuilder.AND();
+                }
+
+                filterQueryBuilder.OpenBracket();
+            }
 
             foreach (var item in this)
             {
                 if (item.IsSelected)
                 {
+                    string? tableName = item?.Record.GetTableName();
                     string? fieldName = item?.Record?.GetTablePK()?.Name;
-                    sb.Append($"{fieldName} = @{fieldName}{++i} OR ");
+                    filterQueryBuilder.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{++i}").OR();
                     filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetTablePK()?.GetValue());
                 }
             }
 
-            if (sb.Length > 0)
+            if (selectedCount > 0)
             {
-                sb.Remove(sb.Length - 1, 1);
-                if (sb.ToString(sb.Length - 2, 2) == "OR")
-                {
-                    sb.Remove(sb.Length - 2, 2);
-                    sb.Remove(sb.Length - 1, 1);
-                }
+                filterQueryBuilder.RemoveLastWhereCondition();
+                filterQueryBuilder.CloseBracket();
             }
-
-            return sb.ToString();
         }
 
         /// <summary>

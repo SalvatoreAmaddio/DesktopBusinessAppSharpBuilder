@@ -15,10 +15,9 @@ namespace FrontEnd.Controller
     public abstract class AbstractFormListController<M> : AbstractFormController<M>, IAbstractFormListController<M> where M : AbstractModel, new()
     {
         bool _openWindowOnNew = true;
-        protected FilterQueryBuilder QueryBuiler;
         public ICommand OpenCMD { get; set; }
         public ICommand OpenNewCMD { get; set; }
-        public abstract string SearchQry { get; set; }
+        public SelectBuilder SearchQry { get; private set; }
         public bool OpenWindowOnNew
         {
             get => _openWindowOnNew;
@@ -28,11 +27,17 @@ namespace FrontEnd.Controller
         protected readonly List<QueryParameter> SearchParameters = [];
         public AbstractFormListController() : base()
         {
+            SearchQry = InstantiateSearchQry();
             OpenCMD = new CMD<M>(Open);
             OpenNewCMD = new CMD(OpenNew);
-            QueryBuiler = new(SearchQry);
             AsRecordSource().RunFilter += OnSourceRunFilter;
         }
+
+        public void ReloadSearchQry() 
+        {
+            SearchQry.Dispose();
+            SearchQry = InstantiateSearchQry();
+        } 
 
         public abstract Task<IEnumerable<M>> SearchRecordAsync();
         public abstract void OnOptionFilter(FilterEventArgs e);
@@ -176,6 +181,8 @@ namespace FrontEnd.Controller
             if (sender is not FilterEventArgs filterEvtArgs)
                 GoFirst();
         }
+
+        public abstract SelectBuilder InstantiateSearchQry();
 
         ~AbstractFormListController() => Dispose(false);
 
