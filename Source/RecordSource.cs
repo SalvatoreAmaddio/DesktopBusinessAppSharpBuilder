@@ -147,8 +147,23 @@ namespace FrontEnd.Source
 
         public void ReplaceRecords(IEnumerable<M> newSource)
         {
+            ISQLModel? current = null;
+            try 
+            {
+                current = navigator?.Current;
+            }
+            catch
+            {
+
+            }
+
             Clear();
             ReplaceRange(newSource);
+
+            if (current!=null && Controller != null) 
+            {
+                Controller.CurrentModel = this.FirstOrDefault(s=>s.Equals(current));
+            }
         }
 
         public void Dispose(bool disposeController)
