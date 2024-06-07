@@ -17,7 +17,7 @@ namespace FrontEnd.Controller
         bool _openWindowOnNew = true;
         public ICommand OpenCMD { get; set; }
         public ICommand OpenNewCMD { get; set; }
-        public SelectBuilder SearchQry { get; private set; }
+        public IWhereClause SearchQry { get; private set; }
         public bool OpenWindowOnNew
         {
             get => _openWindowOnNew;
@@ -173,16 +173,16 @@ namespace FrontEnd.Controller
             }
         }
 
-        protected async void OnSearchPropertyRequery(object? sender) 
+        protected async void OnSearchPropertyRequery(object? sender)
         {
-            var results = await Task.Run(SearchRecordAsync);
+            IEnumerable<M> results = await Task.Run(SearchRecordAsync);
             AsRecordSource().ReplaceRecords(results);
 
             if (sender is not FilterEventArgs filterEvtArgs)
                 GoFirst();
         }
 
-        public abstract SelectBuilder InstantiateSearchQry();
+        public abstract IWhereClause InstantiateSearchQry();
 
         ~AbstractFormListController() => Dispose(false);
 

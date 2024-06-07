@@ -42,10 +42,10 @@ namespace FrontEnd.Controller
         /// public override string SearchQry { get; set; } = $"SELECT * FROM Employee WHERE (LOWER(FirstName) LIKE @name OR LOWER(LastName) LIKE @name)";
         /// </code>
         /// </summary>
-        public SelectBuilder SearchQry { get; }
+        public IWhereClause SearchQry { get; }
 
         public void ReloadSearchQry();
-        public SelectBuilder InstantiateSearchQry();
+        public IWhereClause InstantiateSearchQry();
 
         /// <summary>
         /// Tells if the Controller shall open a Window or add a new row to the <see cref="Lista"/> to add a New Record.<para/>

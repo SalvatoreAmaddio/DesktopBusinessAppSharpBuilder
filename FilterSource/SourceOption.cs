@@ -48,16 +48,16 @@ namespace FrontEnd.FilterSource
         /// </summary>
         /// <param name="filterQueryBuilder"></param>
         /// <returns>A string</returns>
-        public void Conditions(SelectBuilder filterQueryBuilder)
+        public void Conditions(IWhereClause filterQueryBuilder)
         {
+            ///WHEREClause
             int i = 0;
             int selectedCount = Selected().Count();
+
             if (selectedCount > 0)
             {
-                if (filterQueryBuilder.HasWhereConditons()) 
-                {
+                if (filterQueryBuilder.HasWhereClause())
                     filterQueryBuilder.AND();
-                }
 
                 filterQueryBuilder.OpenBracket();
             }
@@ -75,7 +75,7 @@ namespace FrontEnd.FilterSource
 
             if (selectedCount > 0)
             {
-                filterQueryBuilder.RemoveLastWhereCondition();
+                filterQueryBuilder.RemoveLastChange();
                 filterQueryBuilder.CloseBracket();
             }
         }
