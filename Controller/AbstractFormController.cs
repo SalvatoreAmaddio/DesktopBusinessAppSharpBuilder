@@ -20,13 +20,14 @@ namespace FrontEnd.Controller
     /// This class extends <see cref="AbstractSQLModelController"/> and implementats <see cref="IAbstractFormController{M}"/>
     /// </summary>
     /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
-    public abstract class AbstractFormController<M> : AbstractSQLModelController, ISubFormController, IDisposable, IAbstractFormController<M> where M : AbstractModel, new()
+    public abstract class AbstractFormController<M> : AbstractSQLModelController, IParentController, ISubFormController, IDisposable, IAbstractFormController<M> where M : AbstractModel, new()
     {
         private string _search = string.Empty;
         private bool _isloading = false;
         protected ISQLModel? _currentModel;
         private string _records = string.Empty;
         private UIElement? _uiElement;
+        private readonly List<ISubFormController> _subControllers = [];
         public UIElement? UI
         {
             get => _uiElement;
@@ -46,9 +47,9 @@ namespace FrontEnd.Controller
                     
             }
         }
-
         public bool AllowAutoSave { get; set; } = false;
         public IEnumerable<M>? MasterSource => DatabaseManager.Find<M>()?.MasterSource.Cast<M>();
+        public IAbstractFormController? ParentController { get; set; }
         public AbstractModel? ParentRecord { get; private set; }
         public override ISQLModel? CurrentModel
         {
@@ -64,6 +65,7 @@ namespace FrontEnd.Controller
             get => (M?)CurrentModel;
             set => CurrentModel = value;
         }
+
         public override string Records { get => _records; protected set => UpdateProperty(ref value, ref _records); }
         public override bool AllowNewRecord
         {
@@ -90,6 +92,19 @@ namespace FrontEnd.Controller
             UpdateCMD = new CMD<M>(Update);
             DeleteCMD = new CMD<M>(Delete);
             RequeryCMD = new CMDAsync(Requery);
+        }
+
+        public ISubFormController GetSubController(int index) => _subControllers[index];
+        public void AddSubControllers(ISubFormController controller) 
+        {
+            controller.ParentController = this;
+            _subControllers.Add(controller);
+        }
+
+        public void RemoveSubControllers(ISubFormController controller)
+        {
+            controller.ParentController = null;
+            _subControllers.Remove(controller);
         }
 
         public RecordSource<M> AsRecordSource()=>(RecordSource<M>)Source;
@@ -260,6 +275,7 @@ namespace FrontEnd.Controller
                 BeforeUpdate = null;
                 NewRecordEvent = null;
                 AsRecordSource().Dispose(false);
+                _subControllers.Clear();
             }
 
             _disposed = true;

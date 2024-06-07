@@ -10,10 +10,19 @@ using Backend.Database;
 
 namespace FrontEnd.Controller
 {
+    public interface IParentController 
+    {
+        public ISubFormController GetSubController(int index);
+
+        public void AddSubControllers(ISubFormController controller);
+
+        public void RemoveSubControllers(ISubFormController controller);
+    }
+
     /// <summary>
     /// This interface extends <see cref="IAbstractSQLModelController"/> and adds properties and methods to work as a bridge between <see cref="AbstractModel"/> objects and <see cref="Form"/> objects.
     /// </summary>
-    public interface IAbstractFormController : IAbstractSQLModelController, INotifier
+    public interface IAbstractFormController : IAbstractSQLModelController, IParentController, INotifier
     {
         /// <summary>
         /// Gets and sets a reference to a <see cref="Window"/> or <see cref="Page"/> object that the Controller is associated to. <para/>
@@ -46,6 +55,7 @@ namespace FrontEnd.Controller
         public void OnWindowClosing(object? sender, CancelEventArgs e);
 
         public bool AllowAutoSave { get; set; }
+
     }
 
     /// <summary>

@@ -8,6 +8,8 @@ namespace FrontEnd.Controller
     /// </summary>
     public interface ISubFormController
     {
+        public IAbstractFormController? ParentController { get; set; }
+
         /// <summary>
         /// Holds a reference to the SubForm's ParentRecord property. This property is set by the <see cref="SetParentRecord(AbstractModel?)"/>  called within the SubForm object.
         /// </summary>
