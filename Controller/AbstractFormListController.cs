@@ -15,16 +15,21 @@ namespace FrontEnd.Controller
     public abstract class AbstractFormListController<M> : AbstractFormController<M>, IAbstractFormListController<M> where M : AbstractModel, new()
     {
         bool _openWindowOnNew = true;
+
+        #region Commands
         public ICommand OpenCMD { get; set; }
         public ICommand OpenNewCMD { get; set; }
+        #endregion
+
+        #region Properties
         public IWhereClause SearchQry { get; private set; }
         public bool OpenWindowOnNew
         {
             get => _openWindowOnNew;
             set => _openWindowOnNew = value;
         }
+        #endregion
 
-        protected readonly List<QueryParameter> SearchParameters = [];
         public AbstractFormListController() : base()
         {
             SearchQry = InstantiateSearchQry();
@@ -38,7 +43,6 @@ namespace FrontEnd.Controller
             SearchQry.Dispose();
             SearchQry = InstantiateSearchQry();
         } 
-
         public abstract Task<IEnumerable<M>> SearchRecordAsync();
         public abstract void OnOptionFilterClicked(FilterEventArgs e);
 
@@ -66,7 +70,6 @@ namespace FrontEnd.Controller
             foreach (var item in toRemove)
                 AsRecordSource().Remove(item); //get rid of them.
         }
-
         public override bool GoNew()
         {
             if (OpenWindowOnNew) 
@@ -102,7 +105,6 @@ namespace FrontEnd.Controller
             CleanSource();
             return base.GoFirst();
         }
-
         public override bool GoAt(ISQLModel? record)
         {
             if (!CanMove()) return false;
@@ -130,10 +132,8 @@ namespace FrontEnd.Controller
         /// <param name="qry">The query to be used, can be null</param>
         /// <param name="parameters">A list of parameters to be used, can be null</param>
         /// <returns>A RecordSource</returns>
-        public Task<RecordSource<M>> CreateFromAsyncList(string? qry = null, List<QueryParameter>? parameters = null) 
-        {
-            return RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync(qry, parameters).Cast<M>());
-        } 
+        public Task<RecordSource<M>> CreateFromAsyncList(string? qry = null, List<QueryParameter>? parameters = null) => 
+        RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync(qry, parameters).Cast<M>());
 
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
         {
@@ -168,9 +168,7 @@ namespace FrontEnd.Controller
         {
             base.Dispose(disposing);
             if (disposing) 
-            {
-                SearchParameters.Clear();
-            }
+                SearchQry.Dispose();
         }
 
         protected async void OnSearchPropertyRequery(object? sender)

@@ -22,12 +22,16 @@ namespace FrontEnd.Controller
     /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
     public abstract class AbstractFormController<M> : AbstractSQLModelController, IParentController, ISubFormController, IDisposable, IAbstractFormController<M> where M : AbstractModel, new()
     {
+        #region backing fields
         private string _search = string.Empty;
         private bool _isloading = false;
         protected ISQLModel? _currentModel;
         private string _records = string.Empty;
         private UIElement? _uiElement;
         private readonly List<ISubFormController> _subControllers = [];
+        #endregion
+
+        #region Properties
         public UIElement? UI
         {
             get => _uiElement;
@@ -65,7 +69,6 @@ namespace FrontEnd.Controller
             get => (M?)CurrentModel;
             set => CurrentModel = value;
         }
-
         public override string Records { get => _records; protected set => UpdateProperty(ref value, ref _records); }
         public override bool AllowNewRecord
         {
@@ -78,14 +81,20 @@ namespace FrontEnd.Controller
         }
         public bool IsLoading { get => _isloading; set => UpdateProperty(ref value, ref _isloading); }
         public string Search { get => _search; set => UpdateProperty(ref value, ref _search); }
+        #endregion
+
+        #region Commands
         public ICommand UpdateCMD { get; set; }
         public ICommand DeleteCMD { get; set; }
         public ICommand RequeryCMD { get; set; }
+        #endregion
 
+        #region Events
         public event PropertyChangedEventHandler? PropertyChanged;
         public event AfterUpdateEventHandler? AfterUpdate;
         public event BeforeUpdateEventHandler? BeforeUpdate;
         public event NewRecordEventHandler? NewRecordEvent;
+        #endregion
 
         public AbstractFormController() : base()
         {
@@ -106,10 +115,8 @@ namespace FrontEnd.Controller
             controller.ParentController = null;
             _subControllers.Remove(controller);
         }
-
         public RecordSource<M> AsRecordSource()=>(RecordSource<M>)Source;
         protected override IRecordSource InitSource() => new RecordSource<M>(Db,this);
-
 
         /// <summary>
         /// It checks if the <see cref="CurrentRecord"/>'s property meets the conditions to be updated. This method is called whenever the <see cref="Navigator"/> moves.
@@ -143,7 +150,6 @@ namespace FrontEnd.Controller
             AsRecordSource().ReplaceRange(results); //Update also its child source for this controller.
             IsLoading = false; //Notify the GUI the process has terminated
         }
-
         public bool PerformUpdate() => Update(CurrentRecord);
 
         /// <summary>
@@ -171,7 +177,6 @@ namespace FrontEnd.Controller
             DeleteRecord();
             return true;
         }
-
         public override bool GoNew()
         {
             if (!CanMove()) return false;
@@ -182,11 +187,8 @@ namespace FrontEnd.Controller
             Records = Source.RecordPositionDisplayer();
             return moved;
         }
-
         protected void InvokeOnNewRecordEvent() => NewRecordEvent?.Invoke(this, EventArgs.Empty);
-
         public void RaisePropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
-
         public void UpdateProperty<T>(ref T value, ref T _backProp, [CallerMemberName] string propName = "")
         {
             BeforeUpdateArgs args = new(value, _backProp, propName);
@@ -196,7 +198,6 @@ namespace FrontEnd.Controller
             RaisePropertyChanged(propName);
             AfterUpdate?.Invoke(this, args);
         }
-
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
         {
             if (CurrentModel == null) throw new NoModelException();
@@ -210,7 +211,6 @@ namespace FrontEnd.Controller
             if (crud == CRUD.INSERT) GoLast(); //if the we have inserted a new record instruct the Navigator to move to the last record.
             return true;
         }
-
         public void SetParentRecord(AbstractModel? parentRecord)
         {
             ParentRecord = parentRecord;
@@ -222,12 +222,10 @@ namespace FrontEnd.Controller
             }
             else Records = "NO RECORDS";
         }
-
         public virtual void OnSubFormFilter()
         {
             throw new NotImplementedException("You have not override the OnSubFormFilter() method in the Controller class that handles the SubForm.");
         }
-
         public virtual void OnWindowClosing(object? sender, CancelEventArgs e)
         {
             bool dirty = AsRecordSource().Any(s => s.IsDirty);
@@ -256,7 +254,6 @@ namespace FrontEnd.Controller
             if (!e.Cancel) 
                 Dispose();
         }
-
         protected override void Dispose(bool disposing)
         {
             if (_disposed) return;
