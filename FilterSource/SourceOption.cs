@@ -1,11 +1,9 @@
 ﻿using Backend.Database;
 using Backend.Model;
 using Backend.Source;
-using FrontEnd.Controller;
 using FrontEnd.Model;
 using FrontEnd.Source;
 using MvvmHelpers;
-using System.Text;
 
 namespace FrontEnd.FilterSource
 {
@@ -30,6 +28,14 @@ namespace FrontEnd.FilterSource
         {
         }
 
+        public SourceOption(IRecordSource source, string groupByProp, string displayProperty) 
+        {
+            IEnumerable<IAbstractModel?> range = source.Cast<AbstractModel>().GroupBy(s=>s.GetPropertyValue(groupByProp)).Select(s=>s.FirstOrDefault());
+            IEnumerable<IFilterOption> options = range.Select(s=>new FilterOption(s,displayProperty));
+            ReplaceRange(options);
+            _displayProperty = displayProperty;            
+        }
+
         public SourceOption(IRecordSource source, string displayProperty) : base(source.Cast<AbstractModel>().Select(s => new FilterOption(s, displayProperty)))
         {
             Source = source;
@@ -48,7 +54,49 @@ namespace FrontEnd.FilterSource
         /// </summary>
         /// <param name="filterQueryBuilder"></param>
         /// <returns>A string</returns>
-        public void Conditions(IWhereClause filterQueryBuilder)
+        public void Conditions(IWhereClause filterQueryBuilder, bool useDisplayProperty = false)
+        {
+            ///WHEREClause
+            int i = 0;
+            int selectedCount = Selected().Count();
+
+            if (selectedCount > 0)
+            {
+                if (filterQueryBuilder.HasWhereClause())
+                    filterQueryBuilder.AND();
+
+                filterQueryBuilder.OpenBracket();
+            }
+
+            foreach (var item in this)
+            {
+                if (item.IsSelected)
+                {
+                    i++;
+                    string? tableName = item?.Record.GetTableName();
+                    string? fieldName = null;
+                    if (useDisplayProperty) 
+                    {
+                        fieldName = _displayProperty;
+                        filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
+                    }
+                    else
+                    {
+                        fieldName = item?.Record?.GetTablePK()?.Name;
+                        filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetTablePK()?.GetValue());
+                    }
+                    filterQueryBuilder.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+                }
+            }
+
+            if (selectedCount > 0)
+            {
+                filterQueryBuilder.RemoveLastChange();
+                filterQueryBuilder.CloseBracket();
+            }
+        }
+
+        public void Conditions(IWhereClause filterQueryBuilder, bool val, bool valw)
         {
             ///WHEREClause
             int i = 0;
@@ -67,9 +115,9 @@ namespace FrontEnd.FilterSource
                 if (item.IsSelected)
                 {
                     string? tableName = item?.Record.GetTableName();
-                    string? fieldName = item?.Record?.GetTablePK()?.Name;
+                    string? fieldName = _displayProperty;
                     filterQueryBuilder.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{++i}").OR();
-                    filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetTablePK()?.GetValue());
+                    filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
                 }
             }
 
@@ -79,7 +127,6 @@ namespace FrontEnd.FilterSource
                 filterQueryBuilder.CloseBracket();
             }
         }
-
         /// <summary>
         /// It adds a <see cref="IUIControl"/> object to the <see cref="UIControls"/>.
         /// <para/>

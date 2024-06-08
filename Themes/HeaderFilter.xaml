@@ -1,7 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:FrontEnd.Forms"
+                    xmlns:converter="clr-namespace:FrontEnd.Converters"
                     >
+    <converter:BoolToStringConverter x:Key="IfBool"/>
 
     <Style TargetType="{x:Type local:HeaderFilter}">
         <Setter Property="Template">
@@ -28,7 +30,7 @@
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*" MinWidth="100"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <CheckBox Grid.Column="0" Content="{Binding Value}" IsChecked="{Binding IsSelected}"/>
+                                                    <CheckBox Grid.Column="0" Content="{Binding Value, Converter={StaticResource IfBool}}" IsChecked="{Binding IsSelected}"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>

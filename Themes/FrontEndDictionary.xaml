@@ -3,7 +3,6 @@
                     xmlns:converter="clr-namespace:FrontEnd.Converters"
                     >
     <converter:StringToTimeConverter x:Key="TimeBox"/>
-
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Images.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Strings.xaml"/>
