@@ -31,8 +31,9 @@ namespace FrontEnd.FilterSource
         public event PropertyChangedEventHandler? PropertyChanged;
         public event SelectionChangedEventHandler? OnSelectionChanged;
 
-        public FilterOption(ISQLModel record, string displayProperty)
+        public FilterOption(ISQLModel? record, string displayProperty)
         {
+            if (record == null) throw new ArgumentNullException(nameof(record));
             Record = record;
             PropertyInfo Field = Record.GetProperties().First(s => s.Name.Equals(displayProperty));
             Value = Field.GetValue(Record);

@@ -16,24 +16,29 @@ namespace FrontEnd.FilterSource
     /// <param name="displayProperty">The Record's property to display in the option list.</param>
     public class SourceOption : ObservableRangeCollection<IFilterOption>, IChildSource, IDisposable
     {
+        private string _groupByProp = string.Empty;
+        private bool _isPrimitiveData => (string.IsNullOrEmpty(_groupByProp)) ? false : true;
         private readonly string _displayProperty = string.Empty;
         /// <summary>
         /// A list of <see cref="IUIControl"/> associated to this <see cref="RecordSource"/>.
         /// </summary>
         private List<IUIControl>? UIControls;
         private IRecordSource? Source;
+        private bool _unique = false;
         public IParentSource? ParentSource { get; set; }
 
-        public SourceOption(IEnumerable<IFilterOption> source) : base(source)
-        {
-        }
+        public SourceOption(IEnumerable<IFilterOption> source) : base(source) { }
 
-        public SourceOption(IRecordSource source, string groupByProp, string displayProperty) 
+        public SourceOption(IRecordSource source, string groupByProp, string displayProperty, bool unique = true) 
         {
-            IEnumerable<IAbstractModel?> range = source.Cast<AbstractModel>().GroupBy(s=>s.GetPropertyValue(groupByProp)).Select(s=>s.FirstOrDefault());
-            IEnumerable<IFilterOption> options = range.Select(s=>new FilterOption(s,displayProperty));
+            IEnumerable<IAbstractModel?> range = source.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
+            IEnumerable<IFilterOption> options = range.Select(s => new FilterOption(s, displayProperty));
             ReplaceRange(options);
-            _displayProperty = displayProperty;            
+            Source = source;
+            _unique = unique;
+            _groupByProp = groupByProp;
+            _displayProperty = displayProperty;
+            Source.ParentSource?.AddChild(this);
         }
 
         public SourceOption(IRecordSource source, string displayProperty) : base(source.Cast<AbstractModel>().Select(s => new FilterOption(s, displayProperty)))
@@ -42,6 +47,7 @@ namespace FrontEnd.FilterSource
             _displayProperty = displayProperty;
             Source.ParentSource?.AddChild(this);
         }
+
 
         /// <summary>
         /// Returns all selected options.
@@ -54,9 +60,8 @@ namespace FrontEnd.FilterSource
         /// </summary>
         /// <param name="filterQueryBuilder"></param>
         /// <returns>A string</returns>
-        public void Conditions(IWhereClause filterQueryBuilder, bool useDisplayProperty = false)
+        public void Conditions(IWhereClause filterQueryBuilder)
         {
-            ///WHEREClause
             int i = 0;
             int selectedCount = Selected().Count();
 
@@ -75,7 +80,7 @@ namespace FrontEnd.FilterSource
                     i++;
                     string? tableName = item?.Record.GetTableName();
                     string? fieldName = null;
-                    if (useDisplayProperty) 
+                    if (_isPrimitiveData) 
                     {
                         fieldName = _displayProperty;
                         filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
@@ -96,37 +101,6 @@ namespace FrontEnd.FilterSource
             }
         }
 
-        public void Conditions(IWhereClause filterQueryBuilder, bool val, bool valw)
-        {
-            ///WHEREClause
-            int i = 0;
-            int selectedCount = Selected().Count();
-
-            if (selectedCount > 0)
-            {
-                if (filterQueryBuilder.HasWhereClause())
-                    filterQueryBuilder.AND();
-
-                filterQueryBuilder.OpenBracket();
-            }
-
-            foreach (var item in this)
-            {
-                if (item.IsSelected)
-                {
-                    string? tableName = item?.Record.GetTableName();
-                    string? fieldName = _displayProperty;
-                    filterQueryBuilder.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{++i}").OR();
-                    filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
-                }
-            }
-
-            if (selectedCount > 0)
-            {
-                filterQueryBuilder.RemoveLastChange();
-                filterQueryBuilder.CloseBracket();
-            }
-        }
         /// <summary>
         /// It adds a <see cref="IUIControl"/> object to the <see cref="UIControls"/>.
         /// <para/>
@@ -135,7 +109,7 @@ namespace FrontEnd.FilterSource
         /// <param name="control">An object implementing <see cref="IUIControl"/></param>
         public void AddUIControlReference(IUIControl control)
         {
-            if (UIControls == null) UIControls = [];
+            UIControls ??= [];
             UIControls.Add(control);
         }
 
@@ -152,6 +126,66 @@ namespace FrontEnd.FilterSource
         public void Update(CRUD crud, ISQLModel model)
         {
             FilterOption option = new(model, _displayProperty);
+            if (_isPrimitiveData) 
+                UpdatePrimitiveData(crud, option);
+            else 
+                UpdateRecord(crud,option);
+        }
+
+        private void UpdatePrimitiveData(CRUD crud, FilterOption option)
+        {
+            bool exist = this.Any(s => s.Equals(option));
+            if (exist) 
+            {
+                UpdateRecord(crud, option);
+                if (_unique) 
+                    OnUnique(option);
+            }
+            else UpdateRecord(CRUD.INSERT, option);            
+        }
+
+        private void OnUnique(IFilterOption option)
+        {
+            if (_unique)
+            {
+                int count = this.Count(s => CountValues(s, option.Value));
+                if (count > 1)
+                    UpdateRecord(CRUD.DELETE, option);
+
+                //further check
+                IEnumerable<IFilterOption> options = DistinctOptions();
+
+                if (this.Count != options.Count())
+                {
+                    List<IFilterOption> extra = options.Where(s => FilterValues(s, option.Value)).ToList();
+                    foreach (var e in extra)
+                        UpdateRecord(CRUD.INSERT, e);
+                }
+            }
+        }
+
+        private IEnumerable<IFilterOption> DistinctOptions() 
+        {
+            if (Source == null) throw new NullReferenceException();
+            IEnumerable<IAbstractModel?> range = Source.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
+            return range.Select(s => new FilterOption(s, _displayProperty));
+        }
+
+        private static bool FilterValues(IFilterOption record, object? value)
+        {
+            if (record == null || record.Value == null) return false;
+            return !record.Value.Equals(value);
+        }
+
+        private static bool CountValues(IFilterOption record, object? value)
+        {
+            if (record == null || record.Value == null) return false;
+            return record.Value.Equals(value);
+        }
+
+        private void UpdateRecord(CRUD crud, IFilterOption? option) 
+        {
+            if (option == null) return;
             switch (crud)
             {
                 case CRUD.INSERT:
@@ -169,13 +203,13 @@ namespace FrontEnd.FilterSource
                     break;
             }
         }
-
         public void Dispose() 
         {
             Source?.ParentSource?.RemoveChild(this);
             UIControls?.Clear();
             Clear();
             Source?.Dispose();
-        } 
+            GC.SuppressFinalize(this);
+        }
     }
 }
