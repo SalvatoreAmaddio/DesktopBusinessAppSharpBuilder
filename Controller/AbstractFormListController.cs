@@ -38,11 +38,11 @@ namespace FrontEnd.Controller
             AsRecordSource().RunFilter += OnSourceRunFilter;
         }
 
-        public void ReloadSearchQry() 
+        public void ReloadSearchQry()
         {
             SearchQry.Dispose();
             SearchQry = InstantiateSearchQry();
-        } 
+        }
         public abstract Task<IEnumerable<M>> SearchRecordAsync();
         public abstract void OnOptionFilterClicked(FilterEventArgs e);
 
@@ -182,6 +182,45 @@ namespace FrontEnd.Controller
 
         public abstract IWhereClause InstantiateSearchQry();
 
+        public override async Task RequeryAsync()
+        {
+            IsLoading = true; //notify the GUI that there is a process going on.
+            IEnumerable<M>? results = null;
+            await Task.Run(async () => //retrieve the records. Do not freeze the GUI.
+            {
+                results = await RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync().Cast<M>());
+            });
+
+            if (results == null) throw new Exception("Source is null"); //Something has gone wrong.
+            Db.ReplaceRecords(results.ToList<ISQLModel>()); //Replace the Master RecordSource's records with the newly fetched ones.
+            
+            try 
+            {
+                OnSubFormFilter();
+                IsLoading = false;
+                return;
+            }
+            catch 
+            {
+                try
+                {
+                    OnOptionFilterClicked(new FilterEventArgs());
+                    IsLoading = false;
+                    return;
+                }
+                catch (NotImplementedException)
+                {
+                    try
+                    {
+                        results = await SearchRecordAsync();
+                    }
+                    catch (NotImplementedException) { }
+                }
+            }
+
+            AsRecordSource().ReplaceRecords(results); //Update also its child source for this controller.
+            IsLoading = false; //Notify the GUI the process has terminated
+        }
         ~AbstractFormListController() => Dispose(false);
 
     }

@@ -94,17 +94,18 @@ namespace FrontEnd.Controller
         public event AfterUpdateEventHandler? AfterUpdate;
         public event BeforeUpdateEventHandler? BeforeUpdate;
         public event NewRecordEventHandler? NewRecordEvent;
+        public event NotifyParentControllerEventHandler? NotifyParentEvent;
         #endregion
 
         public AbstractFormController() : base()
         {
             UpdateCMD = new CMD<M>(Update);
             DeleteCMD = new CMD<M>(Delete);
-            RequeryCMD = new CMDAsync(Requery);
+            RequeryCMD = new CMDAsync(RequeryAsync);
         }
 
         public ISubFormController GetSubController(int index) => _subControllers[index];
-        public void AddSubControllers(ISubFormController controller) 
+        public void AddSubControllers(ISubFormController controller)
         {
             controller.ParentController = this;
             _subControllers.Add(controller);
@@ -115,6 +116,7 @@ namespace FrontEnd.Controller
             controller.ParentController = null;
             _subControllers.Remove(controller);
         }
+
         public RecordSource<M> AsRecordSource()=>(RecordSource<M>)Source;
         protected override IRecordSource InitSource() => new RecordSource<M>(Db,this);
 
@@ -136,7 +138,7 @@ namespace FrontEnd.Controller
         /// This method is called by <see cref="RequeryCMD"/> command to Requery the database table.
         /// It awaits the <see cref="RecordSource.CreateFromAsyncList(IAsyncEnumerable{ISQLModel})"/> whose result is then used to replace the records kept in the <see cref="IAbstractSQLModelController.Db"/> property and in the <see cref="IAbstractSQLModelController.Source"/> property.
         /// </summary>
-        protected virtual async Task Requery()
+        public virtual async Task RequeryAsync()
         {
             IsLoading = true; //notify the GUI that there is a process going on.
             IEnumerable<M>? results = null;
@@ -147,7 +149,7 @@ namespace FrontEnd.Controller
 
             if (results == null) throw new Exception("Source is null"); //Something has gone wrong.
             Db.ReplaceRecords(results.ToList<ISQLModel>()); //Replace the Master RecordSource's records with the newly fetched ones.
-            AsRecordSource().ReplaceRange(results); //Update also its child source for this controller.
+            AsRecordSource().ReplaceRecords(results); //Update also its child source for this controller.
             IsLoading = false; //Notify the GUI the process has terminated
         }
         public bool PerformUpdate() => Update(CurrentRecord);
@@ -161,7 +163,10 @@ namespace FrontEnd.Controller
         {
             if (model == null) return false;
             CurrentRecord = model;
-            return AlterRecord();
+            bool result = AlterRecord();
+            if (result) 
+                NotifyParentEvent?.Invoke(this, EventArgs.Empty);
+            return result;
         }
 
         /// <summary>
@@ -175,6 +180,7 @@ namespace FrontEnd.Controller
             if (result == DialogResult.No) return false;
             CurrentRecord = model;
             DeleteRecord();
+            NotifyParentEvent?.Invoke(this, EventArgs.Empty);
             return true;
         }
         public override bool GoNew()

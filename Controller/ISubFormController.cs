@@ -41,6 +41,8 @@ namespace FrontEnd.Controller
         /// </summary>
         public event NewRecordEventHandler? NewRecordEvent;
 
+        public event NotifyParentControllerEventHandler? NotifyParentEvent;
+
         /// <summary>
         /// Override this method to implement a custom logic to filter a SubForm object.
         /// <para/>

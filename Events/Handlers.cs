@@ -3,6 +3,7 @@ using System.Windows;
 
 namespace FrontEnd.Events
 {
+    public delegate void NotifyParentControllerEventHandler(object? sender, EventArgs e);
     public delegate void OnPreparingCalendarFormEventHandler(object sender, OnPreparingCalendarFormEventArgs e);
     public delegate void NewRecordEventHandler(object? sender, EventArgs e);
     public delegate void ParentRecordChangedEventHandler(object? sender, ParentRecordChangedArgs e);

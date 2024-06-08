@@ -106,7 +106,11 @@ namespace FrontEnd.Source
                     break;
             }
 
-            RunFilter?.Invoke(this,new());
+            try 
+            {
+                RunFilter?.Invoke(this, new());
+            }
+            catch { }
 
         }
 

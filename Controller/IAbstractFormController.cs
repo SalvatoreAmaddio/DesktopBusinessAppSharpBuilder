@@ -56,6 +56,8 @@ namespace FrontEnd.Controller
 
         public bool AllowAutoSave { get; set; }
 
+        public Task RequeryAsync();
+
     }
 
     /// <summary>
