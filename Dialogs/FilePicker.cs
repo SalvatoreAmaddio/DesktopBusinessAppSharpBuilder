@@ -7,7 +7,7 @@ namespace FrontEnd.Dialogs
     /// <summary>
     /// This class hols a collection of constants of common FilePicker filters.
     /// </summary>
-    public static class FilePickerFilters
+    public static class FilePickerFilters 
     {
         public const string ALL_FILES = "All Files (*.*)|*.*";
         public const string TEXT_FILES = "Text Files (*.txt)|*.txt";
@@ -23,7 +23,7 @@ namespace FrontEnd.Dialogs
     /// <summary>
     /// This class wrap the <see cref="OpenFileDialog"/> class.
     /// </summary>
-    public class FilePicker(string title = "Select a file")
+    public class FilePicker(string title = "Select a file") : IDisposable
     {
         public delegate void FileOK(object? sender, CancelEventArgs e);
 
@@ -66,9 +66,24 @@ namespace FrontEnd.Dialogs
 
         public void OpenSelectedFiles() => openFileDialog?.OpenFiles();
 
+        public string? SelectedFileExtension() 
+        {
+            string[]? bits = SelectedFileName?.Split(".");
+            return bits?[bits.Length-1];
+        }
+
+        public void Dispose()
+        {
+            if (openFileDialog!=null)
+                openFileDialog.FileOk -= OnOpenFileDialogFileOk;
+            OnFileOK = null;
+            openFileDialog = null;
+            GC.SuppressFinalize(this);
+        }
+
         ~FilePicker()
         {
-            OnFileOK = null;
+            Dispose();
         }
     }
 

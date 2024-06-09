@@ -1,9 +1,11 @@
 ﻿using FrontEnd.Dialogs;
 using FrontEnd.Utils;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace FrontEnd.Forms
 {
@@ -23,7 +25,7 @@ namespace FrontEnd.Forms
                 nameof(FileTransferCommand),
                 typeof(ICommand),
                 typeof(PhotoFrame),
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+                new FrameworkPropertyMetadata(null)
                 );
 
         #region Source
@@ -84,9 +86,28 @@ namespace FrontEnd.Forms
                 PART_RemovePictureButton.Click += OnRemovePictureButtonClicked;
         }
 
+        static string RemoveFilePrefix(string? path)
+        {
+            if (string.IsNullOrEmpty(path)) return "";
+            string prefix = "file:///";
+            if (path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return path.Substring(prefix.Length);
+            }
+            return path;
+        }
+
         private void OnRemovePictureButtonClicked(object sender, RoutedEventArgs e)
         {
+            string? src = RemoveFilePrefix(Source?.ToString());
             Source = null;
+            if (!string.IsNullOrEmpty(src))
+            {
+                bool x = File.Exists(src);
+                if (x)
+                    File.Delete(src);
+            }
+
             FileTransferCommand?.Execute(null);
         }
 
@@ -103,8 +124,9 @@ namespace FrontEnd.Forms
                 if (path.Length > 0) 
                 {
                     Source = Helper.LoadImg(path);
-                    FileTransferCommand?.Execute(new FilePickerCatch(path, filePicker?.SelectedFileName));
+                    FileTransferCommand?.Execute(new FilePickerCatch(path, filePicker?.SelectedFileName, filePicker?.SelectedFileExtension()));
                 }
+            filePicker?.Dispose();
         }
 
         public void Dispose()
@@ -120,9 +142,10 @@ namespace FrontEnd.Forms
         }
     }
 
-    public class FilePickerCatch(string filePath, string? fileName) 
+    public class FilePickerCatch(string filePath, string? fileName, string? extension)
     {
         public string FilePath { get; } = filePath;
         public string? FileName { get; } = fileName;
+        public string? Extension { get; } = extension;
     }
 }

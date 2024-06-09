@@ -28,17 +28,10 @@ namespace FrontEnd.Controller
     public class CMD : ICommand
     {
         public event EventHandler? CanExecuteChanged;
-        private readonly Action<object?>? _execute;
-        private readonly Action? _execute2;
-
-        public CMD(Action<object?> execute) 
-        { 
-            _execute = execute;
-        }
-
+        private readonly Action? _execute;
         public CMD(Action execute)
         {
-            _execute2 = execute;
+            _execute = execute;
         }
 
         public bool CanExecute(object? parameter)
@@ -49,12 +42,33 @@ namespace FrontEnd.Controller
         public void Execute(object? parameter) 
         {
             if (_execute != null)
-                _execute(parameter);
-            if (_execute2 != null)
-                _execute2();
+                _execute();
         }
     }
 
+    public class Command<T> : ICommand 
+    {
+        public event EventHandler? CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        private readonly Action<T?> _execute;
+        public Command(Action<T?> execute) => _execute = execute;
+
+        public bool CanExecute(object? parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object? parameter)
+        {
+            if (_execute != null)
+                _execute((T?)parameter);
+        }
+
+    }
     /// <summary>
     /// This class implements <see cref="ICommand"/> and deal with click events that take a <see cref="AbstractModel"/> object as argument.
     /// Objects of this class are tipically used to deal with CRUD operations.
