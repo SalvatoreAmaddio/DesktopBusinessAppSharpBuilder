@@ -97,19 +97,7 @@ namespace FrontEnd.Forms
             return path;
         }
 
-        private void OnRemovePictureButtonClicked(object sender, RoutedEventArgs e)
-        {
-            string? src = RemoveFilePrefix(Source?.ToString());
-            Source = null;
-            if (!string.IsNullOrEmpty(src))
-            {
-                bool x = File.Exists(src);
-                if (x)
-                    File.Delete(src);
-            }
-
-            FileTransferCommand?.Execute(null);
-        }
+        private void OnRemovePictureButtonClicked(object sender, RoutedEventArgs e) => FileTransferCommand?.Execute(null);
 
         private void OnPictureMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
