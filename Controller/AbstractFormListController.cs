@@ -144,9 +144,12 @@ namespace FrontEnd.Controller
             AbstractModel temp = CurrentRecord;
 
             if (crud == CRUD.INSERT) 
-            {   //INSERT must follow a slighlty different logic to avoid unexpected behaviour between the RecordSource and the Lista object.
-                temp = AsRecordSource()[Source.Count - 1];
-                AsRecordSource().RemoveAt(Source.Count - 1);
+            {   //INSERT must follow a slighlty different logic if it the user is allowed to insert new rows himself. This is to avoid unexpected behaviour between the RecordSource and the Lista object.
+                if (AsRecordSource().Count > 0 && !OpenWindowOnNew) 
+                {
+                    temp = AsRecordSource()[Source.Count - 1];
+                    AsRecordSource().RemoveAt(Source.Count - 1);
+                }
                 ExecuteCRUD(ref temp, crud, sql, parameters);
             } 
             else ExecuteCRUD(ref temp, crud, sql, parameters);
