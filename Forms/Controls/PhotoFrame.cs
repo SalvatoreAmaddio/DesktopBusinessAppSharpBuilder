@@ -2,6 +2,7 @@
 using FrontEnd.Utils;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace FrontEnd.Forms
@@ -10,6 +11,20 @@ namespace FrontEnd.Forms
     {
         private Button? PART_RemovePictureButton;
         private Image? PART_Picture;
+
+        public ICommand? FileTransferCommand
+        {
+            get => (ICommand?)GetValue(FileTransferCommandProperty);
+            set => SetValue(FileTransferCommandProperty, value);
+        }
+
+        public static readonly DependencyProperty FileTransferCommandProperty =
+            DependencyProperty.Register(
+                nameof(FileTransferCommand),
+                typeof(ICommand),
+                typeof(PhotoFrame),
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+                );
 
         #region Source
         /// <summary>
@@ -22,7 +37,12 @@ namespace FrontEnd.Forms
         }
 
         public static readonly DependencyProperty SourceProperty =
-            DependencyProperty.Register(nameof(Source), typeof(ImageSource), typeof(PhotoFrame), new PropertyMetadata(null));
+            DependencyProperty.Register(
+                nameof(Source), 
+                typeof(ImageSource), 
+                typeof(PhotoFrame), 
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+                );
         #endregion
 
         #region CornerRadius
@@ -67,6 +87,7 @@ namespace FrontEnd.Forms
         private void OnRemovePictureButtonClicked(object sender, RoutedEventArgs e)
         {
             Source = null;
+            FileTransferCommand?.Execute(null);
         }
 
         private void OnPictureMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -79,8 +100,11 @@ namespace FrontEnd.Forms
             filePicker.ShowDialog();
             string? path = filePicker.SelectedFile;
             if (path!=null) 
-                if (path.Length > 0)
+                if (path.Length > 0) 
+                {
                     Source = Helper.LoadImg(path);
+                    FileTransferCommand?.Execute(new FilePickerCatch(path, filePicker?.SelectedFileName));
+                }
         }
 
         public void Dispose()
@@ -94,5 +118,11 @@ namespace FrontEnd.Forms
             Unloaded -= OnUnloaded;
             GC.SuppressFinalize(this);
         }
+    }
+
+    public class FilePickerCatch(string filePath, string? fileName) 
+    {
+        public string FilePath { get; } = filePath;
+        public string? FileName { get; } = fileName;
     }
 }

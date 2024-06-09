@@ -25,10 +25,21 @@ namespace FrontEnd.Controller
     /// This class implements <see cref="ICommand"/>
     /// </summary>
     /// <param name="execute">An Action</param>
-    public class CMD(Action execute) : ICommand
+    public class CMD : ICommand
     {
         public event EventHandler? CanExecuteChanged;
-        private readonly Action _execute = execute;
+        private readonly Action<object?>? _execute;
+        private readonly Action? _execute2;
+
+        public CMD(Action<object?> execute) 
+        { 
+            _execute = execute;
+        }
+
+        public CMD(Action execute)
+        {
+            _execute2 = execute;
+        }
 
         public bool CanExecute(object? parameter)
         {
@@ -37,7 +48,10 @@ namespace FrontEnd.Controller
 
         public void Execute(object? parameter) 
         {
-            _execute();
+            if (_execute != null)
+                _execute(parameter);
+            if (_execute2 != null)
+                _execute2();
         }
     }
 
