@@ -7,11 +7,29 @@ using System.ComponentModel;
 using Backend.Utils;
 using FrontEnd.ExtensionMethods;
 using FrontEnd.Dialogs;
+using System.IO;
 
 namespace FrontEnd.Utils
 {
     public class Helper
     {
+        public static BitmapImage? LoadImageCopy(string? imagePath)
+        {
+            if (string.IsNullOrEmpty(imagePath)) return null;
+            if (!File.Exists(imagePath)) return null;
+            byte[] imageData = File.ReadAllBytes(imagePath);
+
+            using (MemoryStream ms = new(imageData))
+            {
+                BitmapImage bitmap = new();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensure the file handle is not locked
+                bitmap.StreamSource = ms;
+                bitmap.EndInit();
+                return bitmap;
+            }
+        }
+
         /// <summary>
         /// Subscribes the Closing Event of the <see cref="Window"/> containg the <see cref="TabControl"/>. <para/>
         /// For each Tab, the event calls the <see cref="IAbstractFormController.OnWindowClosing(object?, CancelEventArgs)"/> method
@@ -130,9 +148,10 @@ namespace FrontEnd.Utils
         /// <exception cref="ArgumentException">Path cannot be null</exception>
         public static BitmapImage LoadImg(string? path)
         {
-            if (string.IsNullOrEmpty(path)) throw new ArgumentException("Path cannot be empty");
+            if (string.IsNullOrEmpty(path)) throw new ArgumentNullException("Path cannot be empty");
             BitmapImage bitmap = new();
             bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensure the file handle is not locked
             bitmap.UriSource = new Uri(path);
             bitmap.EndInit();
             return bitmap;

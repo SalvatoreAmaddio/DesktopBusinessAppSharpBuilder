@@ -13,7 +13,6 @@ namespace FrontEnd.Forms
     {
         private Button? PART_RemovePictureButton;
         private Image? PART_Picture;
-
         public ICommand? FileTransferCommand
         {
             get => (ICommand?)GetValue(FileTransferCommandProperty);
@@ -84,20 +83,23 @@ namespace FrontEnd.Forms
 
             if (PART_RemovePictureButton != null)
                 PART_RemovePictureButton.Click += OnRemovePictureButtonClicked;
+
         }
 
-        static string RemoveFilePrefix(string? path)
+        private void OnRemovePictureButtonClicked(object sender, RoutedEventArgs e) 
         {
-            if (string.IsNullOrEmpty(path)) return "";
-            string prefix = "file:///";
-            if (path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            string path = string.Empty;
+            string? uri = Source?.ToString();
+            if (!string.IsNullOrEmpty(uri) && uri.StartsWith("file:///"))
             {
-                return path.Substring(prefix.Length);
+                path = uri.Substring(8).Replace('/', '\\');
+                Source = null;
+                ClearValue(SourceProperty);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                FileTransferCommand?.Execute(null);
             }
-            return path;
         }
-
-        private void OnRemovePictureButtonClicked(object sender, RoutedEventArgs e) => FileTransferCommand?.Execute(null);
 
         private void OnPictureMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
