@@ -1,7 +1,6 @@
 ﻿using Backend.Utils;
 using FrontEnd.Controller;
 using FrontEnd.Model;
-using FrontEnd.Reports;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;

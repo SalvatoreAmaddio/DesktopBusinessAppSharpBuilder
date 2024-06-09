@@ -189,11 +189,20 @@ namespace FrontEnd.Controller
             bool moved = Navigator.MoveNew();
             if (!moved) return false;
             CurrentModel = new M();
-            InvokeOnNewRecordEvent();
+            if (InvokeOnNewRecordEvent()) // if the event is cancelled.
+            {
+                return false;
+            }
             Records = Source.RecordPositionDisplayer();
             return moved;
         }
-        protected void InvokeOnNewRecordEvent() => NewRecordEvent?.Invoke(this, EventArgs.Empty);
+        protected bool InvokeOnNewRecordEvent() 
+        {
+            AllowRecordMovementArgs args = new(RecordMovement.GoNew);
+            NewRecordEvent?.Invoke(this, args);
+            return args.Cancel;
+        } 
+
         public void RaisePropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         public void UpdateProperty<T>(ref T value, ref T _backProp, [CallerMemberName] string propName = "")
         {

@@ -5,7 +5,7 @@ namespace FrontEnd.Events
 {
     public delegate void NotifyParentControllerEventHandler(object? sender, EventArgs e);
     public delegate void OnPreparingCalendarFormEventHandler(object sender, OnPreparingCalendarFormEventArgs e);
-    public delegate void NewRecordEventHandler(object? sender, EventArgs e);
+    public delegate void NewRecordEventHandler(object? sender, AllowRecordMovementArgs e);
     public delegate void ParentRecordChangedEventHandler(object? sender, ParentRecordChangedArgs e);
     public delegate void AfterUpdateEventHandler(object? sender, AfterUpdateArgs e);
     public delegate void BeforeUpdateEventHandler(object? sender, BeforeUpdateArgs e);
@@ -35,6 +35,21 @@ namespace FrontEnd.Events
             RoutedEvent = evt;
             Source = source;
         }
+    }
+
+    public enum RecordMovement 
+    { 
+        GoFirst = 1,
+        GoLast = 2,
+        GoNext = 3,
+        GoPrevious = 4,
+        GoNew = 5
+    }
+
+    public class AllowRecordMovementArgs(RecordMovement movement) : EventArgs
+    {
+        public RecordMovement Movement { get; } = movement;
+        public bool Cancel { get; set; } = false;
     }
 
     public class FilterEventArgs() : EventArgs 
