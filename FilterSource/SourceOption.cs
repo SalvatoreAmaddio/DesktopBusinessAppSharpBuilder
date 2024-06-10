@@ -53,7 +53,7 @@ namespace FrontEnd.FilterSource
             
             if (selectedCount > 0)
             {
-                if (filterQueryBuilder.HasWhereClause())
+                if (filterQueryBuilder.HasWhereConditions())
                     filterQueryBuilder.AND();
 
                 filterQueryBuilder.OpenBracket();
@@ -155,7 +155,7 @@ namespace FrontEnd.FilterSource
 
             if (selectedCount > 0)
             {
-                if (filterQueryBuilder.HasWhereClause())
+                if (filterQueryBuilder.HasWhereConditions())
                     filterQueryBuilder.AND();
 
                 filterQueryBuilder.OpenBracket();

@@ -3,7 +3,7 @@
                     xmlns:local="clr-namespace:FrontEnd.Forms"
                     xmlns:converter="clr-namespace:FrontEnd.Converters"
                     >
-    <converter:BoolToStringConverter x:Key="IfBool"/>
+    <converter:HeaderFilterConverter x:Key="converter"/>
 
     <Style TargetType="{x:Type local:HeaderFilter}">
         <Setter Property="Template">
@@ -30,7 +30,7 @@
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*" MinWidth="100"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <CheckBox Grid.Column="0" Content="{Binding Value, Converter={StaticResource IfBool}}" IsChecked="{Binding IsSelected}"/>
+                                                    <CheckBox Grid.Column="0" Content="{Binding Value, Converter={StaticResource converter}}" IsChecked="{Binding IsSelected}"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
