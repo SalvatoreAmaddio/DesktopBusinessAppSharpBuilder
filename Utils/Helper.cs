@@ -146,9 +146,9 @@ namespace FrontEnd.Utils
         /// <param name="path">The path to the image</param>
         /// <returns>A BitmapImage</returns>
         /// <exception cref="ArgumentException">Path cannot be null</exception>
-        public static BitmapImage LoadImg(string? path)
+        public static BitmapImage? LoadImg(string? path)
         {
-            if (string.IsNullOrEmpty(path)) throw new ArgumentNullException("Path cannot be empty");
+            if (string.IsNullOrEmpty(path)) return null;
             BitmapImage bitmap = new();
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensure the file handle is not locked

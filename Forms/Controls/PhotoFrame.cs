@@ -31,19 +31,25 @@ namespace FrontEnd.Forms
         /// <summary>
         /// Gets and Sets a <see cref="ImageSource"/>
         /// </summary>
-        public ImageSource? Source
+        public string Source
         {
-            get => (ImageSource?)GetValue(SourceProperty);
+            get => (string)GetValue(SourceProperty);
             set => SetValue(SourceProperty, value);
         }
 
         public static readonly DependencyProperty SourceProperty =
             DependencyProperty.Register(
-                nameof(Source), 
-                typeof(ImageSource), 
+                nameof(Source),
+                typeof(string),
                 typeof(PhotoFrame), 
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+                new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSourcePropertyChanged)
                 );
+
+        private static void OnSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            PhotoFrame control = (PhotoFrame)d;
+            control.SetImageSource(e.NewValue.ToString());
+        }
         #endregion
 
         #region CornerRadius
@@ -62,43 +68,36 @@ namespace FrontEnd.Forms
 
         static PhotoFrame() => DefaultStyleKeyProperty.OverrideMetadata(typeof(PhotoFrame), new FrameworkPropertyMetadata(typeof(PhotoFrame)));
 
-        public PhotoFrame() 
-        {
-            Unloaded += OnUnloaded;
-        }
+        public PhotoFrame() => Unloaded += OnUnloaded;
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
+
+        private void SetImageSource(string? path) 
         {
-            Dispose();
+            if (string.IsNullOrEmpty(path)) return;
+            if (PART_Picture == null) return;
+            PART_Picture.Source = Helper.LoadImg(Source);
         }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             PART_RemovePictureButton = (Button?)GetTemplateChild(nameof(PART_RemovePictureButton));
+
             PART_Picture = (Image)GetTemplateChild(nameof(PART_Picture));
+            PART_Picture.Source = Helper.LoadImg(Source);
 
             if (PART_Picture != null)
                 PART_Picture.MouseUp += OnPictureMouseUp;
 
             if (PART_RemovePictureButton != null)
                 PART_RemovePictureButton.Click += OnRemovePictureButtonClicked;
-
         }
 
         private void OnRemovePictureButtonClicked(object sender, RoutedEventArgs e) 
         {
-            string path = string.Empty;
-            string? uri = Source?.ToString();
-            if (!string.IsNullOrEmpty(uri) && uri.StartsWith("file:///"))
-            {
-                path = uri.Substring(8).Replace('/', '\\');
-                Source = null;
-                ClearValue(SourceProperty);
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                FileTransferCommand?.Execute(null);
-            }
+            PART_Picture.Source = null;
+            FileTransferCommand?.Execute(null);
         }
 
         private void OnPictureMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -113,7 +112,7 @@ namespace FrontEnd.Forms
             if (path!=null) 
                 if (path.Length > 0) 
                 {
-                    Source = Helper.LoadImg(path);
+                    Source = path;
                     FileTransferCommand?.Execute(new FilePickerCatch(path, filePicker?.SelectedFileName, filePicker?.SelectedFileExtension()));
                 }
             filePicker?.Dispose();
@@ -123,11 +122,16 @@ namespace FrontEnd.Forms
         {
             if (PART_Picture != null)
                 PART_Picture.MouseUp -= OnPictureMouseUp;
-
+            PART_Picture.Source = null;
+            PART_Picture = null;
             if (PART_RemovePictureButton != null)
                 PART_RemovePictureButton.Click -= OnRemovePictureButtonClicked;
 
             Unloaded -= OnUnloaded;
+
+            ClearValue(SourceProperty);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
             GC.SuppressFinalize(this);
         }
     }
