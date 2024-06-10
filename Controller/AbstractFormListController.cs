@@ -174,7 +174,7 @@ namespace FrontEnd.Controller
                 SearchQry.Dispose();
         }
 
-        protected async void OnSearchPropertyRequery(object? sender)
+        protected async Task OnSearchPropertyRequeryAsync(object? sender)
         {
             IEnumerable<M> results = await Task.Run(SearchRecordAsync);
             AsRecordSource().ReplaceRecords(results);
