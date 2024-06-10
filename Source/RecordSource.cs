@@ -46,7 +46,6 @@ namespace FrontEnd.Source
         public RecordSource(IAbstractDatabase db) : this(db.MasterSource.Cast<M>()) 
         {
             db.MasterSource.AddChild(this);
-            var x = Count;
         } 
 
         /// <summary>
@@ -58,7 +57,6 @@ namespace FrontEnd.Source
         public RecordSource(IAbstractDatabase db, IAbstractFormController controller) : this(db)
         { 
             Controller = controller;
-            var x = Count;
         }
         #endregion
 

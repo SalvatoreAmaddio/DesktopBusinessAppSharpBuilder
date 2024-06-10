@@ -177,6 +177,7 @@ namespace FrontEnd.Controller
         protected async Task OnSearchPropertyRequeryAsync(object? sender)
         {
             IEnumerable<M> results = await Task.Run(SearchRecordAsync);
+            var x = results.Count();
             AsRecordSource().ReplaceRecords(results);
 
             if (sender is not FilterEventArgs filterEvtArgs)

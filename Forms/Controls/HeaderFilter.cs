@@ -2,7 +2,6 @@
 using FrontEnd.FilterSource;
 using FrontEnd.Source;
 using FrontEnd.Utils;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -128,7 +127,10 @@ namespace FrontEnd.Forms
             IsOpen = false;
             ResetDropDownButtonAppereance();
         }
-        private void OnDropdownButtonClicked(object sender, RoutedEventArgs e) => IsOpen = !IsOpen;            
+        private void OnDropdownButtonClicked(object sender, RoutedEventArgs e) 
+        {
+            IsOpen = !IsOpen;
+        }            
         #endregion
 
         #region IsOpen
@@ -183,12 +185,21 @@ namespace FrontEnd.Forms
 
         public void OnItemSourceUpdated(object[] args)
         {
-            if (args.Length == 1) 
+            if (args.Length == 1) // NEW OPTION WAS ADDED
             {
-                IFilterOption option = (IFilterOption) args[0];
-                option.OnSelectionChanged += OnOptionSelected;
-                return;
+                if (args[0] is string) 
+                {
+                    foreach (IFilterOption option in ItemsSource)
+                        option.OnSelectionChanged += OnOptionSelected;
+                }
+                else 
+                {
+                    IFilterOption option = (IFilterOption)args[0];
+                    option.OnSelectionChanged += OnOptionSelected;
+                    return;
+                }
             }
+
             if (PART_ListBox == null) throw new Exception($"{nameof(PART_ListBox)} cannot be null.");
             DataTemplate tempDataTemplate = PART_ListBox.ItemTemplate;
             PART_ListBox.ItemTemplate = null;
@@ -214,6 +225,17 @@ namespace FrontEnd.Forms
         {
         }
 
+        protected void DisposeSource() 
+        {
+            if (ItemsSource != null)
+            {
+                foreach (IFilterOption option in ItemsSource)
+                    option.Dispose();
+
+                ((SourceOption?)ItemsSource)?.Dispose();
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -225,13 +247,7 @@ namespace FrontEnd.Forms
                 if (PART_ClearButton != null)
                     PART_ClearButton.Click -= OnClearButtonClicked;
 
-                if (ItemsSource!=null) 
-                {
-                    foreach (IFilterOption option in ItemsSource)
-                        option.Dispose();
-
-                    ((SourceOption?)ItemsSource)?.Dispose();
-                }
+                DisposeSource();
 
                 Window? window = Helper.GetActiveWindow();
                 if (window != null)
