@@ -187,10 +187,12 @@ namespace FrontEnd.Forms
         {
             if (args.Length == 1) // NEW OPTION WAS ADDED
             {
-                if (args[0] is string) 
+                if (args[0] is string) //UPDATE STRING
                 {
-                    foreach (IFilterOption option in ItemsSource)
+                    foreach (IFilterOption option in ItemsSource) 
+                    {
                         option.OnSelectionChanged += OnOptionSelected;
+                    }
                 }
                 else 
                 {

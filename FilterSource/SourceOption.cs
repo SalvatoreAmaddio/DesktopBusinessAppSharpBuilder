@@ -39,8 +39,8 @@ namespace FrontEnd.FilterSource
         /// Returns all selected options.
         /// </summary>
         /// <returns>An <see cref="IEnumerable{IFilterOption}"/></returns>
-        public IEnumerable<ISQLModel> Selected() => this.Where(s => s.IsSelected).Select(s=>s.Record);
-
+     //   public IEnumerable<ISQLModel> SelectedRecords() => this.Where(s => s.IsSelected).Select(s => s.Record);
+        public IEnumerable<IFilterOption> SelectedOptions() => this.Where(s => s.IsSelected);
         /// <summary>
         /// It loops through the List and builds the SQL logic to filter the Select the statement.
         /// </summary>
@@ -49,7 +49,7 @@ namespace FrontEnd.FilterSource
         public virtual void Conditions(IWhereClause filterQueryBuilder)
         {
             int i = 0;
-            int selectedCount = Selected().Count();
+            int selectedCount = SelectedOptions().Count();
             
             if (selectedCount > 0)
             {
@@ -151,7 +151,7 @@ namespace FrontEnd.FilterSource
         public override void Conditions(IWhereClause filterQueryBuilder)
         {
             int i = 0;
-            int selectedCount = Selected().Count();
+            int selectedCount = SelectedOptions().Count();
 
             if (selectedCount > 0)
             {
@@ -183,10 +183,36 @@ namespace FrontEnd.FilterSource
 
         public void SelectDistinct()
         {
-            IEnumerable<IAbstractModel?> range = Source.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
-            IEnumerable<IFilterOption> options = range.Select(s => new FilterOption(s, _displayProperty));
-            ReplaceRange(options.OrderBy(s=>s.Value));
+            IEnumerable<IAbstractModel?>? range = Source?.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
+            IEnumerable<IFilterOption>? options = range?.Select(s=> new FilterOption(s, _displayProperty)).OrderBy(s => s.Value);
+            if (options!=null) 
+            {
+                IEnumerable<IFilterOption> previouslySelected = SelectedOptions().ToList();
+                ReplaceRange(options);
+                foreach(var option in this) 
+                {
+                    if (previouslySelected.Any(s=> AnyFunction(s.Value, option.Value))) 
+                        option.IsSelected = true;
+                }
+            }
+
             NotifyUIControl(["UPDATE"]);
+        }
+
+        private bool AnyFunction(object? value1, object? value2)
+        {
+            if (value1 == null || value2 == null) return false;
+
+            if (value1 is DateTime date1 && value2 is DateTime date2) 
+                return date1.Date == date2.Date;
+
+            return value1 == value2;
+        }
+
+        private bool A(IFilterOption s, IFilterOption o) 
+        {
+            if (s.Value == null) return false;
+            return s.Value.Equals(o.Value);
         }
 
         public override void Update(CRUD crud, ISQLModel model)
