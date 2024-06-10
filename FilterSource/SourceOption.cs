@@ -64,7 +64,7 @@ namespace FrontEnd.FilterSource
         {
             int i = 0;
             int selectedCount = Selected().Count();
-
+            
             if (selectedCount > 0)
             {
                 if (filterQueryBuilder.HasWhereClause())
