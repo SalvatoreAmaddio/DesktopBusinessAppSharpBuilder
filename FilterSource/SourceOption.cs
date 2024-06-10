@@ -185,7 +185,7 @@ namespace FrontEnd.FilterSource
         {
             IEnumerable<IAbstractModel?> range = Source.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
             IEnumerable<IFilterOption> options = range.Select(s => new FilterOption(s, _displayProperty));
-            ReplaceRange(options);
+            ReplaceRange(options.OrderBy(s=>s.Value));
             NotifyUIControl(["UPDATE"]);
         }
 

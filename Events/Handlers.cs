@@ -25,7 +25,7 @@ namespace FrontEnd.Events
 
     public class OnPreparingCalendarFormEventArgs : RoutedEventArgs
     {
-        public IEnumerable<AbstractModel>? Model { get; set; }
+        public IEnumerable<AbstractModel>? Records { get; set; }
 
         public DateTime Date { get; }
 

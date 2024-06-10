@@ -291,7 +291,7 @@ namespace FrontEnd.Forms.Calendar
         {
             OnPreparingCalendarFormEventArgs args = new(date, OnPreparingEvent, this);
             RaiseEvent(args);
-            return args.Model;
+            return args.Records;
         }
         public void ClearCalendar()
         {
