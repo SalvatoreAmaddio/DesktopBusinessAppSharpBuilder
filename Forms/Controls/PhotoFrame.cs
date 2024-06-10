@@ -1,19 +1,35 @@
-﻿using FrontEnd.Dialogs;
+﻿using FrontEnd.Controller;
+using FrontEnd.Dialogs;
 using FrontEnd.Utils;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace FrontEnd.Forms
 {
     public class PhotoFrame : Control, IDisposable
     {
-        private Button? PART_RemovePictureButton;
         private Image? PART_Picture;
-        public ICommand? FileTransferCommand
+
+        #region RemovePictureCommand
+        public ICommand? RemovePictureCommand
+        {
+            get => (ICommand?)GetValue(RemovePictureCommandProperty);
+            private set => SetValue(RemovePictureCommandProperty, value);
+        }
+
+        public static readonly DependencyProperty RemovePictureCommandProperty =
+            DependencyProperty.Register(
+                nameof(RemovePictureCommand),
+                typeof(ICommand),
+                typeof(PhotoFrame),
+                new FrameworkPropertyMetadata(null)
+                );
+        #endregion
+
+        #region FileTrasferCMD
+        public ICommand? FilePickedCommand
         {
             get => (ICommand?)GetValue(FileTransferCommandProperty);
             set => SetValue(FileTransferCommandProperty, value);
@@ -21,11 +37,12 @@ namespace FrontEnd.Forms
 
         public static readonly DependencyProperty FileTransferCommandProperty =
             DependencyProperty.Register(
-                nameof(FileTransferCommand),
+                nameof(FilePickedCommand),
                 typeof(ICommand),
                 typeof(PhotoFrame),
                 new FrameworkPropertyMetadata(null)
                 );
+        #endregion
 
         #region Source
         /// <summary>
@@ -68,7 +85,11 @@ namespace FrontEnd.Forms
 
         static PhotoFrame() => DefaultStyleKeyProperty.OverrideMetadata(typeof(PhotoFrame), new FrameworkPropertyMetadata(typeof(PhotoFrame)));
 
-        public PhotoFrame() => Unloaded += OnUnloaded;
+        public PhotoFrame() 
+        {
+            Unloaded += OnUnloaded;
+            RemovePictureCommand = new CMD(OnRemovePictureButtonClicked);
+        }
 
         private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
 
@@ -82,25 +103,22 @@ namespace FrontEnd.Forms
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            PART_RemovePictureButton = (Button?)GetTemplateChild(nameof(PART_RemovePictureButton));
 
-            PART_Picture = (Image)GetTemplateChild(nameof(PART_Picture));
-            PART_Picture.Source = Helper.LoadImg(Source);
+            PART_Picture = (Image?)GetTemplateChild(nameof(PART_Picture));
+            SetImageSource(Source);
 
             if (PART_Picture != null)
                 PART_Picture.MouseUp += OnPictureMouseUp;
-
-            if (PART_RemovePictureButton != null)
-                PART_RemovePictureButton.Click += OnRemovePictureButtonClicked;
         }
 
-        private void OnRemovePictureButtonClicked(object sender, RoutedEventArgs e) 
+        private void OnRemovePictureButtonClicked() 
         {
+            if (PART_Picture == null) return;
             PART_Picture.Source = null;
-            FileTransferCommand?.Execute(null);
+            FilePickedCommand?.Execute(new FilePickerCatch(Source));
         }
 
-        private void OnPictureMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnPictureMouseUp(object sender, MouseButtonEventArgs e)
         {
             FilePicker filePicker = new("Select a Picture")
             {
@@ -113,19 +131,19 @@ namespace FrontEnd.Forms
                 if (path.Length > 0) 
                 {
                     Source = path;
-                    FileTransferCommand?.Execute(new FilePickerCatch(path, filePicker?.SelectedFileName, filePicker?.SelectedFileExtension()));
+                    FilePickedCommand?.Execute(new FilePickerCatch(path, filePicker?.SelectedFileName, filePicker?.SelectedFileExtension()));
                 }
             filePicker?.Dispose();
         }
 
         public void Dispose()
         {
-            if (PART_Picture != null)
+            if (PART_Picture != null) 
+            {
                 PART_Picture.MouseUp -= OnPictureMouseUp;
-            PART_Picture.Source = null;
-            PART_Picture = null;
-            if (PART_RemovePictureButton != null)
-                PART_RemovePictureButton.Click -= OnRemovePictureButtonClicked;
+                PART_Picture.Source = null;
+                PART_Picture = null;
+            }
 
             Unloaded -= OnUnloaded;
 
@@ -136,10 +154,25 @@ namespace FrontEnd.Forms
         }
     }
 
-    public class FilePickerCatch(string filePath, string? fileName, string? extension)
+    public class FilePickerCatch
     {
-        public string FilePath { get; } = filePath;
-        public string? FileName { get; } = fileName;
-        public string? Extension { get; } = extension;
+        public string FilePath { get; } 
+        public string? FileName { get; } 
+        public string? Extension { get; }
+
+        public bool FileRemoved { get; } = false;
+
+        public FilePickerCatch(string filePath, string? fileName, string? extension) 
+        { 
+            FilePath = filePath;
+            FileName = fileName;
+            Extension = extension;
+        }
+
+        public FilePickerCatch(string filePath)
+        {
+            FilePath = filePath;
+            FileRemoved = true;
+        }
     }
 }

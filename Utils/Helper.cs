@@ -132,13 +132,20 @@ namespace FrontEnd.Utils
         public static BitmapImage? LoadImg(string? path)
         {
             if (string.IsNullOrEmpty(path)) return null;
-            if (!File.Exists(path)) return null;
-            BitmapImage bitmap = new();
-            bitmap.BeginInit();
-            bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensure the file handle is not locked
-            bitmap.UriSource = new Uri(path);
-            bitmap.EndInit();
-            return bitmap;
+            try 
+            {
+                BitmapImage bitmap = new();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensure the file handle is not locked
+                bitmap.UriSource = new Uri(path);
+                bitmap.EndInit();
+                return bitmap;
+            }
+            catch 
+            { 
+                return null;
+            }
+
         }
 
         /// <summary>

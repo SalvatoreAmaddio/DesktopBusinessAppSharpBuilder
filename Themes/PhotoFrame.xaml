@@ -12,7 +12,7 @@
                 <ControlTemplate TargetType="{x:Type local:PhotoFrame}">
                     <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}" CornerRadius="{TemplateBinding CornerRadius}" SnapsToDevicePixels="True">
                         <Grid>
-                            <Button x:Name="PART_RemovePictureButton" Content="X" Panel.ZIndex="1" VerticalAlignment="Top" HorizontalAlignment="Right" Background="Transparent" Foreground="Red" BorderThickness="0" Margin="0,-2,1,0" FontWeight="Bold"/>
+                            <Button x:Name="PART_RemovePictureButton" Content="X" Panel.ZIndex="1" VerticalAlignment="Top" HorizontalAlignment="Right" Background="Transparent" Foreground="Red" BorderThickness="0" Margin="0,-2,1,0" FontWeight="Bold" Command="{TemplateBinding RemovePictureCommand}"/>
                             <Image x:Name="PART_Picture" Cursor="Hand" VerticalAlignment="Stretch" Stretch="Uniform" Source="{TemplateBinding Source}"/>
                         </Grid>
                     </Border>
