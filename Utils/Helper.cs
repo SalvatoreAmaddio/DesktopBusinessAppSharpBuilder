@@ -13,23 +13,6 @@ namespace FrontEnd.Utils
 {
     public class Helper
     {
-        public static BitmapImage? LoadImageCopy(string? imagePath)
-        {
-            if (string.IsNullOrEmpty(imagePath)) return null;
-            if (!File.Exists(imagePath)) return null;
-            byte[] imageData = File.ReadAllBytes(imagePath);
-
-            using (MemoryStream ms = new(imageData))
-            {
-                BitmapImage bitmap = new();
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensure the file handle is not locked
-                bitmap.StreamSource = ms;
-                bitmap.EndInit();
-                return bitmap;
-            }
-        }
-
         /// <summary>
         /// Subscribes the Closing Event of the <see cref="Window"/> containg the <see cref="TabControl"/>. <para/>
         /// For each Tab, the event calls the <see cref="IAbstractFormController.OnWindowClosing(object?, CancelEventArgs)"/> method
@@ -149,6 +132,7 @@ namespace FrontEnd.Utils
         public static BitmapImage? LoadImg(string? path)
         {
             if (string.IsNullOrEmpty(path)) return null;
+            if (!File.Exists(path)) return null;
             BitmapImage bitmap = new();
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad; // Ensure the file handle is not locked
