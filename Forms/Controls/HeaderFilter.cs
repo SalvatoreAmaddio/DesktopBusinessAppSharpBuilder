@@ -169,14 +169,22 @@ namespace FrontEnd.Forms
             if (new_source == null) return;
             SourceOption? source = new_source as SourceOption;
             source?.AddUIControlReference(this);
-            if (source is SourceOption)
+            if (source is SourceOption) 
+            {
                 foreach (IFilterOption option in source)
                     option.OnSelectionChanged += OnOptionSelected;
+
+                if (ItemsSource.Any(s => s.IsSelected)) 
+                {
+                    if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
+                    PART_DropDownButton.Content = ClearFilter;
+                }
+            }
         }
 
         private void OnOptionSelected(object? sender, EventArgs e)
         {
-            if (PART_DropDownButton == null) throw new Exception("DropDownButton is null");
+            if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
             PART_DropDownButton.Content = ClearFilter;
             ToolTip = "Clear Filter";
             ((IAbstractFormListController)DataContext).OnOptionFilterClicked(new());
