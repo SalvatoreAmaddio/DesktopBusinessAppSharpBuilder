@@ -1,6 +1,7 @@
 ﻿using Backend.Database;
 using Backend.Model;
 using Backend.Source;
+using FrontEnd.Controller;
 using FrontEnd.Model;
 using FrontEnd.Source;
 using MvvmHelpers;
@@ -139,14 +140,15 @@ namespace FrontEnd.FilterSource
 
     public class PrimitiveSourceOption : SourceOption
     {
-        protected string _groupByProp = string.Empty;
-        public PrimitiveSourceOption(IRecordSource source, string groupByProp, string displayProperty)
+        public PrimitiveSourceOption(IAbstractFormController controller, string displayProperty) : this(controller.Source, displayProperty)
+        { }
+
+        public PrimitiveSourceOption(IRecordSource source, string displayProperty)
         {
             IEnumerable<IAbstractModel?> range = source.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
             IEnumerable<IFilterOption> options = range.Select(s => new FilterOption(s, displayProperty));
             ReplaceRange(options);
             Source = source;
-            _groupByProp = groupByProp;
             _displayProperty = displayProperty;
             Source.ParentSource?.AddChild(this);
         }
@@ -194,7 +196,7 @@ namespace FrontEnd.FilterSource
                 ReplaceRange(options);
                 foreach(var option in this) 
                 {
-                    if (previouslySelected.Any(s=> AnyFunction(s.Value, option.Value))) 
+                    if (previouslySelected.Any(s=> CompareValues(s.Value, option.Value))) 
                         option.IsSelected = true;
                 }
             }
@@ -202,12 +204,15 @@ namespace FrontEnd.FilterSource
             NotifyUIControl(["UPDATE"]);
         }
 
-        private bool AnyFunction(object? value1, object? value2)
+        private bool CompareValues(object? value1, object? value2)
         {
             if (value1 == null || value2 == null) return false;
 
             if (value1 is DateTime date1 && value2 is DateTime date2) 
                 return date1.Date == date2.Date;
+
+            if (value1 is TimeSpan time1 && value2 is TimeSpan time2)
+                return time1 == time2;
 
             return value1 == value2;
         }
