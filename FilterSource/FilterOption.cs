@@ -1,8 +1,8 @@
 ﻿using Backend.Model;
-using FrontEnd.Events;
 using System.ComponentModel;
 using FrontEnd.Forms;
 using System.Reflection;
+using SelectionChangedEventHandler = FrontEnd.Events.SelectionChangedEventHandler;
 
 namespace FrontEnd.FilterSource
 {
@@ -47,7 +47,7 @@ namespace FrontEnd.FilterSource
         }
 
         public override bool Equals(object? obj) =>
-        obj is FilterOption option && Record.Equals(option.Record);
+        obj is IFilterOption option && Record.Equals(option.Record);
 
         public override int GetHashCode() => HashCode.Combine(Record);
 

@@ -24,23 +24,33 @@ namespace FrontEnd.FilterSource
         protected IRecordSource? Source;
         public IParentSource? ParentSource { get; set; }
         protected string _displayProperty = string.Empty;
-
+        protected OrderBy _orderBy;
+        private string _orderByProperty = string.Empty;
         public SourceOption() { }
-        public SourceOption(IEnumerable<IFilterOption> source) : base(source) { }
+      //  public SourceOption(IEnumerable<IFilterOption> source) : base(source) { }
 
-        public SourceOption(IRecordSource source, string displayProperty) : base(source.Cast<AbstractModel>().Select(s => new FilterOption(s, displayProperty)))
+        public SourceOption(IRecordSource source, string displayProperty, OrderBy orderBy = OrderBy.ASC, string orderByProperty = "") : base(source.Cast<AbstractModel>().Select(s => new FilterOption(s, displayProperty)))
         {
-            Source = source;
+            _orderByProperty = orderByProperty;
+            _orderBy = orderBy;
             _displayProperty = displayProperty;
+            Source = source;
             Source.ParentSource?.AddChild(this);
+            ReplaceRange(OrderSource());
         }
 
+        protected virtual IEnumerable<IFilterOption> OrderSource() 
+        {
+            if (_orderBy == OrderBy.ASC)
+                return this.OrderBy(s => s.Record.GetPropertyValue((string.IsNullOrEmpty(_orderByProperty)) ? _displayProperty : _orderByProperty)).ToList();
+            else
+                return this.OrderByDescending(s => s.Record.GetPropertyValue((string.IsNullOrEmpty(_orderByProperty)) ? _displayProperty : _orderByProperty)).ToList();
+        }
 
         /// <summary>
         /// Returns all selected options.
         /// </summary>
         /// <returns>An <see cref="IEnumerable{IFilterOption}"/></returns>
-     //   public IEnumerable<ISQLModel> SelectedRecords() => this.Where(s => s.IsSelected).Select(s => s.Record);
         public IEnumerable<IFilterOption> SelectedOptions() => this.Where(s => s.IsSelected);
         /// <summary>
         /// It loops through the List and builds the SQL logic to filter the Select the statement.
@@ -122,6 +132,8 @@ namespace FrontEnd.FilterSource
                     Remove(option);
                     break;
             }
+
+            ReplaceRange(OrderSource());
         }
 
         public void Dispose() 
@@ -140,17 +152,17 @@ namespace FrontEnd.FilterSource
 
     public class PrimitiveSourceOption : SourceOption
     {
-        public PrimitiveSourceOption(IAbstractFormController controller, string displayProperty) : this(controller.Source, displayProperty)
+        public PrimitiveSourceOption(IAbstractFormController controller, string displayProperty, OrderBy orderby = OrderBy.ASC) : this(controller.Source, displayProperty, orderby)
         { }
 
-        public PrimitiveSourceOption(IRecordSource source, string displayProperty)
+        public PrimitiveSourceOption(IRecordSource source, string displayProperty, OrderBy orderby = OrderBy.ASC)
         {
-            IEnumerable<IAbstractModel?> range = source.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
-            IEnumerable<IFilterOption> options = range.Select(s => new FilterOption(s, displayProperty));
-            ReplaceRange(options);
-            Source = source;
+            this._orderBy = orderby;
             _displayProperty = displayProperty;
+            Source = source;
             Source.ParentSource?.AddChild(this);
+            IEnumerable<IFilterOption> options = OrderSource();
+            ReplaceRange(options);
         }
 
         public override void Conditions(IWhereClause filterQueryBuilder)
@@ -185,11 +197,11 @@ namespace FrontEnd.FilterSource
                 filterQueryBuilder.CloseBracket();
             }
         }
-
         public void SelectDistinct()
         {
-            IEnumerable<IAbstractModel?>? range = Source?.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
-            IEnumerable<IFilterOption>? options = range?.Select(s=> new FilterOption(s, _displayProperty)).OrderBy(s => s.Value);
+
+            IEnumerable<IFilterOption> options = OrderSource();
+
             if (options!=null) 
             {
                 IEnumerable<IFilterOption> previouslySelected = SelectedOptions().ToList();
@@ -202,6 +214,15 @@ namespace FrontEnd.FilterSource
             }
 
             NotifyUIControl(["UPDATE"]);
+        }
+
+        protected override IEnumerable<IFilterOption> OrderSource()
+        {
+            IEnumerable<IAbstractModel?>? range = Source?.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
+            if (_orderBy == OrderBy.ASC)
+                return range.Select(s => new FilterOption(s, _displayProperty)).OrderBy(s => s.Value).ToList();
+            else
+                return range.Select(s => new FilterOption(s, _displayProperty)).OrderByDescending(s => s.Value).ToList();
         }
 
         private bool CompareValues(object? value1, object? value2)
@@ -235,5 +256,11 @@ namespace FrontEnd.FilterSource
             }
             SelectDistinct();
         }
+    }
+
+    public enum OrderBy 
+    { 
+        ASC = 0,
+        DESC = 1,
     }
 }

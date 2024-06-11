@@ -185,9 +185,5 @@ namespace FrontEnd.Source
             Clear();
         }
 
-        ~RecordSource()
-        {
-            Dispose();
-        }
     }
 }
