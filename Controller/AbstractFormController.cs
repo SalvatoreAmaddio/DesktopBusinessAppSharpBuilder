@@ -82,6 +82,7 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Events
+        public event AfterSubFormFilterEventHandler? AfterSubFormFilter;
         public event PropertyChangedEventHandler? PropertyChanged;
         public event AfterUpdateEventHandler? AfterUpdate;
         public event BeforeUpdateEventHandler? BeforeUpdate;
@@ -96,6 +97,7 @@ namespace FrontEnd.Controller
             RequeryCMD = new CMDAsync(RequeryAsync);
         }
 
+        public void RunAfterSubFormFilterEvent() => AfterSubFormFilter?.Invoke(this, EventArgs.Empty);
         public ISubFormController GetSubController(int index) => _subControllers[index];
         public void AddSubControllers(ISubFormController controller)
         {
@@ -261,31 +263,28 @@ namespace FrontEnd.Controller
             if (!e.Cancel) 
                 Dispose();
         }
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed) return;
 
-            if (disposing)
+        public override void Dispose()
+        {
+            if (_uiElement is Window _win)
+                _win.Closing -= OnWindowClosing;
+
+            if (_uiElement is Page _page) 
             {
-                if (_uiElement is Window _win)
-                    _win.Closing -= OnWindowClosing;
-                if (_uiElement is Page _page) 
-                {
-                    Window? win = Helper.GetActiveWindow();
-                    if (win!=null)
-                        win.Closing -= OnWindowClosing;
-                }
-                AfterUpdate = null;
-                BeforeUpdate = null;
-                NewRecordEvent = null;
-                AsRecordSource().Dispose(false);
-                _subControllers.Clear();
+                Window? win = Helper.GetActiveWindow();
+                if (win!=null)
+                    win.Closing -= OnWindowClosing;
             }
 
-            _disposed = true;
+            AfterUpdate = null;
+            BeforeUpdate = null;
+            NewRecordEvent = null;
+            AfterSubFormFilter = null;
+            AsRecordSource().Dispose(false);
+            _subControllers.Clear();
+            base.Dispose();
         }
 
-        ~AbstractFormController() => Dispose(false);
     }
 
 }

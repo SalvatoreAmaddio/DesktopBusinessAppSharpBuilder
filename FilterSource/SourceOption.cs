@@ -127,6 +127,10 @@ namespace FrontEnd.FilterSource
         {
             Source?.ParentSource?.RemoveChild(this);
             UIControls?.Clear();
+
+            foreach(IFilterOption option in this)
+                option.Dispose();
+
             Clear();
             Source?.Dispose();
             GC.SuppressFinalize(this);
@@ -136,7 +140,6 @@ namespace FrontEnd.FilterSource
     public class PrimitiveSourceOption : SourceOption
     {
         protected string _groupByProp = string.Empty;
-
         public PrimitiveSourceOption(IRecordSource source, string groupByProp, string displayProperty)
         {
             IEnumerable<IAbstractModel?> range = source.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
@@ -207,12 +210,6 @@ namespace FrontEnd.FilterSource
                 return date1.Date == date2.Date;
 
             return value1 == value2;
-        }
-
-        private bool A(IFilterOption s, IFilterOption o) 
-        {
-            if (s.Value == null) return false;
-            return s.Value.Equals(o.Value);
         }
 
         public override void Update(CRUD crud, ISQLModel model)

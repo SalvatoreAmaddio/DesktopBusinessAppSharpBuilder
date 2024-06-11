@@ -8,6 +8,8 @@ namespace FrontEnd.Controller
     /// </summary>
     public interface ISubFormController
     {
+        public event AfterSubFormFilterEventHandler? AfterSubFormFilter;
+        public void RunAfterSubFormFilterEvent();
         public IAbstractFormController? ParentController { get; set; }
 
         /// <summary>

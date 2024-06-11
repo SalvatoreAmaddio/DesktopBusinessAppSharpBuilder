@@ -167,11 +167,10 @@ namespace FrontEnd.Controller
             temp.IsDirty = false;
         }
 
-        protected override void Dispose(bool disposing)
+        public override void Dispose()
         {
-            base.Dispose(disposing);
-            if (disposing) 
-                SearchQry.Dispose();
+            SearchQry.Dispose();
+            base.Dispose();
         }
 
         protected async Task OnSearchPropertyRequeryAsync(object? sender)
@@ -225,7 +224,6 @@ namespace FrontEnd.Controller
             AsRecordSource().ReplaceRecords(results); //Update also its child source for this controller.
             IsLoading = false; //Notify the GUI the process has terminated
         }
-        ~AbstractFormListController() => Dispose(false);
 
     }
 }

@@ -13,7 +13,6 @@ namespace FrontEnd.FilterSource
     /// </summary>
     public class FilterOption : IFilterOption
     {
-        protected bool _disposed = false;
         private bool _isSelected = false;
         public object? Value { get; private set; }
         public ISQLModel Record { get; private set; }
@@ -39,6 +38,8 @@ namespace FrontEnd.FilterSource
             Value = Field.GetValue(Record);
         }
 
+        public void Select() => IsSelected = true;
+
         public void Deselect()
         {
             _isSelected = false;
@@ -58,25 +59,12 @@ namespace FrontEnd.FilterSource
 
         public virtual void Dispose()
         {
-            Dispose(true);
+            OnSelectionChanged = null;
+            PropertyChanged = null;
             GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed) return;
-
-            if (disposing)
-            {
-                OnSelectionChanged = null;
-                PropertyChanged = null;
-            }
-
-            _disposed = true;
         }
 
         public override string ToString() => $"{Record} - {Value}";
 
-        ~FilterOption() => Dispose(false);
     }
 }

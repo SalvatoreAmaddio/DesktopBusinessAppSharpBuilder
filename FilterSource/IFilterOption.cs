@@ -43,5 +43,7 @@ namespace FrontEnd.FilterSource
         /// </summary>
         /// <param name="obj"></param>
         public void Copy(IFilterOption obj);
+        
+        public void Select();
     }
 }
