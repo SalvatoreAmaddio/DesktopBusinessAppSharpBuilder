@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using FrontEnd.Controller;
+using FrontEnd.Utils;
 
 namespace FrontEnd.Forms.Calendar
 {
@@ -19,6 +20,7 @@ namespace FrontEnd.Forms.Calendar
         private StackPanel? PART_Fridays;
         private StackPanel? PART_Saturdays;
         private StackPanel? PART_Sundays;
+        private Window? _activeWindow;
 
         #region RequeryCMD
         public static readonly DependencyProperty RequeryCMDProperty =
@@ -177,7 +179,9 @@ namespace FrontEnd.Forms.Calendar
             PreviousMonthCMD = new CMDAsync(() => Go(TimeTravel.PREV_MONTH));
             PreviousWeekCMD = new CMDAsync(()=>Go(TimeTravel.PREV_WEEK));
             NextWeekCMD = new CMDAsync(() => Go(TimeTravel.NEXT_WEEK));
-            Unloaded += OnUnloaded;
+            _activeWindow = Helper.GetActiveWindow();
+            if (_activeWindow != null )
+                _activeWindow.Closing += OnUnloaded;
         }
 
         public override async void OnApplyTemplate()
@@ -231,14 +235,7 @@ namespace FrontEnd.Forms.Calendar
         }
 
         #region Events
-        private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
-        private void OnCalendarDaySlotUnloaded(object sender, RoutedEventArgs e)
-        {
-            CalendarDaySlot currentSlot = (CalendarDaySlot)sender;
-            currentSlot.Models = null;
-            currentSlot.Unloaded -= OnCalendarDaySlotUnloaded;
-            currentSlot.MouseUp -= OnCalendarDaySlotMouseUp;
-        }
+        private void OnUnloaded(object? sender, System.ComponentModel.CancelEventArgs e) => Dispose();
         private void OnCalendarDaySlotMouseUp(object sender, MouseButtonEventArgs e)
         {
             CalendarDaySlot? prevSelectedSlot = CurrentSlots.FirstOrDefault(s => s.IsSelected);
@@ -282,7 +279,6 @@ namespace FrontEnd.Forms.Calendar
         {
             CalendarDaySlot slot = new(date) { IsFestive = weekends };
             slot.MouseUp += OnCalendarDaySlotMouseUp;
-            slot.Unloaded += OnCalendarDaySlotUnloaded;
             slot.Models = RaiseOnPreparing(slot.Date);
             CurrentSlots.Add(slot);
             return slot;
@@ -293,8 +289,17 @@ namespace FrontEnd.Forms.Calendar
             RaiseEvent(args);
             return args.Records;
         }
+
+        private void DisposeCalendarDaySlot(CalendarDaySlot currentSlot)
+        {
+            currentSlot.Models = null;
+            currentSlot.MouseUp -= OnCalendarDaySlotMouseUp;
+        }
         public void ClearCalendar()
         {
+            foreach(var slot in CurrentSlots) 
+                DisposeCalendarDaySlot(slot);
+
             PART_Mondays?.Children.Clear();
             PART_Tuesdays?.Children.Clear();
             PART_Wednesdays?.Children.Clear();
@@ -306,8 +311,9 @@ namespace FrontEnd.Forms.Calendar
         }
         public void Dispose()
         {
-            Unloaded -= OnUnloaded;
-            CurrentSlots.Clear();
+            if (_activeWindow != null)
+                _activeWindow.Closing -= OnUnloaded;
+            ClearCalendar();
             GC.SuppressFinalize(this);
         }
 

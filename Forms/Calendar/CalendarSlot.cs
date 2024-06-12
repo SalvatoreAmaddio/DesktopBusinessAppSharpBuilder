@@ -7,9 +7,5 @@ namespace FrontEnd.Forms.Calendar
     {
         static CalendarSlot() => DefaultStyleKeyProperty.OverrideMetadata(typeof(CalendarSlot), new FrameworkPropertyMetadata(typeof(CalendarSlot)));
 
-        public CalendarSlot()
-        {
-
-        }
     }
 }
