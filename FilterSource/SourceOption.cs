@@ -219,6 +219,7 @@ namespace FrontEnd.FilterSource
         protected override IEnumerable<IFilterOption> OrderSource()
         {
             IEnumerable<IAbstractModel?>? range = Source?.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
+            if (range == null) throw new NullReferenceException();
             if (_orderBy == OrderBy.ASC)
                 return range.Select(s => new FilterOption(s, _displayProperty)).OrderBy(s => s.Value).ToList();
             else
