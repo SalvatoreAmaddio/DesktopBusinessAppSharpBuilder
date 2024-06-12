@@ -77,8 +77,8 @@ namespace FrontEnd.FilterSource
                     i++;
                     string? tableName = item?.Record.GetTableName();
                     string? fieldName = null;
-                    fieldName = item?.Record?.GetTablePK()?.Name;
-                    filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetTablePK()?.GetValue());
+                    fieldName = item?.Record?.GetPrimaryKey()?.Name;
+                    filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetPrimaryKey()?.GetValue());
                     filterQueryBuilder.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
                 }
             }

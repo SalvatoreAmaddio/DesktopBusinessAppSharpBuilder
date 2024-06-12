@@ -34,7 +34,7 @@ namespace FrontEnd.FilterSource
         {
             if (record == null) throw new ArgumentNullException(nameof(record));
             Record = record;
-            PropertyInfo Field = Record.GetProperties().First(s => s.Name.Equals(displayProperty));
+            PropertyInfo Field = Record.GetPropertiesInfo().First(s => s.Name.Equals(displayProperty));
             Value = Field.GetValue(Record);
         }
 

@@ -33,7 +33,6 @@ namespace FrontEnd.Model
     /// </summary>
     public abstract class AbstractModel : AbstractSQLModel, IAbstractModel
     {
-        public event OnDirtyChangedEventHandler? OnDirtyChanged;
         bool _isDirty = false;
         public bool IsDirty
         {
@@ -52,15 +51,14 @@ namespace FrontEnd.Model
         /// </summary>
         protected List<SimpleTableField> AllFields { get; }
 
+        #region Events
+        public event OnDirtyChangedEventHandler? OnDirtyChanged;
         public event PropertyChangedEventHandler? PropertyChanged;
         public event AfterUpdateEventHandler? AfterUpdate;
         public event BeforeUpdateEventHandler? BeforeUpdate;
+        #endregion
 
-        public AbstractModel() : base() 
-        {
-            AllFields = new(_getAllTableFields());
-
-        }
+        public AbstractModel() : base() => AllFields = new(_getAllTableFields());
 
         private IEnumerable<SimpleTableField> _getAllTableFields()
         {
