@@ -55,10 +55,10 @@ namespace FrontEnd.Controller
         /// </code>
         /// </summary>
         /// <param name="model">An <see cref="AbstractModel"/> object which is the record to visualise in the new Window</param>
-        protected abstract void Open(M? model);
+        protected abstract void Open(M model);
 
         /// <summary>
-        /// Calls the <see cref="Open(M?)"/> by passing a new instance of <see cref="AbstractModel"/>.
+        /// Calls the <see cref="Open(M)"/> by passing a new instance of <see cref="AbstractModel"/>.
         /// </summary>
         protected void OpenNew() => Open(new());
         private void OnSourceRunFilter(object? sender, FilterEventArgs e) => OnOptionFilterClicked(e);

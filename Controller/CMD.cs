@@ -77,10 +77,10 @@ namespace FrontEnd.Controller
     public class CMD<M> : ICommand where M : AbstractModel, new()
     {
         public event EventHandler? CanExecuteChanged;
-        private readonly Action<M?>? _action;
+        private readonly Action<M>? _action;
         private readonly Func<M?, bool>? _fun;
 
-        public CMD(Action<M?> execute) => _action = execute;    
+        public CMD(Action<M> execute) => _action = execute;    
 
         public CMD(Func<M?, bool> fun) => _fun = fun;
 

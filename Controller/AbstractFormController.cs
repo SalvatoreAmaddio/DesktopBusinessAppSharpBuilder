@@ -96,7 +96,6 @@ namespace FrontEnd.Controller
             DeleteCMD = new CMD<M>(Delete);
             RequeryCMD = new CMDAsync(RequeryAsync);
         }
-
         public void RunAfterSubFormFilterEvent() => AfterSubFormFilter?.Invoke(this, EventArgs.Empty);
         public ISubFormController GetSubController(int index) => _subControllers[index];
         public void AddSubControllers(ISubFormController controller)
@@ -104,13 +103,11 @@ namespace FrontEnd.Controller
             controller.ParentController = this;
             _subControllers.Add(controller);
         }
-
         public void RemoveSubControllers(ISubFormController controller)
         {
             controller.ParentController = null;
             _subControllers.Remove(controller);
         }
-
         public RecordSource<M> AsRecordSource()=>(RecordSource<M>)Source;
         protected override IRecordSource InitSource() => new RecordSource<M>(Db,this);
 
@@ -196,7 +193,6 @@ namespace FrontEnd.Controller
             NewRecordEvent?.Invoke(this, args);
             return args.Cancel;
         } 
-
         public void RaisePropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         public void UpdateProperty<T>(ref T value, ref T _backProp, [CallerMemberName] string propName = "")
         {
@@ -263,13 +259,12 @@ namespace FrontEnd.Controller
             if (!e.Cancel) 
                 Dispose();
         }
-
         public override void Dispose()
         {
             if (_uiElement is Window _win)
                 _win.Closing -= OnWindowClosing;
 
-            if (_uiElement is Page _page) 
+            if (_uiElement is Page _page)
             {
                 Window? win = Helper.GetActiveWindow();
                 if (win!=null)
@@ -282,9 +277,7 @@ namespace FrontEnd.Controller
             AfterSubFormFilter = null;
             AsRecordSource().Dispose(false);
             _subControllers.Clear();
-            base.Dispose();
+            GC.SuppressFinalize(this);
         }
-
     }
-
 }
