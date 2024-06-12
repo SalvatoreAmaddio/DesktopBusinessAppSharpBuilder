@@ -7,6 +7,7 @@ using Backend.Database;
 using Backend.Model;
 using Backend.Exceptions;
 using FrontEnd.Controller;
+using Backend.Enums;
 
 namespace FrontEnd.Source
 {

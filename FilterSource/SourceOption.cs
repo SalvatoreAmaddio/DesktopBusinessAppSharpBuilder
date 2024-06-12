@@ -5,6 +5,7 @@ using FrontEnd.Controller;
 using FrontEnd.Model;
 using FrontEnd.Source;
 using MvvmHelpers;
+using Backend.Enums;
 
 namespace FrontEnd.FilterSource
 {

@@ -13,6 +13,7 @@ using System.Windows;
 using FrontEnd.Source;
 using System.Windows.Controls;
 using FrontEnd.Utils;
+using Backend.Enums;
 
 namespace FrontEnd.Controller
 {
