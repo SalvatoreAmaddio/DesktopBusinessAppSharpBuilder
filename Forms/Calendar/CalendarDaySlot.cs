@@ -43,7 +43,11 @@ namespace FrontEnd.Forms.Calendar
         #endregion
 
         private IEnumerable<AbstractModel>? _model;
-        public IEnumerable<AbstractModel>? Models
+        
+        /// <summary>
+        /// Gets a <see cref="IEnumerable{AbstractModel}"/> containing the records associated with this Slot.
+        /// </summary>
+        public IEnumerable<AbstractModel>? Records
         { 
             get => _model;
             set 
@@ -52,6 +56,18 @@ namespace FrontEnd.Forms.Calendar
                 if (_model?.Count() > 0)
                     HasAppointment = Visibility.Visible;
             } 
+        }
+        
+        /// <summary>
+        /// Returns the number of <see cref="AbstractModel"/> associated with this Slot.
+        /// </summary>
+        public int Count
+        {
+            get 
+            { 
+                if (Records == null) return 0;
+                return Records.Count();
+            }
         }
         public bool IsToday { get => this.Date == DateTime.Now; }
 

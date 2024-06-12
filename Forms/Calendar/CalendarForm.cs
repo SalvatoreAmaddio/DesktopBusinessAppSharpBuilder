@@ -279,7 +279,7 @@ namespace FrontEnd.Forms.Calendar
         {
             CalendarDaySlot slot = new(date) { IsFestive = weekends };
             slot.MouseUp += OnCalendarDaySlotMouseUp;
-            slot.Models = RaiseOnPreparing(slot.Date);
+            slot.Records = RaiseOnPreparing(slot.Date);
             CurrentSlots.Add(slot);
             return slot;
         }
@@ -292,7 +292,7 @@ namespace FrontEnd.Forms.Calendar
 
         private void DisposeCalendarDaySlot(CalendarDaySlot currentSlot)
         {
-            currentSlot.Models = null;
+            currentSlot.Records = null;
             currentSlot.MouseUp -= OnCalendarDaySlotMouseUp;
         }
         public void ClearCalendar()
