@@ -155,18 +155,20 @@ namespace FrontEnd.Source
             {
                 current = navigator?.Current;
             }
-            catch
-            {
-
-            }
+            catch { }
 
             Clear();
             ReplaceRange(newSource);
 
             if (current!=null && Controller != null) 
             {
-                Controller.CurrentModel = this.FirstOrDefault(s=>s.Equals(current));
+                Controller.CurrentModel = this.FirstOrDefault(s => s.Equals(current));
+                if (Controller.CurrentModel == null)
+                    Controller.GoFirst();
+                return;
             }
+
+            Controller?.GoFirst();
         }
 
         public void Dispose(bool disposeController)

@@ -44,6 +44,9 @@ namespace FrontEnd.FilterSource
         /// <param name="obj"></param>
         public void Copy(IFilterOption obj);
         
+        /// <summary>
+        /// It sets the <see cref="IsSelected"/> property to true.
+        /// </summary>
         public void Select();
     }
 }
