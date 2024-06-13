@@ -62,6 +62,13 @@ namespace FrontEnd.FilterSource
             int i = 0;
             int selectedCount = SelectedOptions().Count();
             WhereClause? whereClause = abstractClause.GetClause<WhereClause>();
+            
+            if (whereClause == null) 
+            {
+                whereClause = abstractClause.OpenClause<WhereClause>();
+                abstractClause.Join(whereClause);
+            }
+
             if (selectedCount > 0)
             {
                 if (abstractClause.HasWhereConditions())
