@@ -1,5 +1,4 @@
-﻿using Backend.Database;
-using Backend.Model;
+﻿using Backend.Model;
 using Backend.Source;
 using FrontEnd.Controller;
 using FrontEnd.Model;
@@ -56,19 +55,19 @@ namespace FrontEnd.FilterSource
         /// <summary>
         /// It loops through the List and builds the SQL logic to filter the Select the statement.
         /// </summary>
-        /// <param name="filterQueryBuilder"></param>
+        /// <param name="abstractClause"></param>
         /// <returns>A string</returns>
-        public virtual void Conditions(IWhereClause filterQueryBuilder)
+        public virtual void Conditions(AbstractClause abstractClause)
         {
             int i = 0;
             int selectedCount = SelectedOptions().Count();
-            
+            WhereClause? whereClause = abstractClause.GetClause<WhereClause>();
             if (selectedCount > 0)
             {
-                if (filterQueryBuilder.HasWhereConditions())
-                    filterQueryBuilder.AND();
+                if (abstractClause.HasWhereConditions())
+                    whereClause?.AND();
 
-                filterQueryBuilder.OpenBracket();
+                whereClause?.OpenBracket();
             }
 
             foreach (var item in this)
@@ -79,15 +78,15 @@ namespace FrontEnd.FilterSource
                     string? tableName = item?.Record.GetTableName();
                     string? fieldName = null;
                     fieldName = item?.Record?.GetPrimaryKey()?.Name;
-                    filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetPrimaryKey()?.GetValue());
-                    filterQueryBuilder.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+                    abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPrimaryKey()?.GetValue());
+                    whereClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
                 }
             }
 
             if (selectedCount > 0)
             {
-                filterQueryBuilder.RemoveLastChange();
-                filterQueryBuilder.CloseBracket();
+                whereClause?.RemoveLastChange();
+                whereClause?.CloseBracket();
             }
         }
 
@@ -166,17 +165,17 @@ namespace FrontEnd.FilterSource
             ReplaceRange(options);
         }
 
-        public override void Conditions(IWhereClause filterQueryBuilder)
+        public override void Conditions(AbstractClause abstractClause)
         {
             int i = 0;
             int selectedCount = SelectedOptions().Count();
-
+            WhereClause? whereClause = abstractClause.GetClause<WhereClause>();
             if (selectedCount > 0)
             {
-                if (filterQueryBuilder.HasWhereConditions())
-                    filterQueryBuilder.AND();
+                if (abstractClause.HasWhereConditions())
+                    whereClause?.AND();
 
-                filterQueryBuilder.OpenBracket();
+                whereClause?.OpenBracket();
             }
 
             foreach (var item in this)
@@ -187,15 +186,15 @@ namespace FrontEnd.FilterSource
                     string? tableName = item?.Record.GetTableName();
                     string? fieldName = null;
                     fieldName = _displayProperty;
-                    filterQueryBuilder.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
-                    filterQueryBuilder.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+                    abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
+                    whereClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
                 }
             }
 
             if (selectedCount > 0)
             {
-                filterQueryBuilder.RemoveLastChange();
-                filterQueryBuilder.CloseBracket();
+                whereClause?.RemoveLastChange();
+                whereClause?.CloseBracket();
             }
         }
         public void SelectDistinct()

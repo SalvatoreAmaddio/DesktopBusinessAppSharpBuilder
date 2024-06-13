@@ -23,7 +23,7 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Properties
-        public IWhereClause SearchQry { get; private set; }
+        public AbstractClause SearchQry { get; private set; }
         public bool OpenWindowOnNew
         {
             get => _openWindowOnNew;
@@ -183,7 +183,7 @@ namespace FrontEnd.Controller
                 GoFirst();
         }
 
-        public abstract IWhereClause InstantiateSearchQry();
+        public abstract AbstractClause InstantiateSearchQry();
 
         public override async Task RequeryAsync()
         {
