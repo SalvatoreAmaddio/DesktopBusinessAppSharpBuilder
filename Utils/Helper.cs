@@ -148,6 +148,17 @@ namespace FrontEnd.Utils
 
         }
 
+        public static void OpenWindowDialog(string title, object content) 
+        {
+            Window window = new()
+            {
+                Title = title,
+                Content = content,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            window.ShowDialog();
+        }
+
         /// <summary>
         /// It logs the user out and remove the login <see cref="Credential"/> saved in the local computer.
         /// </summary>
