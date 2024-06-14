@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows;
 using FrontEnd.Source;
 using System.Windows.Controls;
-using FrontEnd.Utils;
 using Backend.Enums;
 
 namespace FrontEnd.Controller
@@ -45,13 +44,19 @@ namespace FrontEnd.Controller
                     _win.Closing += OnWindowClosing;
                 if (_uiElement is Page _page) 
                 {
-                    Window? win = Helper.GetActiveWindow();
-                    if (win != null)
-                        win.Closing += OnWindowClosing;
+                    _page.Loaded += OnPageLoaded;
                 }
                     
             }
         }
+
+        protected void OnPageLoaded(object sender, RoutedEventArgs e)
+        {
+            Window? win = Window.GetWindow(UI);
+            if (win != null)
+                win.Closing += OnWindowClosing;
+        }
+
         public bool AllowAutoSave { get; set; } = false;
         public IEnumerable<M>? MasterSource => DatabaseManager.Find<M>()?.MasterSource.Cast<M>();
         public IAbstractFormController? ParentController { get; set; }
@@ -235,7 +240,11 @@ namespace FrontEnd.Controller
         public virtual void OnWindowClosing(object? sender, CancelEventArgs e)
         {
             bool dirty = AsRecordSource().Any(s => s.IsDirty);
-            if (!dirty) return; // if the record is not dirty, there is nothing to check, close the window.
+            if (!dirty) 
+            {
+                Dispose();
+                return; // if the record is not dirty, there is nothing to check, close the window.
+            }
             e.Cancel = dirty; 
             
             if (AllowAutoSave) 
@@ -266,11 +275,7 @@ namespace FrontEnd.Controller
                 _win.Closing -= OnWindowClosing;
 
             if (_uiElement is Page _page)
-            {
-                Window? win = Helper.GetActiveWindow();
-                if (win!=null)
-                    win.Closing -= OnWindowClosing;
-            }
+                _page.Loaded -= OnPageLoaded;
 
             AfterUpdate = null;
             BeforeUpdate = null;

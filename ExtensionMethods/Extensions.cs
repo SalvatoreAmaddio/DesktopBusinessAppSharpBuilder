@@ -24,13 +24,13 @@ namespace FrontEnd.ExtensionMethods
             win.DataContext = controller;
             controller.UI = win;
         }
-
-        public static C GetController<C>(this Window win) where C : IAbstractFormController => (C)win.DataContext;
         public static void SetController(this Page page, IAbstractFormController controller)
         {
             page.DataContext = controller;
             controller.UI = page;
         }
+
+        public static C GetController<C>(this Window win) where C : IAbstractFormController => (C)win.DataContext;
 
         public static C GetController<C>(this Page page) where C : IAbstractFormController => (C)page.DataContext;
 
