@@ -27,6 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\bin.png" />
     <None Remove="images\task.png" />
   </ItemGroup>
 
@@ -44,6 +45,7 @@
   </ItemGroup>
 
 <ItemGroup>
+    <Resource Include="images\bin.png" />
     <Resource Include="images\clear_filter.png" />
     <Resource Include="images\delete.png" />
     <Resource Include="images\emailsetting.png" />

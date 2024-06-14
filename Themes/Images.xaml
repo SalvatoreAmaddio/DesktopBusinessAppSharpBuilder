@@ -23,5 +23,5 @@
     <BitmapImage x:Key="root_dir" UriSource="pack://application:,,,/FrontEnd;component/Images/root_directory.png"/>
     <BitmapImage x:Key="logout" UriSource="pack://application:,,,/FrontEnd;component/Images/logout.png"/>
     <BitmapImage x:Key="task" UriSource="pack://application:,,,/FrontEnd;component/Images/task.png"/>
-
+    <BitmapImage x:Key="bin" UriSource="pack://application:,,,/FrontEnd;component/Images/bin.png"/>
 </ResourceDictionary>
