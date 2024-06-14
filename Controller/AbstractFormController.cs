@@ -237,7 +237,7 @@ namespace FrontEnd.Controller
         {
             throw new NotImplementedException("You have not override the OnSubFormFilter() method in the Controller class that handles the SubForm.");
         }
-        public virtual void OnWindowClosing(object? sender, CancelEventArgs e)
+        public virtual async void OnWindowClosing(object? sender, CancelEventArgs e)
         {
             bool dirty = AsRecordSource().Any(s => s.IsDirty);
             if (!dirty) 
@@ -267,7 +267,7 @@ namespace FrontEnd.Controller
             }
 
             if (!e.Cancel) 
-                Dispose();
+                await Task.Run(Dispose);
         }
         public override void Dispose()
         {
