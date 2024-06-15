@@ -62,11 +62,11 @@ namespace FrontEnd.FilterSource
             int i = 0;
             int selectedCount = SelectedOptions().Count();
             WhereClause? whereClause = abstractClause.GetClause<WhereClause>();
-            
-            if (whereClause == null) 
+
+            if (whereClause == null)
             {
                 whereClause = abstractClause.OpenClause<WhereClause>();
-                abstractClause.Join(whereClause);
+//                abstractClause.Join(whereClause);
             }
 
             if (selectedCount > 0)
@@ -96,6 +96,8 @@ namespace FrontEnd.FilterSource
                 whereClause?.CloseBracket();
             }
         }
+
+        public virtual void HavingConditions(AbstractClause abstractClause) { }
 
         /// <summary>
         /// It adds a <see cref="IUIControl"/> object to the <see cref="UIControls"/>.
@@ -170,6 +172,28 @@ namespace FrontEnd.FilterSource
             Source.ParentSource?.AddChild(this);
             IEnumerable<IFilterOption> options = OrderSource();
             ReplaceRange(options);
+        }
+
+        public override void HavingConditions(AbstractClause abstractClause)
+        {
+            int i = 0;
+            int selectedCount = SelectedOptions().Count();
+
+            foreach (var item in this)
+            {
+                if (item.IsSelected)
+                {
+                    i++;
+                    string? tableName = item?.Record.GetTableName();
+                    string? fieldName = null;
+                    fieldName = _displayProperty;
+                    abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
+                }
+            }
+
+            if (selectedCount > 0)
+            {
+            }
         }
 
         public override void Conditions(AbstractClause abstractClause)
