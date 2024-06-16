@@ -86,8 +86,8 @@ namespace FrontEnd.Model
             if (args.Cancel) return;
             _backProp = value;
             IsDirty = true;
-            RaisePropertyChanged(propName);
             AfterUpdate?.Invoke(this, args);
+            RaisePropertyChanged(propName);
         }
 
         public void Undo() 

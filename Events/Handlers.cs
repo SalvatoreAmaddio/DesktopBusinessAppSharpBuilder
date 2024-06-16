@@ -83,8 +83,30 @@ namespace FrontEnd.Events
 
     public class AfterUpdateArgs(object? value, object? backProperty, string propertyName) : UpdateArgs(propertyName)
     {
-        public object? value = value;
-        public readonly object? backProperty = backProperty;
+        /// <summary>
+        /// The new Property's Value.
+        /// </summary>
+        protected object? NewValue = value;
+
+        /// <summary>
+        /// The Old Property's Value.
+        /// </summary>
+        protected readonly object? OldValue = backProperty;
+
+        /// <summary>
+        /// Converts the <see cref="NewValue"/> property to the type <typeparamref name="T"/>. It can return null.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T? GetNewValueAs<T>() => (T?)this.NewValue;
+
+        /// <summary>
+        /// Converts the <see cref="NewValue"/> property to the type <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        public T ConvertNewValueTo<T>() => (this.NewValue == null) ? throw new NullReferenceException() : (T)this.NewValue;
     }
 
     public class BeforeUpdateArgs(object? value, object? backProperty, string propertyName) : AfterUpdateArgs(value, backProperty, propertyName)
@@ -94,5 +116,21 @@ namespace FrontEnd.Events
         /// </summary>
         /// <value>true is the <see cref="AbstractModel"/>'s property can be updated,</value>
         public bool Cancel { get; set; } = false;
+
+        /// <summary>
+        /// Converts the <see cref="OldValue"/> property to the type <typeparamref name="T"/>. It can return null.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T? GetOldValueAs<T>() => (T?)this.OldValue;
+
+        /// <summary>
+        /// Converts the <see cref="OldValue"/> property to the type <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        public T ConvertOldValueTo<T>() => (this.OldValue == null) ? throw new NullReferenceException() : (T)this.OldValue;
+
     }
 }
