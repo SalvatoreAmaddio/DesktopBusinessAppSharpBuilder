@@ -63,8 +63,10 @@ namespace FrontEnd.FilterSource
         /// <returns>A string</returns>
         public virtual void Conditions<T>(AbstractClause abstractClause) where T : AbstractConditionalClause, IQueryClause, new()
         {
-            int i = 0;
             int selectedCount = SelectedOptions().Count();
+            if (selectedCount == 0) return;
+
+            int i = 0;
             T? conditionalClause = abstractClause.GetClause<T>();
 
             if (conditionalClause == null)
@@ -72,7 +74,7 @@ namespace FrontEnd.FilterSource
 
             if (selectedCount > 0)
             {
-                if (abstractClause.HasWhereConditions())
+                if (conditionalClause.HasConditions())
                     conditionalClause?.AND();
 
                 conditionalClause?.OpenBracket();
@@ -93,13 +95,16 @@ namespace FrontEnd.FilterSource
                 conditionalClause?.CloseBracket();
             }
         }
-        protected virtual void ForEachItem(AbstractClause abstractClause, AbstractConditionalClause? whereClause, IFilterOption item, int i)
+        protected virtual void ForEachItem(AbstractClause abstractClause, AbstractConditionalClause? conditionalClause, IFilterOption item, int i)
         {
             string? tableName = item?.Record.GetTableName();
             string? fieldName = null;
             fieldName = item?.Record?.GetPrimaryKey()?.Name;
             abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPrimaryKey()?.GetValue());
-            whereClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+            if (conditionalClause is HavingClause) 
+                conditionalClause?.EqualsTo($"{fieldName}", $"@{fieldName}{i}").OR();
+            else 
+                conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
         }
 
         /// <summary>
@@ -185,7 +190,10 @@ namespace FrontEnd.FilterSource
             string? fieldName = null;
             fieldName = _displayProperty;
             abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
-            conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+            if (conditionalClause is HavingClause)
+                conditionalClause?.EqualsTo($"{fieldName}", $"@{fieldName}{i}").OR();
+            else
+                conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
         }
         public void SelectDistinct()
         {
