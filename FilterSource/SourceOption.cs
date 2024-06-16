@@ -17,15 +17,19 @@ namespace FrontEnd.FilterSource
     /// <param name="displayProperty">The Record's property to display in the option list.</param>
     public class SourceOption : ObservableRangeCollection<IFilterOption>, IChildSource, IDisposable
     {
+        #region Variables
         /// <summary>
         /// A list of <see cref="IUIControl"/> associated to this <see cref="RecordSource"/>.
         /// </summary>
         protected List<IUIControl>? UIControls;
         protected IRecordSource? Source;
-        public IParentSource? ParentSource { get; set; }
         protected string _displayProperty = string.Empty;
         protected OrderBy _orderBy;
         private string _orderByProperty = string.Empty;
+        #endregion
+        public IParentSource? ParentSource { get; set; }
+
+        #region Constructors
         public SourceOption() { }
       //  public SourceOption(IEnumerable<IFilterOption> source) : base(source) { }
 
@@ -38,8 +42,8 @@ namespace FrontEnd.FilterSource
             Source.ParentSource?.AddChild(this);
             ReplaceRange(OrderSource());
         }
-
-        protected virtual IEnumerable<IFilterOption> OrderSource() 
+        #endregion
+        protected virtual IEnumerable<IFilterOption> OrderSource()
         {
             if (_orderBy == OrderBy.ASC)
                 return this.OrderBy(s => s.Record.GetPropertyValue((string.IsNullOrEmpty(_orderByProperty)) ? _displayProperty : _orderByProperty)).ToList();
@@ -57,24 +61,21 @@ namespace FrontEnd.FilterSource
         /// </summary>
         /// <param name="abstractClause"></param>
         /// <returns>A string</returns>
-        public virtual void Conditions(AbstractClause abstractClause)
+        public virtual void Conditions<T>(AbstractClause abstractClause) where T : AbstractConditionalClause, IQueryClause, new()
         {
             int i = 0;
             int selectedCount = SelectedOptions().Count();
-            WhereClause? whereClause = abstractClause.GetClause<WhereClause>();
+            T? conditionalClause = abstractClause.GetClause<T>();
 
-            if (whereClause == null)
-            {
-                whereClause = abstractClause.OpenClause<WhereClause>();
-//                abstractClause.Join(whereClause);
-            }
+            if (conditionalClause == null)
+                conditionalClause = abstractClause.OpenClause<T>();
 
             if (selectedCount > 0)
             {
                 if (abstractClause.HasWhereConditions())
-                    whereClause?.AND();
+                    conditionalClause?.AND();
 
-                whereClause?.OpenBracket();
+                conditionalClause?.OpenBracket();
             }
 
             foreach (var item in this)
@@ -82,22 +83,24 @@ namespace FrontEnd.FilterSource
                 if (item.IsSelected)
                 {
                     i++;
-                    string? tableName = item?.Record.GetTableName();
-                    string? fieldName = null;
-                    fieldName = item?.Record?.GetPrimaryKey()?.Name;
-                    abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPrimaryKey()?.GetValue());
-                    whereClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+                    ForEachItem(abstractClause, conditionalClause, item, i);
                 }
             }
 
             if (selectedCount > 0)
             {
-                whereClause?.RemoveLastChange();
-                whereClause?.CloseBracket();
+                conditionalClause?.RemoveLastChange();
+                conditionalClause?.CloseBracket();
             }
         }
-
-        public virtual void HavingConditions(AbstractClause abstractClause) { }
+        protected virtual void ForEachItem(AbstractClause abstractClause, AbstractConditionalClause? whereClause, IFilterOption item, int i)
+        {
+            string? tableName = item?.Record.GetTableName();
+            string? fieldName = null;
+            fieldName = item?.Record?.GetPrimaryKey()?.Name;
+            abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPrimaryKey()?.GetValue());
+            whereClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+        }
 
         /// <summary>
         /// It adds a <see cref="IUIControl"/> object to the <see cref="UIControls"/>.
@@ -161,6 +164,7 @@ namespace FrontEnd.FilterSource
 
     public class PrimitiveSourceOption : SourceOption
     {
+        #region Constructors
         public PrimitiveSourceOption(IAbstractFormController controller, string displayProperty, OrderBy orderby = OrderBy.ASC) : this(controller.Source, displayProperty, orderby)
         { }
 
@@ -173,60 +177,15 @@ namespace FrontEnd.FilterSource
             IEnumerable<IFilterOption> options = OrderSource();
             ReplaceRange(options);
         }
+        #endregion
 
-        public override void HavingConditions(AbstractClause abstractClause)
+        protected override void ForEachItem(AbstractClause abstractClause, AbstractConditionalClause? conditionalClause, IFilterOption item, int i)
         {
-            int i = 0;
-            int selectedCount = SelectedOptions().Count();
-
-            foreach (var item in this)
-            {
-                if (item.IsSelected)
-                {
-                    i++;
-                    string? tableName = item?.Record.GetTableName();
-                    string? fieldName = null;
-                    fieldName = _displayProperty;
-                    abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
-                }
-            }
-
-            if (selectedCount > 0)
-            {
-            }
-        }
-
-        public override void Conditions(AbstractClause abstractClause)
-        {
-            int i = 0;
-            int selectedCount = SelectedOptions().Count();
-            WhereClause? whereClause = abstractClause.GetClause<WhereClause>();
-            if (selectedCount > 0)
-            {
-                if (abstractClause.HasWhereConditions())
-                    whereClause?.AND();
-
-                whereClause?.OpenBracket();
-            }
-
-            foreach (var item in this)
-            {
-                if (item.IsSelected)
-                {
-                    i++;
-                    string? tableName = item?.Record.GetTableName();
-                    string? fieldName = null;
-                    fieldName = _displayProperty;
-                    abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
-                    whereClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
-                }
-            }
-
-            if (selectedCount > 0)
-            {
-                whereClause?.RemoveLastChange();
-                whereClause?.CloseBracket();
-            }
+            string? tableName = item?.Record.GetTableName();
+            string? fieldName = null;
+            fieldName = _displayProperty;
+            abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
+            conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
         }
         public void SelectDistinct()
         {
