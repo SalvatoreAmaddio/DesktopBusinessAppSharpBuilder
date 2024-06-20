@@ -61,6 +61,8 @@ namespace FrontEnd.Controller
         /// </code>
         /// </summary>
         public void OnSubFormFilter();
+
+        public void Dispose();
     }
 
 }

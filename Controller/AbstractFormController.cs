@@ -13,6 +13,8 @@ using System.Windows;
 using FrontEnd.Source;
 using System.Windows.Controls;
 using Backend.Enums;
+using MailKit.Search;
+using Backend.ExtensionMethods;
 
 namespace FrontEnd.Controller
 {
@@ -32,6 +34,8 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Properties
+        public AbstractClause SearchQry { get; private set; }
+
         public UIElement? UI
         {
             get => _uiElement;
@@ -40,8 +44,11 @@ namespace FrontEnd.Controller
                 if (value is not Window && value is not Page)
                     throw new Exception("UI Element is meant to be either a Window or a Page");
                 _uiElement = value;
-                if (_uiElement is Window _win)
+                if (_uiElement is Window _win) 
+                {
                     _win.Closing += OnWindowClosing;
+                    _win.Loaded += OnWindowLoaded;
+                }
                 if (_uiElement is Page _page) 
                 {
                     _page.Loaded += OnPageLoaded;
@@ -53,10 +60,21 @@ namespace FrontEnd.Controller
         protected void OnPageLoaded(object sender, RoutedEventArgs e)
         {
             Window? win = Window.GetWindow(UI);
-            if (win != null)
+            if (win != null) 
+            {
                 win.Closing += OnWindowClosing;
+                win.Loaded += OnWindowLoaded;
+            }
         }
-
+        /// <summary>
+        /// Wrap up method for the <see cref="RecordSource{M}.CreateFromAsyncList(IAsyncEnumerable{ISQLModel})"/>
+        /// </summary>
+        /// <param name="qry">The query to be used, can be null</param>
+        /// <param name="parameters">A list of parameters to be used, can be null</param>
+        /// <returns>A RecordSource</returns>
+        public Task<RecordSource<M>> CreateFromAsyncList(string? qry = null, List<QueryParameter>? parameters = null) =>
+        RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync(qry, parameters).Cast<M>());
+        protected virtual void OnWindowLoaded(object sender, RoutedEventArgs e) { }
         public bool AllowAutoSave { get; set; } = false;
         public IEnumerable<M>? MasterSource => DatabaseManager.Find<M>()?.MasterSource.Cast<M>();
         public IAbstractFormController? ParentController { get; set; }
@@ -101,7 +119,17 @@ namespace FrontEnd.Controller
             UpdateCMD = new CMD<M>(Update);
             DeleteCMD = new CMD<M>(Delete);
             RequeryCMD = new CMDAsync(RequeryAsync);
+            SearchQry = InstantiateSearchQry();
         }
+
+        public void ReloadSearchQry()
+        {
+            SearchQry.Dispose();
+            SearchQry = InstantiateSearchQry();
+        }
+
+        public virtual AbstractClause InstantiateSearchQry() => new M().From();
+
         public void RunAfterSubFormFilterEvent() => AfterSubFormFilter?.Invoke(this, EventArgs.Empty);
         public ISubFormController GetSubController(int index) => _subControllers[index];
         public void AddSubControllers(ISubFormController controller)
@@ -271,8 +299,11 @@ namespace FrontEnd.Controller
         }
         public override void Dispose()
         {
-            if (_uiElement is Window _win)
+            if (_uiElement is Window _win) 
+            {
                 _win.Closing -= OnWindowClosing;
+                _win.Loaded -= OnWindowLoaded;
+            }
 
             if (_uiElement is Page _page)
                 _page.Loaded -= OnPageLoaded;
@@ -282,6 +313,8 @@ namespace FrontEnd.Controller
             NewRecordEvent = null;
             AfterSubFormFilter = null;
             AsRecordSource().Dispose(false);
+            foreach (ISubFormController subController in _subControllers)
+                subController.Dispose();
             _subControllers.Clear();
             GC.SuppressFinalize(this);
         }

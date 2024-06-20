@@ -23,7 +23,6 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Properties
-        public AbstractClause SearchQry { get; private set; }
         public bool OpenWindowOnNew
         {
             get => _openWindowOnNew;
@@ -33,16 +32,9 @@ namespace FrontEnd.Controller
 
         public AbstractFormListController() : base()
         {
-            SearchQry = InstantiateSearchQry();
             OpenCMD = new CMD<M>(Open);
             OpenNewCMD = new CMD(OpenNew);
             AsRecordSource().RunFilter += OnSourceRunFilter;
-        }
-
-        public void ReloadSearchQry()
-        {
-            SearchQry.Dispose();
-            SearchQry = InstantiateSearchQry();
         }
         public abstract Task<IEnumerable<M>> SearchRecordAsync();
         public abstract void OnOptionFilterClicked(FilterEventArgs e);
@@ -127,15 +119,6 @@ namespace FrontEnd.Controller
             }
         }
 
-        /// <summary>
-        /// Wrap up method for the <see cref="RecordSource{M}.CreateFromAsyncList(IAsyncEnumerable{ISQLModel})"/>
-        /// </summary>
-        /// <param name="qry">The query to be used, can be null</param>
-        /// <param name="parameters">A list of parameters to be used, can be null</param>
-        /// <returns>A RecordSource</returns>
-        public Task<RecordSource<M>> CreateFromAsyncList(string? qry = null, List<QueryParameter>? parameters = null) => 
-        RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync(qry, parameters).Cast<M>());
-
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
         {
             if (CurrentRecord == null) throw new NoModelException();
@@ -172,6 +155,7 @@ namespace FrontEnd.Controller
         {
             SearchQry.Dispose();
             base.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         protected async Task OnSearchPropertyRequeryAsync(object? sender)
@@ -182,8 +166,6 @@ namespace FrontEnd.Controller
             if (sender is not FilterEventArgs filterEvtArgs)
                 GoFirst();
         }
-
-        public abstract AbstractClause InstantiateSearchQry();
 
         public override async Task RequeryAsync()
         {

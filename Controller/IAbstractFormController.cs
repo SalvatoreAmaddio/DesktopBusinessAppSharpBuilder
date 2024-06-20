@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Backend.Database;
+using Backend.Model;
 
 namespace FrontEnd.Controller
 {
@@ -35,6 +36,8 @@ namespace FrontEnd.Controller
         /// Notify the GUI that a process involving an instance of <see cref="AbstractForm"/> is running.
         /// </summary>
         public bool IsLoading { get; set; }
+        public AbstractClause InstantiateSearchQry();
+        public void ReloadSearchQry();
 
         /// <summary>
         /// Perform an Insert/Update CRUD operation on the <see cref="IAbstractSQLModelController.CurrentModel"/> property.

@@ -44,9 +44,6 @@ namespace FrontEnd.Controller
         /// </summary>
         public AbstractClause SearchQry { get; }
 
-        public void ReloadSearchQry();
-        public AbstractClause InstantiateSearchQry();
-
         /// <summary>
         /// Tells if the Controller shall open a Window or add a new row to the <see cref="Lista"/> to add a New Record.<para/>
         /// <c>KEEP IN MIND THAT:</c>
