@@ -28,6 +28,10 @@ namespace FrontEnd.Converters
         {
             if (value is string str)
             {
+                if (str.Length == 1) 
+                {
+                    str = $"{str}:00 AM";
+                }
                 DateTime parsedDateTime;
                 if (DateTime.TryParseExact(str, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime))
                 {
@@ -44,4 +48,5 @@ namespace FrontEnd.Converters
 
 
     }
+
 }
