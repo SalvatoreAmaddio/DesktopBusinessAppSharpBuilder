@@ -8,6 +8,7 @@ using Backend.Model;
 using Backend.Exceptions;
 using FrontEnd.Controller;
 using Backend.Enums;
+using System.Windows;
 
 namespace FrontEnd.Source
 {
@@ -184,8 +185,18 @@ namespace FrontEnd.Source
             UIControls?.Clear();
             navigator = null;
             RunFilter = null;
-            GC.SuppressFinalize(this);
-            Clear();
+            try
+            {
+                Clear();
+            }
+            catch 
+            {
+                Application.Current.Dispatcher.BeginInvoke(Clear);                
+            }
+            finally 
+            {
+                GC.SuppressFinalize(this);
+            }
         }
 
     }

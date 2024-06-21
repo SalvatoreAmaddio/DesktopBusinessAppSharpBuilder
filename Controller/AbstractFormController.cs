@@ -274,6 +274,9 @@ namespace FrontEnd.Controller
         public virtual async void OnWindowClosing(object? sender, CancelEventArgs e)
         {
             bool dirty = AsRecordSource().Any(s => s.IsDirty);
+            if (CurrentRecord!=null && CurrentRecord.IsNewRecord()) 
+                dirty = CurrentRecord.IsDirty;
+
             if (!dirty) 
             {
                 Dispose();
@@ -319,8 +322,19 @@ namespace FrontEnd.Controller
         {
             if (_uiElement is Window _win) 
             {
-                _win.Closing -= OnWindowClosing;
-                _win.Loaded -= OnWindowLoaded;
+                try 
+                {
+                    _win.Closing -= OnWindowClosing;
+                    _win.Loaded -= OnWindowLoaded;
+                }
+                catch 
+                {
+                    Application.Current.Dispatcher.Invoke(() => 
+                    {                    
+                        _win.Closing -= OnWindowClosing;
+                        _win.Loaded -= OnWindowLoaded;
+                    });
+                }
             }
 
             if (_uiElement is Page _page)
