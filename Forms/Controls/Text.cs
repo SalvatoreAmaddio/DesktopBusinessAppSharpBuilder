@@ -22,7 +22,7 @@ namespace FrontEnd.Forms
             Source = Helper.LoadFromImages("close")
         };
 
-        private readonly ResourceDictionary resourceDict = Helper.GetDictionary(nameof(Text));
+        protected readonly ResourceDictionary resourceDict = Helper.GetDictionary(nameof(Text));
 
         static Text() 
         {
@@ -39,7 +39,7 @@ namespace FrontEnd.Forms
         }
         public Text()
         {
-            Style = (Style)resourceDict["TextTemplateStyle"];
+            Style = FetchStyle();
             Binding PlaceholderVisibilityBinding = new(nameof(Text))
             {
                 Source = this,
@@ -67,6 +67,11 @@ namespace FrontEnd.Forms
             ClearButtonVisibilityMultiBinding.Bindings.Add(IsKeyboardFocusWithinBinding);
             SetBinding(ClearButtonVisibilityProperty, ClearButtonVisibilityMultiBinding);
             Unloaded += OnUnloaded;
+        }
+
+        protected virtual Style FetchStyle() 
+        { 
+            return (Style)resourceDict["TextTemplateStyle"]; 
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
