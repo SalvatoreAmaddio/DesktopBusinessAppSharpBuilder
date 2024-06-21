@@ -13,7 +13,6 @@ using System.Windows;
 using FrontEnd.Source;
 using System.Windows.Controls;
 using Backend.Enums;
-using MailKit.Search;
 using Backend.ExtensionMethods;
 
 namespace FrontEnd.Controller

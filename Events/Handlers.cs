@@ -13,6 +13,20 @@ namespace FrontEnd.Events
     public delegate void SelectionChangedEventHandler(object? sender, EventArgs e);
     public delegate void OnDirtyChangedEventHandler(object? sender, OnDirtyChangedEventArgs e);
 
+    public abstract class AbstractEventArgs : EventArgs 
+    {
+        public string[] Messages = [];
+
+        public bool HasMessages => Messages.Length > 0;
+
+        public bool MessageIs(int index, string value) => this[index].Equals(value);
+
+        public string this[int index]
+        {
+            get { return Messages[index]; }
+        }
+    }
+
     /// <summary>
     /// This delegate works as a bridge between the <see cref="Controller.AbstractFormListController{M}"/> and a <see cref="Source.RecordSource{M}"/>.
     /// <para/>
@@ -53,7 +67,7 @@ namespace FrontEnd.Events
         public bool Cancel { get; set; } = false;
     }
 
-    public class FilterEventArgs() : EventArgs 
+    public class FilterEventArgs() : AbstractEventArgs
     {
     }
 
@@ -68,7 +82,7 @@ namespace FrontEnd.Events
         public AbstractModel? NewValue { get; } = (AbstractModel?)newValue;
     }
 
-    public abstract class UpdateArgs(string propertyName) : EventArgs
+    public abstract class UpdateArgs(string propertyName) : AbstractEventArgs
     {
         public readonly string propertyName = propertyName;
 
