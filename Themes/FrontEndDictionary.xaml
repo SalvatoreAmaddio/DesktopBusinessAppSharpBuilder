@@ -4,6 +4,8 @@
                     >
     <converter:StringToTimeConverter x:Key="TimeBox"/>
     <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Text.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/TextBoxDate.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Images.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Strings.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Colors.xaml"/>
