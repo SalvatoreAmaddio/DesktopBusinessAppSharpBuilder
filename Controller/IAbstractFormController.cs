@@ -61,6 +61,8 @@ namespace FrontEnd.Controller
 
         public Task RequeryAsync();
 
+        public C? GetSubController<C>(int index) where C : IAbstractFormController;
+
     }
 
     /// <summary>

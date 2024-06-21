@@ -46,6 +46,7 @@ namespace FrontEnd.Controller
                 _uiElement = value;
                 if (_uiElement is Window _win) 
                 {
+                    _win.Closed += OnWindowClosed;
                     _win.Closing += OnWindowClosing;
                     _win.Loaded += OnWindowLoaded;
                 }
@@ -57,11 +58,16 @@ namespace FrontEnd.Controller
             }
         }
 
+        protected virtual void OnWindowClosed(object? sender, EventArgs e)
+        {
+        }
+
         protected void OnPageLoaded(object sender, RoutedEventArgs e)
         {
             Window? win = Window.GetWindow(UI);
             if (win != null) 
             {
+                win.Closed += OnWindowClosed;
                 win.Closing += OnWindowClosing;
                 win.Loaded += OnWindowLoaded;
             }
@@ -132,6 +138,7 @@ namespace FrontEnd.Controller
 
         public void RunAfterSubFormFilterEvent() => AfterSubFormFilter?.Invoke(this, EventArgs.Empty);
         public ISubFormController GetSubController(int index) => _subControllers[index];
+        public C? GetSubController<C>(int index) where C : IAbstractFormController => (C?)_subControllers[index];
         public void AddSubControllers(ISubFormController controller)
         {
             controller.ParentController = this;
@@ -297,6 +304,18 @@ namespace FrontEnd.Controller
             if (!e.Cancel) 
                 await Task.Run(Dispose);
         }
+
+        public void DisposeWindow() 
+        {
+            if (_uiElement is Window _win)
+            {
+                _win.Closing -= OnWindowClosed;
+            }
+
+            if (_uiElement is Page _page)
+                _page.Loaded -= OnPageLoaded;
+        }
+
         public override void Dispose()
         {
             if (_uiElement is Window _win) 

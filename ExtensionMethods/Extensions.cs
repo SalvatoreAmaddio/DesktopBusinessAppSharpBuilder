@@ -30,9 +30,29 @@ namespace FrontEnd.ExtensionMethods
             controller.UI = page;
         }
 
-        public static C GetController<C>(this Window win) where C : IAbstractFormController => (C)win.DataContext;
+        public static C? GetController<C>(this Window win) where C : IAbstractFormController 
+        {
+            try 
+            {
+                return (C)win.DataContext;
+            }
+            catch 
+            {
+                return default;
+            }
+        }
 
-        public static C GetController<C>(this Page page) where C : IAbstractFormController => (C)page.DataContext;
+        public static C? GetController<C>(this Page page) where C : IAbstractFormController
+        {
+            try
+            {
+                return (C)page.DataContext;
+            }
+            catch 
+            {
+                return default;
+            }
+        } 
 
         /// <summary>
         /// Gets the Generic of the <see cref="CurrentTabController(TabControl)"/>.
