@@ -14,7 +14,6 @@ namespace FrontEnd.Forms
     /// </summary>
     public partial class Text : TextBox, IDisposable
     {
-        protected bool _disposed = false;
         private Button? ClearButton;
 
         private readonly Image ClearImg = new()
@@ -22,7 +21,7 @@ namespace FrontEnd.Forms
             Source = Helper.LoadFromImages("close")
         };
 
-        protected readonly ResourceDictionary resourceDict = Helper.GetDictionary(nameof(Text));
+        protected virtual ResourceDictionary resourceDict => Helper.GetDictionary(nameof(Text));
 
         static Text() 
         {
@@ -128,25 +127,11 @@ namespace FrontEnd.Forms
 
         public virtual void Dispose()
         {
-            Dispose(true);
+            if (ClearButton != null)
+                ClearButton.Click -= OnClearButtonClicked;
+            Unloaded -= OnUnloaded;
             GC.SuppressFinalize(this);
         }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed) return;
-
-            if (disposing)
-            {
-                Unloaded -= OnUnloaded;
-                if (ClearButton != null)
-                    ClearButton.Click -= OnClearButtonClicked;
-            }
-
-            _disposed = true;
-        }
-
-        ~Text() => Dispose(false);
 
         /// <summary>
         /// This class converts the value of a <see cref="TextBox.Text"/> property to a <see cref="Visibility"/> object.

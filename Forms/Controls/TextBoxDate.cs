@@ -10,7 +10,7 @@ namespace FrontEnd.Forms
 {
     public class TextBoxDate : Text
     {
-        public System.Windows.Controls.Calendar Calendar = new();
+        private System.Windows.Controls.Calendar Calendar;
         private Button? PART_Button;
         private Popup? PART_Popup;
 
@@ -23,7 +23,7 @@ namespace FrontEnd.Forms
 
         public static readonly DependencyProperty SelectedDateProperty =
             DependencyProperty.Register(nameof(SelectedDate), typeof(DateTime?), typeof(TextBoxDate),
-                new FrameworkPropertyMetadata(DateTime.Today, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedDatePropertyChanged));
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedDatePropertyChanged));
         private static void OnSelectedDatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TextBoxDate control = (TextBoxDate)d;
@@ -47,13 +47,13 @@ namespace FrontEnd.Forms
             DependencyProperty.Register(nameof(DropDownButtonClickCommand), typeof(ICommand), typeof(TextBoxDate), new PropertyMetadata(null));
         #endregion
 
-        protected new readonly ResourceDictionary resourceDict = Helper.GetDictionary(nameof(TextBoxDate));
+        protected override ResourceDictionary resourceDict => Helper.GetDictionary(nameof(TextBoxDate));
         static TextBoxDate()
         {
             TextProperty.OverrideMetadata(
             typeof(TextBoxDate),
             new FrameworkPropertyMetadata(
-                string.Empty,
+                DateTime.Today.ToString("dd/MM/yyyy"),
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                 null,
                 null,
@@ -63,6 +63,7 @@ namespace FrontEnd.Forms
         }
         public TextBoxDate() : base()
         {
+            this.Calendar = new();
             DropDownButtonClickCommand = new Command(OpenPopup);
             Binding binding = new(nameof(SelectedDate))
             {
@@ -78,20 +79,21 @@ namespace FrontEnd.Forms
                 Mode = BindingMode.TwoWay,
                 Converter = new ConvertDateToString()
             };
+
             this.SetBinding(TextProperty, textBinding);
-            Calendar.SelectedDatesChanged += Calendar_SelectedDatesChanged;
         }
 
         protected override Style FetchStyle() => (Style)resourceDict["TextBoxDateTemplateStyle"];
 
-        private void Calendar_SelectedDatesChanged(object? sender, SelectionChangedEventArgs e)
+        private void OnSelectedDatesChanged(object? sender, SelectionChangedEventArgs e)
         {
-           PART_Popup.IsOpen = false;
+            var x = SelectedDate;
         }
 
         private void OpenPopup()
         {
-            PART_Popup.IsOpen = !PART_Popup.IsOpen;
+            if (PART_Popup!= null)
+                PART_Popup.IsOpen = !PART_Popup.IsOpen;
             Calendar.Focus();
         }
 
@@ -100,8 +102,17 @@ namespace FrontEnd.Forms
             base.OnApplyTemplate();
             PART_Button = (Button?)GetTemplateChild(nameof(PART_Button));
             PART_Popup = (Popup?)GetTemplateChild(nameof(PART_Popup));
-            if (PART_Popup != null)
+            if (PART_Popup != null) 
+            {
                 PART_Popup.Child = Calendar;
+                Calendar.SelectedDatesChanged += OnSelectedDatesChanged;
+            }
+        }
+
+        public override void Dispose()
+        {
+            Calendar.SelectedDatesChanged -= OnSelectedDatesChanged;
+            base.Dispose();
         }
 
         internal class Command : ICommand
@@ -170,7 +181,6 @@ namespace FrontEnd.Forms
                     chunk = $"19{value}";
                 }
             }
-
             private void AdjustMonth(ref string chunk)
             {
                 int value = Int32.Parse(chunk);
@@ -184,7 +194,6 @@ namespace FrontEnd.Forms
                     chunk = $"01";
                 }
             }
-
             private void AdjustDay(ref string chunk)
             {
                 int value = Int32.Parse(chunk);
