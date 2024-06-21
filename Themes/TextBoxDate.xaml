@@ -9,7 +9,7 @@
 
     <Style TargetType="local:TextBoxDate" x:Key="TextBoxDateTemplateStyle">
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        
+        <Setter Property="Template" Value="{StaticResource TextBoxDateTemplate}"/>
     </Style>
     
     <ControlTemplate x:Key="TextBoxDateTemplate" TargetType="{x:Type local:TextBoxDate}">

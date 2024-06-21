@@ -82,10 +82,7 @@ namespace FrontEnd.Forms
             Calendar.SelectedDatesChanged += Calendar_SelectedDatesChanged;
         }
 
-        protected override Style FetchStyle()
-        {
-            return (Style)resourceDict["TextBoxDateTemplateStyle"];
-        }
+        protected override Style FetchStyle() => (Style)resourceDict["TextBoxDateTemplateStyle"];
 
         private void Calendar_SelectedDatesChanged(object? sender, SelectionChangedEventArgs e)
         {
