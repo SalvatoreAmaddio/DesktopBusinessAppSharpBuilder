@@ -274,7 +274,7 @@ namespace FrontEnd.Controller
         public virtual async void OnWindowClosing(object? sender, CancelEventArgs e)
         {
             bool dirty = AsRecordSource().Any(s => s.IsDirty);
-            if (CurrentRecord!=null && CurrentRecord.IsNewRecord()) 
+            if (CurrentRecord!=null) 
                 dirty = CurrentRecord.IsDirty;
 
             if (!dirty) 
