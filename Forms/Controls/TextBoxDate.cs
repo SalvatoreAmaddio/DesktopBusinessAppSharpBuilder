@@ -133,24 +133,20 @@ namespace FrontEnd.Forms
             if (PART_Popup != null)
                 PART_Popup.IsOpen = !PART_Popup.IsOpen;
             if (Date != null)
-            {
-                Calendar.DisplayDate = Date.Value;
-            }
+                Calendar.DisplayDate = Date.Value; // update calendar
             else
-            {
-                Calendar.DisplayDate = DateTime.Today;
-            }
-            Calendar.Focus();
+                Calendar.DisplayDate = DateTime.Today; // update calendar
+            Calendar.Focus(); //move focus from TextBox to the Calendar object
         }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            PART_Button = (Button?)GetTemplateChild(nameof(PART_Button));
-            PART_Popup = (Popup?)GetTemplateChild(nameof(PART_Popup));
+            PART_Button = (Button?)GetTemplateChild(nameof(PART_Button)); //retrive the button from the Template
+            PART_Popup = (Popup?)GetTemplateChild(nameof(PART_Popup)); //retrive the popup from the Template
             if (PART_Popup != null)
             {
-                PART_Popup.Child = Calendar;
+                PART_Popup.Child = Calendar; //add the Calendar to the popup
                 Binding binding = new("IsOpen")
                 {
                     Source = PART_Popup,
