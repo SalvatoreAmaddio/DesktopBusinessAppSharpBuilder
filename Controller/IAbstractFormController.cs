@@ -44,6 +44,7 @@ namespace FrontEnd.Controller
         /// </summary>
         /// <returns>true if the operation was successful.</returns>
         public bool PerformUpdate();
+        public Task<bool> PerformUpdateAsync();
 
         /// <summary>
         /// Handles record's integrity checks before the Window closes. <para/>

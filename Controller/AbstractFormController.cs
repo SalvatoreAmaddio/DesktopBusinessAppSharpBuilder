@@ -116,7 +116,7 @@ namespace FrontEnd.Controller
         public event AfterUpdateEventHandler? AfterUpdate;
         public event BeforeUpdateEventHandler? BeforeUpdate;
         public event NewRecordEventHandler? NewRecordEvent;
-        public event NotifyParentControllerEventHandler? NotifyParentEvent;
+        public event NotifyParentControllerEventHandler? NotifyParentControllerEvent;
         #endregion
 
         public AbstractFormController() : base()
@@ -185,6 +185,12 @@ namespace FrontEnd.Controller
         }
         public bool PerformUpdate() => Update(CurrentRecord);
 
+        public Task<bool> PerformUpdateAsync() 
+        {
+            bool result = Update(CurrentRecord);
+            return Task.FromResult(result);
+        } 
+
         /// <summary>
         /// This method is called by <see cref="UpdateCMD"/> command to perform an Update or Insert CRUD operation.
         /// </summary>
@@ -196,7 +202,7 @@ namespace FrontEnd.Controller
             CurrentRecord = model;
             bool result = AlterRecord();
             if (result) 
-                NotifyParentEvent?.Invoke(this, EventArgs.Empty);
+                NotifyParentControllerEvent?.Invoke(this, EventArgs.Empty);
             return result;
         }
 
@@ -211,7 +217,7 @@ namespace FrontEnd.Controller
             if (result == DialogResult.No) return false;
             CurrentRecord = model;
             DeleteRecord();
-            NotifyParentEvent?.Invoke(this, EventArgs.Empty);
+            NotifyParentControllerEvent?.Invoke(this, EventArgs.Empty);
             return true;
         }
         public override bool GoNew()
