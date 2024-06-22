@@ -23,11 +23,18 @@ namespace FrontEnd.Model
         public event OnDirtyChangedEventHandler? OnDirtyChanged;
 
         /// <summary>
-        /// Sets the latest changed Property to their previous value.
+        /// Sets the latest changed Properties to their previous value.
         /// </summary>
         public void Undo();
 
+        /// <summary>
+        /// Sets the <see cref="IsDirty"/> property to true.
+        /// </summary>
         public void Dirt();
+
+        /// <summary>
+        /// Sets the <see cref="IsDirty"/> property to false.
+        /// </summary>
         public void Clean();
 
     }
@@ -45,8 +52,7 @@ namespace FrontEnd.Model
             {
                 _isDirty = value;
                 RaisePropertyChanged(nameof(IsDirty));
-                if (!value)
-                    OnDirtyChanged?.Invoke(this, new(this));
+                if (!value) OnDirtyChanged?.Invoke(this, new(this));
             }
         }
 
@@ -62,24 +68,10 @@ namespace FrontEnd.Model
         public event BeforeUpdateEventHandler? BeforeUpdate;
         #endregion
 
-        public AbstractModel() : base() => AllFields = new(_getAllTableFields());
+        public AbstractModel() : base() => AllFields = new(GetAllTableFields());
 
         public void Dirt() => IsDirty = true;
         public void Clean() => IsDirty = false;
-
-        private IEnumerable<SimpleTableField> _getAllTableFields()
-        {
-            Type type = GetType();
-            PropertyInfo[] props = type.GetProperties();
-            foreach (PropertyInfo prop in props)
-            {
-                AbstractField? field = prop.GetCustomAttribute<AbstractField>();
-                if (field != null)
-                {
-                    yield return new SimpleTableField(prop.Name, null, prop);
-                }
-            }
-        }
 
         public void RaisePropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
 
@@ -126,5 +118,20 @@ namespace FrontEnd.Model
             BeforeUpdate = null;
             GC.SuppressFinalize(this);
         }
+
+        private IEnumerable<SimpleTableField> GetAllTableFields()
+        {
+            Type type = GetType();
+            PropertyInfo[] props = type.GetProperties();
+            foreach (PropertyInfo prop in props)
+            {
+                AbstractField? field = prop.GetCustomAttribute<AbstractField>();
+                if (field != null)
+                {
+                    yield return new SimpleTableField(prop.Name, null, prop);
+                }
+            }
+        }
+
     }
 }
