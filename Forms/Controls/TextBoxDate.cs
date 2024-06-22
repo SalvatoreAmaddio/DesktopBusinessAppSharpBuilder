@@ -93,7 +93,6 @@ namespace FrontEnd.Forms
 
             if (Text.Length == 10)
             {
-                var x = Text[CaretIndex];
                 if (Text[CaretIndex].Equals('/'))
                 {
                     CaretIndex = CaretIndex + 1;
