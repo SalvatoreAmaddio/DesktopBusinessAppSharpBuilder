@@ -108,19 +108,23 @@ namespace FrontEnd.Forms
             }
         }
 
+        /// <summary>
+        /// Add the "/" as the user types.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnTextChanged(TextChangedEventArgs e)
         {
             base.OnTextChanged(e);
             if (Text.Length == 2) 
             {
                 Text = $"{Text}/";
-                CaretIndex = 3;
+                CaretIndex = 3; //move caret to next position
             }
 
             if (Text.Length == 5)
             {
                 Text = $"{Text}/";
-                CaretIndex = 6;
+                CaretIndex = 6; //move caret to next position
             }
         }
 
