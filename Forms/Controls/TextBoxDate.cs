@@ -75,6 +75,38 @@ namespace FrontEnd.Forms
 
         protected override Style FetchStyle() => (Style)resourceDict["TextBoxDateTemplateStyle"];
 
+        /// <summary>
+        /// Allow numbers only.
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnPreviewTextInput(TextCompositionEventArgs e)
+        {
+            base.OnPreviewTextInput(e);
+            int number; 
+            bool allowed = Int32.TryParse(e.Text, out number);
+            if (!allowed) 
+            {
+                e.Handled = true;
+                return;
+            }
+        }
+
+        protected override void OnTextChanged(TextChangedEventArgs e)
+        {
+            base.OnTextChanged(e);
+            if (Text.Length == 2) 
+            {
+                Text = $"{Text}/";
+                CaretIndex = 3;
+            }
+
+            if (Text.Length == 5)
+            {
+                Text = $"{Text}/";
+                CaretIndex = 6;
+            }
+        }
+
         private void TogglePopup()
         {
             if (PART_Popup != null)
