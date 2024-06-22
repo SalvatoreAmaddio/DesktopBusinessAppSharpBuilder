@@ -87,7 +87,7 @@ namespace FrontEnd.Forms
             bool allowed = Int32.TryParse(e.Text, out number);
             if (!allowed) 
             {
-                e.Handled = true;
+                e.Handled = true; //cancel the input
                 return;
             }
 
@@ -96,14 +96,14 @@ namespace FrontEnd.Forms
                 if (Text[CaretIndex].Equals('/'))
                 {
                     CaretIndex = CaretIndex + 1;
-                    e.Handled = true;
+                    e.Handled = true; //cancel the input
                     return;
                 }
 
                 int position = CaretIndex;
                 Text = Text.ReplaceCharAt(position, e.Text[0]);
                 CaretIndex = position;
-                e.Handled = true;
+                e.Handled = true; //cancel the input
                 return;
             }
         }
