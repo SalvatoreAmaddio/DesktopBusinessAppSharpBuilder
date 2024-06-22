@@ -5,6 +5,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows;
 using FrontEnd.Utils;
+using Backend.ExtensionMethods;
 
 namespace FrontEnd.Forms
 {
@@ -86,6 +87,23 @@ namespace FrontEnd.Forms
             bool allowed = Int32.TryParse(e.Text, out number);
             if (!allowed) 
             {
+                e.Handled = true;
+                return;
+            }
+
+            if (Text.Length == 10)
+            {
+                var x = Text[CaretIndex];
+                if (Text[CaretIndex].Equals('/'))
+                {
+                    CaretIndex = CaretIndex + 1;
+                    e.Handled = true;
+                    return;
+                }
+
+                int position = CaretIndex;
+                Text = Text.ReplaceCharAt(position, e.Text[0]);
+                CaretIndex = position;
                 e.Handled = true;
                 return;
             }
