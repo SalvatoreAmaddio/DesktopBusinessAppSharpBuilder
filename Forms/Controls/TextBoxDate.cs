@@ -10,7 +10,7 @@ namespace FrontEnd.Forms
 {
     public partial class TextBoxDate : Text
     {
-        private readonly System.Windows.Controls.Calendar Calendar = new();
+        private readonly TextBoxCalendar Calendar = new();
         private Button? PART_Button;
         private Popup? PART_Popup;
 
@@ -65,14 +65,15 @@ namespace FrontEnd.Forms
         {
             Style = FetchStyle();
             DropDownButtonClickCommand = new Command(OpenPopup);
-            this.Calendar.IsTodayHighlighted = true;
-            //Binding binding = new("SelectedDate")
-            //{
-            //    Source = Calendar,
-            //    Mode = BindingMode.TwoWay,
-            //};
 
-            //            this.SetBinding(DateProperty, binding);
+            Binding binding = new(nameof(Date))
+            {
+                Source = this,
+                Mode = BindingMode.TwoWay,
+            };
+
+            this.Calendar.SetBinding(TextBoxCalendar.SelectedDateProperty, binding);
+
             Binding textBinding = new(nameof(Date))
             {
                 Source = this,
@@ -80,28 +81,9 @@ namespace FrontEnd.Forms
                 Converter = new ConvertDateToString()
             };
             this.SetBinding(TextProperty, textBinding);
-
         }
 
         protected override Style FetchStyle() => (Style)resourceDict["TextBoxDateTemplateStyle"];
-
-        private void OnSelectedDatesChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            try
-            {
-                Date = (DateTime?)e.AddedItems[0];
-                Calendar.DisplayDate = (DateTime)e.AddedItems[0];
-            }
-            catch
-            {
-                Date = null;
-            }
-            finally 
-            {
-                if (PART_Popup != null)
-                    PART_Popup.IsOpen = false;
-            }
-        }
 
         private void OpenPopup()
         {
@@ -123,17 +105,50 @@ namespace FrontEnd.Forms
             base.OnApplyTemplate();
             PART_Button = (Button?)GetTemplateChild(nameof(PART_Button));
             PART_Popup = (Popup?)GetTemplateChild(nameof(PART_Popup));
-            if (PART_Popup != null) 
+            if (PART_Popup != null)
             {
                 PART_Popup.Child = Calendar;
-                Calendar.SelectedDatesChanged += OnSelectedDatesChanged;
+                Binding binding = new("IsOpen")
+                {
+                    Source = PART_Popup,
+                    Mode = BindingMode.TwoWay,
+                };
+
+                Calendar.SetBinding(TextBoxCalendar.IsOpenPopupProperty, binding);
             }
         }
 
-        public override void Dispose()
+        internal class TextBoxCalendar : System.Windows.Controls.Calendar
         {
-            Calendar.SelectedDatesChanged -= OnSelectedDatesChanged;
-            base.Dispose();
+            #region IsOpenPopup
+            public bool IsOpenPopup
+            {
+                get => (bool)GetValue(IsOpenPopupProperty);
+                set => SetValue(IsOpenPopupProperty, value);
+            }
+
+            public static readonly DependencyProperty IsOpenPopupProperty =
+                DependencyProperty.Register(nameof(DropDownButtonClickCommand), typeof(bool), typeof(TextBoxCalendar), new PropertyMetadata(false));
+            #endregion
+
+            public TextBoxCalendar() => IsTodayHighlighted = true;
+            protected override void OnSelectedDatesChanged(SelectionChangedEventArgs e)
+            {
+                base.OnSelectedDatesChanged(e);
+                try
+                {
+                    SelectedDate = (DateTime?)e.AddedItems[0];
+                    DisplayDate = (DateTime)e.AddedItems[0];
+                }
+                catch
+                {
+                    SelectedDate = null;
+                }
+                finally
+                {
+                    IsOpenPopup = false;
+                }
+            }
         }
 
         internal class Command : ICommand
