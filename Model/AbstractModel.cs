@@ -26,6 +26,10 @@ namespace FrontEnd.Model
         /// Sets the latest changed Property to their previous value.
         /// </summary>
         public void Undo();
+
+        public void Dirt();
+        public void Clean();
+
     }
 
     /// <summary>
@@ -59,6 +63,9 @@ namespace FrontEnd.Model
         #endregion
 
         public AbstractModel() : base() => AllFields = new(_getAllTableFields());
+
+        public void Dirt() => IsDirty = true;
+        public void Clean() => IsDirty = false;
 
         private IEnumerable<SimpleTableField> _getAllTableFields()
         {
