@@ -117,7 +117,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Button x:Name="PART_Button" Grid.Column="1" Foreground="{TemplateBinding Foreground}" Focusable="False" HorizontalAlignment="Left" Margin="3,0,3,0" Grid.Row="0" Template="{StaticResource DropDownButtonTemplate}" VerticalAlignment="Center" Width="20" Command="{TemplateBinding DropDownButtonClickCommand}"/>
-                <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Margin="4,0,0,0"/>
                 <Label Visibility="{TemplateBinding PlaceholderVisibility}" Content="{TemplateBinding Placeholder}" FontStyle="Italic" Foreground="Gray"/>
                 <Button ToolTip="Clear text" x:Name="PART_clear_button" HorizontalAlignment="Right" Width="10" Background="Transparent" BorderThickness="0" Margin="0,0,5,0" Visibility="{TemplateBinding ClearButtonVisibility}"/>
                 <Popup x:Name="PART_Popup" AllowsTransparency="True" Placement="Bottom" PlacementTarget="{Binding ElementName=PART_ContentHost}" StaysOpen="False"/>

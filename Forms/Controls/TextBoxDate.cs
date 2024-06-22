@@ -8,21 +8,21 @@ using FrontEnd.Utils;
 
 namespace FrontEnd.Forms
 {
-    public class TextBoxDate : Text
+    public partial class TextBoxDate : Text
     {
-        private System.Windows.Controls.Calendar Calendar;
+        private readonly System.Windows.Controls.Calendar Calendar = new();
         private Button? PART_Button;
         private Popup? PART_Popup;
 
-        #region SelectedDate
-        public DateTime? SelectedDate
+        #region Date
+        public DateTime? Date
         {
-            get => (DateTime?)GetValue(SelectedDateProperty);
-            set => SetValue(SelectedDateProperty, value);
+            get => (DateTime?)GetValue(DateProperty);
+            set => SetValue(DateProperty, value);
         }
 
-        public static readonly DependencyProperty SelectedDateProperty =
-            DependencyProperty.Register(nameof(SelectedDate), typeof(DateTime?), typeof(TextBoxDate),
+        public static readonly DependencyProperty DateProperty =
+            DependencyProperty.Register(nameof(Date), typeof(DateTime?), typeof(TextBoxDate),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedDatePropertyChanged));
         private static void OnSelectedDatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -63,37 +63,58 @@ namespace FrontEnd.Forms
         }
         public TextBoxDate() : base()
         {
-            this.Calendar = new();
+            Style = FetchStyle();
             DropDownButtonClickCommand = new Command(OpenPopup);
-            Binding binding = new(nameof(SelectedDate))
-            {
-                Source = Calendar,
-                Mode = BindingMode.TwoWay,
-            };
+            this.Calendar.IsTodayHighlighted = true;
+            //Binding binding = new("SelectedDate")
+            //{
+            //    Source = Calendar,
+            //    Mode = BindingMode.TwoWay,
+            //};
 
-            this.SetBinding(SelectedDateProperty, binding);
-
-            Binding textBinding = new(nameof(SelectedDate))
+            //            this.SetBinding(DateProperty, binding);
+            Binding textBinding = new(nameof(Date))
             {
                 Source = this,
                 Mode = BindingMode.TwoWay,
                 Converter = new ConvertDateToString()
             };
-
             this.SetBinding(TextProperty, textBinding);
+
         }
 
         protected override Style FetchStyle() => (Style)resourceDict["TextBoxDateTemplateStyle"];
 
         private void OnSelectedDatesChanged(object? sender, SelectionChangedEventArgs e)
         {
-            var x = SelectedDate;
+            try
+            {
+                Date = (DateTime?)e.AddedItems[0];
+                Calendar.DisplayDate = (DateTime)e.AddedItems[0];
+            }
+            catch
+            {
+                Date = null;
+            }
+            finally 
+            {
+                if (PART_Popup != null)
+                    PART_Popup.IsOpen = false;
+            }
         }
 
         private void OpenPopup()
         {
-            if (PART_Popup!= null)
+            if (PART_Popup != null)
                 PART_Popup.IsOpen = !PART_Popup.IsOpen;
+            if (Date != null)
+            {
+                Calendar.DisplayDate = Date.Value;
+            }
+            else
+            {
+                Calendar.DisplayDate = DateTime.Today;
+            }
             Calendar.Focus();
         }
 
