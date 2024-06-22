@@ -170,6 +170,7 @@ namespace FrontEnd.Controller
         public override async Task RequeryAsync()
         {
             IsLoading = true; //notify the GUI that there is a process going on.
+            await Task.Delay(10);
             IEnumerable<M>? results = null;
             await Task.Run(async () => //retrieve the records. Do not freeze the GUI.
             {
