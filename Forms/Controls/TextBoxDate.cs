@@ -23,28 +23,18 @@ namespace FrontEnd.Forms
 
         public static readonly DependencyProperty DateProperty =
             DependencyProperty.Register(nameof(Date), typeof(DateTime?), typeof(TextBoxDate),
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedDatePropertyChanged));
-        private static void OnSelectedDatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            TextBoxDate control = (TextBoxDate)d;
-            if (e.NewValue == null)
-            {
-                control.Calendar.DisplayDate = DateTime.Today;
-                return;
-            }
-            control.Calendar.DisplayDate = (DateTime)e.NewValue;
-        }
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         #endregion
 
-        #region DropDownButtonClickCommand
-        public ICommand DropDownButtonClickCommand
+        #region TogglePopupCommand
+        public ICommand TogglePopupCommand
         {
-            get => (ICommand)GetValue(DropDownButtonClickCommandProperty);
-            set => SetValue(DropDownButtonClickCommandProperty, value);
+            get => (ICommand)GetValue(TogglePopupCommandProperty);
+            set => SetValue(TogglePopupCommandProperty, value);
         }
 
-        public static readonly DependencyProperty DropDownButtonClickCommandProperty =
-            DependencyProperty.Register(nameof(DropDownButtonClickCommand), typeof(ICommand), typeof(TextBoxDate), new PropertyMetadata(null));
+        public static readonly DependencyProperty TogglePopupCommandProperty =
+            DependencyProperty.Register(nameof(TogglePopupCommand), typeof(ICommand), typeof(TextBoxDate), new PropertyMetadata(null));
         #endregion
 
         protected override ResourceDictionary resourceDict => Helper.GetDictionary(nameof(TextBoxDate));
@@ -64,7 +54,7 @@ namespace FrontEnd.Forms
         public TextBoxDate() : base()
         {
             Style = FetchStyle();
-            DropDownButtonClickCommand = new Command(OpenPopup);
+            TogglePopupCommand = new Command(TogglePopup);
 
             Binding binding = new(nameof(Date))
             {
@@ -85,7 +75,7 @@ namespace FrontEnd.Forms
 
         protected override Style FetchStyle() => (Style)resourceDict["TextBoxDateTemplateStyle"];
 
-        private void OpenPopup()
+        private void TogglePopup()
         {
             if (PART_Popup != null)
                 PART_Popup.IsOpen = !PART_Popup.IsOpen;
@@ -128,7 +118,7 @@ namespace FrontEnd.Forms
             }
 
             public static readonly DependencyProperty IsOpenPopupProperty =
-                DependencyProperty.Register(nameof(DropDownButtonClickCommand), typeof(bool), typeof(TextBoxCalendar), new PropertyMetadata(false));
+                DependencyProperty.Register(nameof(TogglePopupCommand), typeof(bool), typeof(TextBoxCalendar), new PropertyMetadata(false));
             #endregion
 
             public TextBoxCalendar() => IsTodayHighlighted = true;
@@ -263,5 +253,4 @@ namespace FrontEnd.Forms
         }
 
     }
-
 }
