@@ -190,7 +190,7 @@ namespace FrontEnd.Controller
         /// <returns>true if the operation was successful</returns>
         protected virtual bool Update(M? model)
         {
-            if (ReadOnly) 
+            if (ReadOnly)
             {
                 Failure.Allert("This view is read only","Action Denied");
                 CurrentRecord?.Undo();
