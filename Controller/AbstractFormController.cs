@@ -290,13 +290,13 @@ namespace FrontEnd.Controller
         }
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
         {
-            if (CurrentModel == null) throw new NoModelException();
-            if (!((AbstractModel)CurrentModel).IsDirty) return false; //if the record has not been changed there is nothing to update.
-            CRUD crud = (!CurrentModel.IsNewRecord()) ? CRUD.UPDATE : CRUD.INSERT;
-            if (!CurrentModel.AllowUpdate()) return false; //the record did not meet the criteria to be updated.
-            Db.Model = CurrentModel;
+            if (CurrentRecord == null) throw new NoModelException();
+            if (!CurrentRecord.IsDirty) return false; //if the record has not been changed there is nothing to update.
+            if (!CurrentRecord.AllowUpdate()) return false; //the record did not meet the criteria to be updated.
+            CRUD crud = (!CurrentRecord.IsNewRecord()) ? CRUD.UPDATE : CRUD.INSERT;
+            Db.Model = CurrentRecord;
             Db.Crud(crud, sql, parameters);
-            ((AbstractModel)CurrentModel).IsDirty = false;
+            CurrentRecord.IsDirty = false;
             Db.MasterSource?.NotifyChildren(crud, Db.Model); //tell children sources to reflect the changes occured in the master source's collection.
             if (crud == CRUD.INSERT) GoLast(); //if the we have inserted a new record instruct the Navigator to move to the last record.
             return true;

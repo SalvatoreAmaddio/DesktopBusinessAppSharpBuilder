@@ -17,12 +17,18 @@ namespace FrontEnd.Forms
         protected abstract string CommandName { get; }
         public AbstractButton() 
         {
+            Unloaded += OnUnloaded;
             DataContextChanged += OnDataContextChanged;
             ToolTip = ToolTipText;
             Content = new Image()
             {
                 Source = Helper.LoadFromImages(ImgKey)
             };
+        }
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            DataContextChanged -= OnDataContextChanged;
+            Unloaded -= OnUnloaded;
         }
 
         #region IsWithinList
