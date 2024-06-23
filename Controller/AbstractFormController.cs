@@ -184,7 +184,6 @@ namespace FrontEnd.Controller
             IsLoading = false; //Notify the GUI the process has terminated
         }
         public bool PerformUpdate() => Update(CurrentRecord);
-
         public Task<bool> PerformUpdateAsync() 
         {
             bool result = Update(CurrentRecord);
@@ -312,7 +311,6 @@ namespace FrontEnd.Controller
             if (!e.Cancel) 
                 await Task.Run(Dispose);
         }
-
         public void DisposeWindow() 
         {
             if (_uiElement is Window _win)
@@ -323,7 +321,6 @@ namespace FrontEnd.Controller
             if (_uiElement is Page _page)
                 _page.Loaded -= OnPageLoaded;
         }
-
         public override void Dispose()
         {
             if (_uiElement is Window _win) 
