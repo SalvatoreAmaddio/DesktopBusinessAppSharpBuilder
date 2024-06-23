@@ -193,6 +193,7 @@ namespace FrontEnd.Controller
             if (ReadOnly) 
             {
                 Failure.Allert("This view is read only","Action Denied");
+                CurrentRecord?.Undo();
                 CurrentRecord?.Clean();
                 return false;
             }
@@ -215,6 +216,7 @@ namespace FrontEnd.Controller
             if (ReadOnly)
             {
                 Failure.Allert("This view is read only", "Action Denied");
+                CurrentRecord?.Undo();
                 CurrentRecord?.Clean();
                 return false;
             }
@@ -256,6 +258,7 @@ namespace FrontEnd.Controller
         }
         public override bool GoNew()
         {
+            if (!AllowNewRecord) return false;
             if (InvokeOnRecordMovedEvent(RecordMovement.GoNew)) // if the event is cancelled.
                 return false;
             if (!CanMove()) return false;
@@ -340,10 +343,20 @@ namespace FrontEnd.Controller
         private void OnWinLoaded(object sender, RoutedEventArgs e) => WindowLoaded?.Invoke(sender, e);
         public async void OnWinClosing(object? sender, CancelEventArgs e)
         {
+            if (ReadOnly)
+            {
+                CurrentRecord?.Undo();
+                CurrentRecord?.Clean();
+                Dispose();
+                return; // if the Controller is on ReadOnly, there is nothing to check, close the window.
+            }
+
             BeforeWindowClosing?.Invoke(sender, e);
+
             if (e.Cancel) return;
 
             bool dirty = AsRecordSource().Any(s => s.IsDirty);
+
             if (CurrentRecord!=null) 
                 dirty = CurrentRecord.IsDirty;
 
@@ -381,11 +394,11 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Disposers
-        public void DisposeWindow()
+        public void UnsubscribeWindowClosedEvent()
         {
             if (_uiElement is Window _win)
             {
-                _win.Closing -= OnWinClosed;
+                _win.Closed -= OnWinClosed;
             }
 
             if (_uiElement is Page _page)
@@ -395,7 +408,6 @@ namespace FrontEnd.Controller
         {
             BeforeWindowClosing = null;
             WindowClosing = null;
-            WindowClosed = null;
             WindowLoaded = null;
             AfterUpdate = null;
             BeforeUpdate = null;

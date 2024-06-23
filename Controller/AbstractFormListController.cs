@@ -120,6 +120,7 @@ namespace FrontEnd.Controller
         }
         public override bool GoNew()
         {
+            if (!AllowNewRecord) return false;
             if (OpenWindowOnNew) 
             {
                 base.GoNew(); //tell the Navigator to add a new record.

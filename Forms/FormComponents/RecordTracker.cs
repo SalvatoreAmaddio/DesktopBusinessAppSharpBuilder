@@ -102,12 +102,15 @@ namespace FrontEnd.Forms.FormComponents
 
             AbstractModel? record = (AbstractModel?)Controller.CurrentModel;
 
-            if (record != null && record.IsNewRecord() && record.IsDirty) 
+            if (!Controller.ReadOnly) 
             {
-                if (Ask() == MessageBoxResult.No)
-                    record.IsDirty = false;
-                else
-                    if (!Controller.PerformUpdate()) return;
+                if (record != null && record.IsDirty)
+                {
+                    if (Ask() == MessageBoxResult.No)
+                        record.IsDirty = false;
+                    else
+                        if (!Controller.PerformUpdate()) return;
+                }
             }
 
             switch (movement)
@@ -121,9 +124,9 @@ namespace FrontEnd.Forms.FormComponents
                 case 3:
                     if (Controller.Source.Navigate().EOF) 
                     {
-                            if (Controller is IAbstractFormListController listController && listController.OpenWindowOnNew)
-                                break;
-                            Controller.GoNew();
+                        if (Controller is IAbstractFormListController listController && listController.OpenWindowOnNew)
+                            break;
+                        Controller.GoNew();
                     }
                     else Controller.GoNext();
                     break;

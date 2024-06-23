@@ -82,7 +82,6 @@ namespace FrontEnd.Forms
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
-        
 
         /// <summary>
         /// Handles the switching from one row to another by clicking on them.
@@ -139,6 +138,13 @@ namespace FrontEnd.Forms
         private bool OnListViewItemLostFocus(AbstractModel? record, bool isTabItem)
         {
             if (record is null) return true; //record is null, nothing to check, exit the method.
+            
+            if (Controller.ReadOnly) // if the Controller is in ReadOnly, changes are not allowed and reverted. 
+            {
+                record.Undo();
+                return true;
+            }
+
             if (!record.IsDirty && !record.IsNewRecord()) return true; //The user is on a record which has not been changed and it is not a new Record. No need for checking.
 
             if (Controller.AllowAutoSave)
