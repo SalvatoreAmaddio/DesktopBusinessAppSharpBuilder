@@ -20,13 +20,13 @@
                             <ColumnDefinition Width="{TemplateBinding RecordStatusColumn}"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <ContentPresenter Grid.Row="0" Grid.ColumnSpan="2" Content="{TemplateBinding Menu}"/>
+                        <ContentPresenter Grid.Row="0" Grid.Column="1" Content="{TemplateBinding Menu}"/>
                         <ContentPresenter Grid.Row="1" Grid.ColumnSpan="2" Content="{TemplateBinding Header}"/>
                         <ContentPresenter Grid.Row="2" Grid.Column="1" Content="{TemplateBinding Content}"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        <formComp:RecordStatus Grid.Row="2" DataContext="{TemplateBinding DataContext}"/>
+                        <formComp:RecordStatus Grid.Row="0" Grid.RowSpan="3" DataContext="{TemplateBinding DataContext}"/>
                         <ProgressBar Grid.Row="3" Grid.ColumnSpan="2" IsIndeterminate="{TemplateBinding IsLoading}"/>
                         <formComp:RecordTracker Grid.Row="4" Grid.ColumnSpan="2" DataContext="{TemplateBinding DataContext}"/>
                     </Grid>
