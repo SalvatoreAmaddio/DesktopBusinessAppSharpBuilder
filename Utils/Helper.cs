@@ -15,7 +15,7 @@ namespace FrontEnd.Utils
     {
         /// <summary>
         /// Subscribes the Closing Event of the <see cref="Window"/> containg the <see cref="TabControl"/>. <para/>
-        /// For each Tab, the event calls the <see cref="IAbstractFormController.OnWindowClosing(object?, CancelEventArgs)"/> method
+        /// For each Tab, the event calls the <see cref="IAbstractFormController.OnWinClosing(object?, CancelEventArgs)"/> method
         /// which determines if the Window can close or not.
         /// </summary>
         /// <param name="tabControl">A TabControl object</param>
@@ -35,7 +35,7 @@ namespace FrontEnd.Utils
                 {
                     FrameworkElement element = (FrameworkElement)((Frame)item.Content).Content; //extract the FrameworkElement.
                     IAbstractFormController controller = (IAbstractFormController)element.DataContext; //extract the DataContext from the FrameworkElement and cast it to IAbstractFormController.
-                    controller.OnWindowClosing(sender, e); //call the OnWindowClosing() method to ask the user on what to do about unsaved changes.
+                    controller.OnWinClosing(sender, e); //call the OnWindowClosing() method to ask the user on what to do about unsaved changes.
                     if (e.Cancel) //if the method changed the e.Cancel property to true, the user attempted to exit the program breaking data integrity rules.
                     {
                         tabControl.SelectedItem = item; //force the user to stay in the Tab.

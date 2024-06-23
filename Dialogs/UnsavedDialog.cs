@@ -8,7 +8,7 @@ namespace FrontEnd.Dialogs
     /// <summary>
     /// Custom Window Dialog to ask the user what action they would like to perform in case some data are missing.
     /// This dialog is usually called when the user attempt to leave a record without saving it.<para/>
-    /// This dialog is used in: <see cref="Lista"/>, <see cref="Controller.IAbstractFormController.OnWindowClosing(object?, System.ComponentModel.CancelEventArgs)"/> 
+    /// This dialog is used in: <see cref="Lista"/>, <see cref="Controller.IAbstractFormController.OnWinClosing(object?, System.ComponentModel.CancelEventArgs)"/> 
     /// </summary>
     public class UnsavedDialog : AbstractDialog
     {

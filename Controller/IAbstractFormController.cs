@@ -27,7 +27,7 @@ namespace FrontEnd.Controller
     {
         /// <summary>
         /// Gets and sets a reference to a <see cref="Window"/> or <see cref="Page"/> object that the Controller is associated to. <para/>
-        /// If the element is a Window, its Closing event gets subscribed to the  <see cref="OnWindowClosing(object?, CancelEventArgs)"/>.<para/>
+        /// If the element is a Window, its Closing event gets subscribed to the  <see cref="OnWinClosing(object?, CancelEventArgs)"/>.<para/>
         /// Whereas, a Page gets its Unloaded event subscribed. Both subscriptions aim at calling <see cref="IDisposable.Dispose"/> 
         /// </summary>
         public UIElement? UI { get; set; }
@@ -56,7 +56,7 @@ namespace FrontEnd.Controller
         ///}
         /// </code>
         /// </summary>
-        public void OnWindowClosing(object? sender, CancelEventArgs e);
+        public void OnWinClosing(object? sender, CancelEventArgs e);
 
         public bool AllowAutoSave { get; set; }
 

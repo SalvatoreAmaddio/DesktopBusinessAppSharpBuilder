@@ -1,8 +1,13 @@
 ﻿using FrontEnd.Model;
+using System.ComponentModel;
 using System.Windows;
 
 namespace FrontEnd.Events
 {
+    public delegate void BeforeWindowClosingEventHandler(object? sender, CancelEventArgs e);
+    public delegate void WindowClosingEventHandler(object? sender, CancelEventArgs e);
+    public delegate void WindowClosedEventHandler(object? sender, EventArgs e);
+    public delegate void WindowLoadedEventHandler(object? sender, RoutedEventArgs e);
     public delegate void AfterSubFormFilterEventHandler(object? sender, EventArgs e);
     public delegate void NotifyParentControllerEventHandler(object? sender, EventArgs e);
     public delegate void OnPreparingCalendarFormEventHandler(object sender, OnPreparingCalendarFormEventArgs e);
