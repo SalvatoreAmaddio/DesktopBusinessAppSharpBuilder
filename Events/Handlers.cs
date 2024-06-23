@@ -58,12 +58,17 @@ namespace FrontEnd.Events
         GoLast = 2,
         GoNext = 3,
         GoPrevious = 4,
-        GoNew = 5
+        GoNew = 5,
+        GoAt = 6,
     }
 
     public class AllowRecordMovementArgs(RecordMovement movement) : EventArgs
     {
         public RecordMovement Movement { get; } = movement;
+        
+        /// <summary>
+        /// If sets to True, the Form will not move to another record.
+        /// </summary>
         public bool Cancel { get; set; } = false;
         public bool NewRecord => Movement == RecordMovement.GoNew;
         public bool GoFirst => Movement == RecordMovement.GoFirst;

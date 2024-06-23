@@ -221,22 +221,63 @@ namespace FrontEnd.Controller
         }
         public override bool GoNew()
         {
+            if (InvokeOnRecordMovedEvent(RecordMovement.GoNew)) // if the event is cancelled.
+                return false;
             if (!CanMove()) return false;
             bool moved = Navigator.MoveNew();
             if (!moved) return false;
             CurrentModel = new M();
-            if (InvokeOnRecordMovingEvent()) // if the event is cancelled.
-                return false;
             Records = Source.RecordPositionDisplayer();
             return moved;
         }
 
-        protected bool InvokeOnRecordMovingEvent(RecordMovement recordMovement = RecordMovement.GoNew) 
+        public override bool GoFirst()
+        {
+            bool result = base.GoFirst();
+            if (InvokeOnRecordMovedEvent(RecordMovement.GoFirst)) // if the event is cancelled.
+                return false;
+            return result;
+        }
+
+        public override bool GoLast()
+        {
+            bool result = base.GoLast();
+            if (InvokeOnRecordMovedEvent(RecordMovement.GoLast)) // if the event is cancelled.
+                return false;
+            return result;
+        }
+
+        public override bool GoPrevious()
+        {
+            bool result = base.GoPrevious();
+            if (InvokeOnRecordMovedEvent(RecordMovement.GoPrevious)) // if the event is cancelled.
+                return false;
+            return result;
+        }
+
+        public override bool GoNext()
+        {
+            bool result = base.GoNext();
+            if (InvokeOnRecordMovedEvent(RecordMovement.GoNext)) // if the event is cancelled.
+                return false;
+            return result;
+        }
+
+        public override bool GoAt(int index)
+        {
+            bool result = base.GoAt(index);
+            if (InvokeOnRecordMovedEvent(RecordMovement.GoAt)) // if the event is cancelled.
+                return false;
+            return result;
+        }
+
+        protected bool InvokeOnRecordMovedEvent(RecordMovement recordMovement)
         {
             AllowRecordMovementArgs args = new(recordMovement);
             RecordMovingEvent?.Invoke(this, args);
             return args.Cancel;
         }
+
         public void RaisePropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         public void UpdateProperty<T>(ref T value, ref T _backProp, [CallerMemberName] string propName = "")
         {

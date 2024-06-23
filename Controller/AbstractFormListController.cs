@@ -76,7 +76,7 @@ namespace FrontEnd.Controller
             AsRecordSource().Add(new M()); //add a new record to the collection.
             Navigator.MoveLast(); //Therefore, you can now move to the last record which is indeed a new record.
             CurrentModel = Navigator.Current; //set the CurrentModel property.
-            InvokeOnRecordMovingEvent(); //if you are using SubForms, Invoke the the OnNewRecordEvent().
+            InvokeOnRecordMovedEvent(RecordMovement.GoNew); //if you are using SubForms, Invoke the the OnNewRecordEvent().
             Records = "New Record"; //update RecordTracker's record displayer.
             return true;
         }
