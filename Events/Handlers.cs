@@ -6,7 +6,7 @@ namespace FrontEnd.Events
     public delegate void AfterSubFormFilterEventHandler(object? sender, EventArgs e);
     public delegate void NotifyParentControllerEventHandler(object? sender, EventArgs e);
     public delegate void OnPreparingCalendarFormEventHandler(object sender, OnPreparingCalendarFormEventArgs e);
-    public delegate void NewRecordEventHandler(object? sender, AllowRecordMovementArgs e);
+    public delegate void RecordMovingEventHandler(object? sender, AllowRecordMovementArgs e);
     public delegate void ParentRecordChangedEventHandler(object? sender, ParentRecordChangedArgs e);
     public delegate void AfterUpdateEventHandler(object? sender, AfterUpdateArgs e);
     public delegate void BeforeUpdateEventHandler(object? sender, BeforeUpdateArgs e);
@@ -65,6 +65,11 @@ namespace FrontEnd.Events
     {
         public RecordMovement Movement { get; } = movement;
         public bool Cancel { get; set; } = false;
+        public bool NewRecord => Movement == RecordMovement.GoNew;
+        public bool GoFirst => Movement == RecordMovement.GoFirst;
+        public bool GoNext => Movement == RecordMovement.GoNext;
+        public bool GoLast => Movement == RecordMovement.GoLast;
+        public bool GoPrevious => Movement == RecordMovement.GoPrevious;
     }
 
     public class FilterEventArgs() : AbstractEventArgs

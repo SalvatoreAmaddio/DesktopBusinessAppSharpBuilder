@@ -115,7 +115,7 @@ namespace FrontEnd.Controller
         public event PropertyChangedEventHandler? PropertyChanged;
         public event AfterUpdateEventHandler? AfterUpdate;
         public event BeforeUpdateEventHandler? BeforeUpdate;
-        public event NewRecordEventHandler? NewRecordEvent;
+        public event RecordMovingEventHandler? RecordMovingEvent;
         public event NotifyParentControllerEventHandler? NotifyParentControllerEvent;
         #endregion
 
@@ -225,19 +225,18 @@ namespace FrontEnd.Controller
             bool moved = Navigator.MoveNew();
             if (!moved) return false;
             CurrentModel = new M();
-            if (InvokeOnNewRecordEvent()) // if the event is cancelled.
-            {
+            if (InvokeOnRecordMovingEvent()) // if the event is cancelled.
                 return false;
-            }
             Records = Source.RecordPositionDisplayer();
             return moved;
         }
-        protected bool InvokeOnNewRecordEvent() 
+
+        protected bool InvokeOnRecordMovingEvent(RecordMovement recordMovement = RecordMovement.GoNew) 
         {
-            AllowRecordMovementArgs args = new(RecordMovement.GoNew);
-            NewRecordEvent?.Invoke(this, args);
+            AllowRecordMovementArgs args = new(recordMovement);
+            RecordMovingEvent?.Invoke(this, args);
             return args.Cancel;
-        } 
+        }
         public void RaisePropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         public void UpdateProperty<T>(ref T value, ref T _backProp, [CallerMemberName] string propName = "")
         {
@@ -345,7 +344,7 @@ namespace FrontEnd.Controller
 
             AfterUpdate = null;
             BeforeUpdate = null;
-            NewRecordEvent = null;
+            RecordMovingEvent = null;
             AfterSubFormFilter = null;
             AsRecordSource().Dispose(false);
             foreach (ISubFormController subController in _subControllers)

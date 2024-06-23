@@ -41,7 +41,7 @@ namespace FrontEnd.Controller
         /// }
         /// </code>
         /// </summary>
-        public event NewRecordEventHandler? NewRecordEvent;
+        public event RecordMovingEventHandler? RecordMovingEvent;
 
         public event NotifyParentControllerEventHandler? NotifyParentControllerEvent;
 
