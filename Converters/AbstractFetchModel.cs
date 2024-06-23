@@ -17,6 +17,8 @@ namespace FrontEnd.Converters
         protected IAbstractDatabase? Db => DatabaseManager.Find<D>();
         protected abstract string Sql { get; }
         protected readonly List<QueryParameter> para = [];
+
+        public D? Convert(object value) => (D?)Convert(value, null!, null!, null!);
         public abstract object? Convert(object value, Type targetType, object parameter, CultureInfo culture);
         public virtual object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => Record;
 
