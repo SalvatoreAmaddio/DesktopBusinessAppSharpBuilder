@@ -138,14 +138,15 @@ namespace FrontEnd.Forms
         private bool OnListViewItemLostFocus(AbstractModel? record, bool isTabItem)
         {
             if (record is null) return true; //record is null, nothing to check, exit the method.
-            
+            if (!record.IsDirty && record.IsNewRecord()) return true; //The user is on a new record which has not been changed and it is not a new Record. No need for checking.
+            if (!record.IsDirty && !record.IsNewRecord()) return true; //The user is on a record which has not been changed and it is not a new Record. No need for checking.
+            if (Controller == null) throw new NullReferenceException();
+
             if (Controller.ReadOnly) // if the Controller is in ReadOnly, changes are not allowed and reverted. 
             {
                 record.Undo();
                 return true;
             }
-
-            if (!record.IsDirty && !record.IsNewRecord()) return true; //The user is on a record which has not been changed and it is not a new Record. No need for checking.
 
             if (Controller.AllowAutoSave)
                 return AttemptSave(isTabItem);

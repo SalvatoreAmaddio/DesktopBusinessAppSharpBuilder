@@ -24,6 +24,7 @@ namespace FrontEnd.Controller
     public abstract class AbstractFormController<M> : AbstractSQLModelController, IParentController, ISubFormController, IDisposable, IAbstractFormController<M> where M : AbstractModel, new()
     {
         #region backing fields
+        private M? _currentRecord;
         private string _search = string.Empty;
         private bool _isloading = false;
         protected ISQLModel? _currentModel;
@@ -78,10 +79,15 @@ namespace FrontEnd.Controller
                 RaisePropertyChanged(nameof(CurrentRecord));
             }
         }
+
         public M? CurrentRecord
         {
             get => (M?)CurrentModel;
-            set => CurrentModel = value;
+            set 
+            {
+                CurrentModel = value;
+                UpdateProperty(ref value, ref _currentRecord);
+            } 
         }
         public override string Records { get => _records; protected set => UpdateProperty(ref value, ref _records); }        
         public bool IsLoading { get => _isloading; set => UpdateProperty(ref value, ref _isloading); }
@@ -264,7 +270,7 @@ namespace FrontEnd.Controller
             if (!CanMove()) return false;
             bool moved = Navigator.MoveNew();
             if (!moved) return false;
-            CurrentModel = new M();
+            CurrentRecord = new M();
             Records = Source.RecordPositionDisplayer();
             return moved;
         }
