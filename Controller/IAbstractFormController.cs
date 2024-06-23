@@ -25,6 +25,8 @@ namespace FrontEnd.Controller
     /// </summary>
     public interface IAbstractFormController : IAbstractSQLModelController, IParentController, INotifier
     {
+        public bool ReadOnly { get; set; }
+
         /// <summary>
         /// Gets and sets a reference to a <see cref="Window"/> or <see cref="Page"/> object that the Controller is associated to. <para/>
         /// If the element is a Window, its Closing event gets subscribed to the  <see cref="OnWinClosing(object?, CancelEventArgs)"/>.<para/>

@@ -36,9 +36,58 @@ namespace FrontEnd.Controller
             OpenNewCMD = new CMD(OpenNew);
             AsRecordSource().RunFilter += OnSourceRunFilter;
         }
+        public override async Task RequeryAsync()
+        {
+            IsLoading = true; //notify the GUI that there is a process going on.
+            await Task.Delay(10);
+            IEnumerable<M>? results = null;
+            await Task.Run(async () => //retrieve the records. Do not freeze the GUI.
+            {
+                results = await RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync().Cast<M>());
+            });
+
+            if (results == null) throw new Exception("Source is null"); //Something has gone wrong.
+            Db.ReplaceRecords(results.ToList<ISQLModel>()); //Replace the Master RecordSource's records with the newly fetched ones.
+
+            try
+            {
+                OnSubFormFilter();
+                IsLoading = false;
+                return;
+            }
+            catch
+            {
+                try
+                {
+                    OnOptionFilterClicked(new FilterEventArgs());
+                    IsLoading = false;
+                    return;
+                }
+                catch (NotImplementedException)
+                {
+                    try
+                    {
+                        results = await SearchRecordAsync();
+                    }
+                    catch (NotImplementedException) { }
+                }
+            }
+
+            AsRecordSource().ReplaceRecords(results); //Update also its child source for this controller.
+            IsLoading = false; //Notify the GUI the process has terminated
+        }
+        protected async Task OnSearchPropertyRequeryAsync(object? sender)
+        {
+            IEnumerable<M> results = await Task.Run(SearchRecordAsync);
+            AsRecordSource().ReplaceRecords(results);
+
+            if (sender is not FilterEventArgs filterEvtArgs)
+                GoFirst();
+        }
         public abstract Task<IEnumerable<M>> SearchRecordAsync();
         public abstract void OnOptionFilterClicked(FilterEventArgs e);
 
+        #region Open Windows
         /// <summary>
         /// Override this method to open a new window to view the selected record. <para/>
         /// For Example:
@@ -54,7 +103,13 @@ namespace FrontEnd.Controller
         /// Calls the <see cref="Open(M)"/> by passing a new instance of <see cref="AbstractModel"/>.
         /// </summary>
         protected void OpenNew() => Open(new());
+        #endregion
+
+        #region Event Subscriptions
         private void OnSourceRunFilter(object? sender, FilterEventArgs e) => OnOptionFilterClicked(e);
+        #endregion
+
+        #region Go At
         public void CleanSource()
         {
             if (OpenWindowOnNew) return;
@@ -118,7 +173,9 @@ namespace FrontEnd.Controller
                 return true;    
             }
         }
+        #endregion
 
+        #region AlterRecord
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
         {
             if (CurrentRecord == null) throw new NoModelException();
@@ -140,7 +197,7 @@ namespace FrontEnd.Controller
             Db.MasterSource?.NotifyChildren(crud, temp);
             return true;
         }
-        
+
         /// <summary>
         /// Execute a CRUD Operation. This method is only used in <see cref="AlterRecord(string?, List{QueryParameter}?)"/> to avoid code repition.
         /// </summary>
@@ -150,63 +207,12 @@ namespace FrontEnd.Controller
             Db.Crud(crud, sql, parameters);
             temp.IsDirty = false;
         }
-
+        #endregion
         public override void Dispose()
         {
             SearchQry.Dispose();
             base.Dispose();
             GC.SuppressFinalize(this);
         }
-
-        protected async Task OnSearchPropertyRequeryAsync(object? sender)
-        {
-            IEnumerable<M> results = await Task.Run(SearchRecordAsync);
-            AsRecordSource().ReplaceRecords(results);
-
-            if (sender is not FilterEventArgs filterEvtArgs)
-                GoFirst();
-        }
-
-        public override async Task RequeryAsync()
-        {
-            IsLoading = true; //notify the GUI that there is a process going on.
-            await Task.Delay(10);
-            IEnumerable<M>? results = null;
-            await Task.Run(async () => //retrieve the records. Do not freeze the GUI.
-            {
-                results = await RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync().Cast<M>());
-            });
-
-            if (results == null) throw new Exception("Source is null"); //Something has gone wrong.
-            Db.ReplaceRecords(results.ToList<ISQLModel>()); //Replace the Master RecordSource's records with the newly fetched ones.
-            
-            try 
-            {
-                OnSubFormFilter();
-                IsLoading = false;
-                return;
-            }
-            catch 
-            {
-                try
-                {
-                    OnOptionFilterClicked(new FilterEventArgs());
-                    IsLoading = false;
-                    return;
-                }
-                catch (NotImplementedException)
-                {
-                    try
-                    {
-                        results = await SearchRecordAsync();
-                    }
-                    catch (NotImplementedException) { }
-                }
-            }
-
-            AsRecordSource().ReplaceRecords(results); //Update also its child source for this controller.
-            IsLoading = false; //Notify the GUI the process has terminated
-        }
-
     }
 }

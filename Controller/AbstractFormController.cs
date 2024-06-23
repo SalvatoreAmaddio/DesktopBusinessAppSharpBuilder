@@ -33,6 +33,7 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Properties
+        public bool ReadOnly { get; set; } = false;
         public AbstractClause SearchQry { get; private set; }
         public UIElement? UI
         {
@@ -189,6 +190,13 @@ namespace FrontEnd.Controller
         /// <returns>true if the operation was successful</returns>
         protected virtual bool Update(M? model)
         {
+            if (ReadOnly) 
+            {
+                Failure.Allert("This view is read only","Action Denied");
+                CurrentRecord?.Clean();
+                return false;
+            }
+
             if (model == null) return false;
             CurrentRecord = model;
             bool result = AlterRecord();
@@ -204,6 +212,12 @@ namespace FrontEnd.Controller
         /// <returns>true if the operation was successful</returns>
         protected virtual bool Delete(M? model)
         {
+            if (ReadOnly)
+            {
+                Failure.Allert("This view is read only", "Action Denied");
+                CurrentRecord?.Clean();
+                return false;
+            }
             DialogResult result = ConfirmDialog.Ask("Are you sure you want to delete this record?");
             if (result == DialogResult.No) return false;
             CurrentRecord = model;
