@@ -86,13 +86,6 @@ namespace FrontEnd.Forms
         }
         #endregion
 
-        public HeaderFilter()
-        {
-           
-        }
-
-        private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e) => Dispose();
-
         private void ResetDropDownButtonAppereance()
         {
             if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
@@ -195,23 +188,6 @@ namespace FrontEnd.Forms
                 option.OnSelectionChanged -= OnOptionSelected;
         }
 
-        private static void DisposeSource(SourceOption source) 
-        {
-            foreach (IFilterOption option in source)
-                option.Dispose();
-
-            source.Dispose();
-        }
-
-        private void OnOptionSelected(object? sender, EventArgs e)
-        {
-            if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
-            PART_DropDownButton.Content = ClearFilter;
-            ToolTip = "Clear Filter";
-            ((IAbstractFormListController)DataContext).OnOptionFilterClicked(new());
-            if (!ItemsSource.Any(s=>s.IsSelected)) ResetDropDownButtonAppereance();
-        }
-
         public void OnItemSourceUpdated(object[] args)
         {
             if (args.Length == 1) // NEW OPTION WAS ADDED
@@ -254,27 +230,42 @@ namespace FrontEnd.Forms
 
         protected override void UnsubscribeEvents(object sender, RoutedEventArgs e) { }
 
+        #region Event Subscriptions
+        private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e) => Dispose();
+        private void OnOptionSelected(object? sender, EventArgs e)
+        {
+            if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
+            PART_DropDownButton.Content = ClearFilter;
+            ToolTip = "Clear Filter";
+            ((IAbstractFormListController)DataContext).OnOptionFilterClicked(new());
+            if (!ItemsSource.Any(s => s.IsSelected)) ResetDropDownButtonAppereance();
+        }
+        #endregion
+
+        private static void DisposeSource(SourceOption source)
+        {
+            foreach (IFilterOption option in source)
+                option.Dispose();
+
+            source.Dispose();
+        }
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if (disposing)
-            {
-                if (PART_DropDownButton != null)
-                    PART_DropDownButton.Click -= OnDropdownButtonClicked;
+            if (PART_DropDownButton != null)
+                PART_DropDownButton.Click -= OnDropdownButtonClicked;
 
-                if (PART_ClearButton != null)
-                    PART_ClearButton.Click -= OnClearButtonClicked;
+            if (PART_ClearButton != null)
+                PART_ClearButton.Click -= OnClearButtonClicked;
 
-                DisposeSource((SourceOption)ItemsSource);
+            DisposeSource((SourceOption)ItemsSource);
 
-                if (ParentWindow != null)
-                    ParentWindow.Closing -= OnClosing;
+            if (ParentWindow != null)
+                ParentWindow.Closing -= OnClosing;
 
-                Loaded -= OnLoaded;
-            }
+            Loaded -= OnLoaded;
         }
-
-        ~HeaderFilter() => Dispose(false);
 
     }
 
