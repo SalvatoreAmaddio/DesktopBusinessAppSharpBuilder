@@ -44,7 +44,6 @@ namespace FrontEnd.Controller
                 Navigator.AllowNewRecord = value;
             }
         }
-
         public bool ReadOnly { get => _readOnly; set => UpdateProperty(ref value, ref _readOnly); }
         public AbstractClause SearchQry { get; private set; }
         public UIElement? UI
@@ -357,6 +356,11 @@ namespace FrontEnd.Controller
                 win.Closed += OnWinClosed;
                 win.Closing += OnWinClosing;
                 win.Loaded += OnWinLoaded;
+
+                if (win.IsLoaded) 
+                {
+                    OnWinLoaded(win, new());
+                }
             }
         }
         private void OnWinLoaded(object sender, RoutedEventArgs e) => WindowLoaded?.Invoke(sender, e);

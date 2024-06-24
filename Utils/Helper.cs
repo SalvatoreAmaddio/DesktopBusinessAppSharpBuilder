@@ -148,7 +148,7 @@ namespace FrontEnd.Utils
 
         }
 
-        public static void OpenWindowDialog(string title, object content, double? width = null, double? height = null, ResizeMode mode = ResizeMode.CanResize) 
+        public static void OpenWindowDialog(string title, object content, double? width = null, double? height = null, ResizeMode mode = ResizeMode.CanResize)
         {
             Window window = new()
             {
