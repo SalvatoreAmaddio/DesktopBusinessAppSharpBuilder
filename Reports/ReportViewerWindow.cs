@@ -1,6 +1,5 @@
 ﻿using Backend.Utils;
 using System.Windows;
-using System.Windows.Input;
 
 namespace FrontEnd.Reports
 {
@@ -41,6 +40,13 @@ namespace FrontEnd.Reports
         {
             Content = ReportViewer;
             Title = "Report Viewer";
+            Closed += OnWindowClosed;
+        }
+
+        private void OnWindowClosed(object? sender, EventArgs e)
+        {
+            ReportViewer.Dispose();
+            Closed -= OnWindowClosed;
         }
 
         public void AddPage(ReportPage page) 
