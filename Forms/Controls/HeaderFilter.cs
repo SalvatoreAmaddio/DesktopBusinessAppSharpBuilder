@@ -250,9 +250,9 @@ namespace FrontEnd.Forms
             source.Dispose();
         }
 
-        protected override void Dispose(bool disposing)
+        protected override void DisposeEvents()
         {
-            base.Dispose(disposing);
+            base.DisposeEvents();
             if (PART_DropDownButton != null)
                 PART_DropDownButton.Click -= OnDropdownButtonClicked;
 
