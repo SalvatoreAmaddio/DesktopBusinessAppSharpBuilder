@@ -5,7 +5,7 @@ namespace FrontEnd.Forms
 {
     public abstract class AbstractContentControl : ContentControl, IDisposable
     {
-        protected bool _disposed = false;
+        protected Window? ParentWindow;
         static AbstractContentControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(AbstractContentControl), new FrameworkPropertyMetadata(typeof(AbstractContentControl)));
 
         public AbstractContentControl() 
@@ -14,7 +14,7 @@ namespace FrontEnd.Forms
             Unloaded += UnsubscribeEvents;
         }
 
-        protected virtual void UnsubscribeEvents(object sender, RoutedEventArgs e) => Dispose(true);
+        protected virtual void UnsubscribeEvents(object sender, RoutedEventArgs e) => DisposeEvents();
 
         protected virtual void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -22,22 +22,15 @@ namespace FrontEnd.Forms
 
         public virtual void Dispose()
         {
-            Dispose(true);
+            DisposeEvents();
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected virtual void DisposeEvents()
         {
-            if (_disposed) return;
-
-            if (disposing)
-            {
-                // Unsubscribe from events
-                DataContextChanged -= OnDataContextChanged;
-                Unloaded -= UnsubscribeEvents;
-            }
-
-            _disposed = true;
+            // Unsubscribe from events
+            DataContextChanged -= OnDataContextChanged;
+            Unloaded -= UnsubscribeEvents;
         }
 
     }

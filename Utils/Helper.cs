@@ -7,7 +7,6 @@ using System.ComponentModel;
 using Backend.Utils;
 using FrontEnd.ExtensionMethods;
 using FrontEnd.Dialogs;
-using System.IO;
 
 namespace FrontEnd.Utils
 {
@@ -23,7 +22,7 @@ namespace FrontEnd.Utils
         public static void ManageTabClosing(TabControl tabControl) 
         {
             //Get the Window
-            Window? window = FindAncestor<Window>(tabControl) ?? throw new Exception("Failed to find the window"); //this Exception should not happen.
+            Window? window = Window.GetWindow(tabControl);
 
             //subscribe the Closing Event
             window.Closing += (sender, e) =>
@@ -58,7 +57,7 @@ namespace FrontEnd.Utils
         /// </summary>
         /// <param name="imgKey">The resource's key</param>
         /// <returns>A BitmapImage</returns>
-        public static BitmapImage LoadFromImages(string imgKey) =>
+        public static BitmapImage? LoadFromImages(string imgKey) =>
         LoadImg(GetDictionary("Images")[imgKey]?.ToString());
 
         /// <summary>

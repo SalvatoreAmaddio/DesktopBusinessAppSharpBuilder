@@ -107,7 +107,7 @@ namespace FrontEnd.Forms
             PART_ListBox = (ListBox)GetTemplateChild(nameof(PART_ListBox));
             System.Diagnostics.PresentationTraceSources.SetTraceLevel(PART_ListBox.ItemContainerGenerator, System.Diagnostics.PresentationTraceLevel.High);
 
-            ParentWindow = Helper.GetActiveWindow();
+            ParentWindow = Window.GetWindow(this);
             if (ParentWindow != null)
                 ParentWindow.Closing += OnClosing;
         }

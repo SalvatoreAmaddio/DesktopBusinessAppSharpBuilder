@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using FrontEnd.Controller;
 using FrontEnd.Utils;
+using FrontEnd.ExtensionMethods;
 
 namespace FrontEnd.Forms.Calendar
 {
@@ -20,7 +21,7 @@ namespace FrontEnd.Forms.Calendar
         private StackPanel? PART_Fridays;
         private StackPanel? PART_Saturdays;
         private StackPanel? PART_Sundays;
-        private Window? _activeWindow;
+        private Window? _parentWindow;
 
         #region RequeryCMD
         public static readonly DependencyProperty RequeryCMDProperty =
@@ -179,9 +180,6 @@ namespace FrontEnd.Forms.Calendar
             PreviousMonthCMD = new CMDAsync(() => Go(TimeTravel.PREV_MONTH));
             PreviousWeekCMD = new CMDAsync(()=>Go(TimeTravel.PREV_WEEK));
             NextWeekCMD = new CMDAsync(() => Go(TimeTravel.NEXT_WEEK));
-            _activeWindow = Helper.GetActiveWindow();
-            if (_activeWindow != null )
-                _activeWindow.Closing += OnUnloaded;
         }
 
         public override async void OnApplyTemplate()
@@ -194,6 +192,10 @@ namespace FrontEnd.Forms.Calendar
             PART_Fridays = (StackPanel?)GetTemplateChild(nameof(PART_Fridays));
             PART_Saturdays = (StackPanel?)GetTemplateChild(nameof(PART_Saturdays));
             PART_Sundays = (StackPanel?)GetTemplateChild(nameof(PART_Sundays));
+            _parentWindow = Window.GetWindow(this);
+            if (_parentWindow != null)
+                _parentWindow.Closing += OnUnloaded;
+
             await OnDateUpdate();
         }
 
@@ -311,8 +313,8 @@ namespace FrontEnd.Forms.Calendar
         }
         public void Dispose()
         {
-            if (_activeWindow != null)
-                _activeWindow.Closing -= OnUnloaded;
+            if (_parentWindow != null)
+                _parentWindow.Closing -= OnUnloaded;
             ClearCalendar();
             GC.SuppressFinalize(this);
         }
