@@ -153,7 +153,7 @@ namespace FrontEnd.FilterSource
             ReplaceRange(OrderSource());
         }
 
-        public void Dispose() 
+        public void Dispose()
         {
             Source?.ParentSource?.RemoveChild(this);
             UIControls?.Clear();

@@ -1,11 +1,11 @@
 ﻿using System.Windows.Controls;
 using System.Windows;
-using FrontEnd.Utils;
 
 namespace FrontEnd.Forms
 {
     public abstract class AbstractControl : Control, IDisposable
     {
+        protected Window? ParentWindow;
         protected bool _disposed = false;
         static AbstractControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(AbstractControl), new FrameworkPropertyMetadata(typeof(AbstractControl)));
 

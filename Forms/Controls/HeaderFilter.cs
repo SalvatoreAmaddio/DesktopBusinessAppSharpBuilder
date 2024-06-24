@@ -86,11 +86,9 @@ namespace FrontEnd.Forms
         }
         #endregion
 
-        public HeaderFilter() 
+        public HeaderFilter()
         {
-            Window? window = Helper.GetActiveWindow();
-            if (window != null) 
-                window.Closing += OnClosing;
+           
         }
 
         private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e) => Dispose();
@@ -115,6 +113,10 @@ namespace FrontEnd.Forms
 
             PART_ListBox = (ListBox)GetTemplateChild(nameof(PART_ListBox));
             System.Diagnostics.PresentationTraceSources.SetTraceLevel(PART_ListBox.ItemContainerGenerator, System.Diagnostics.PresentationTraceLevel.High);
+
+            ParentWindow = Helper.GetActiveWindow();
+            if (ParentWindow != null)
+                ParentWindow.Closing += OnClosing;
         }
 
         #region Events
@@ -162,24 +164,43 @@ namespace FrontEnd.Forms
             set => SetValue(ItemsSourceProperty, value); 
         }
 
-        private static void ItemSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((HeaderFilter)d).BindEvents(e.NewValue);
+        private static void ItemSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((HeaderFilter)d).BindEvents(e.OldValue, e.NewValue);
 
-        private void BindEvents(object new_source)
+        private void BindEvents(object old_source, object new_source)
         {
+            if (old_source != null)
+                UnsubscribeEvents((SourceOption)old_source);
+
             if (new_source == null) return;
+
             SourceOption? source = new_source as SourceOption;
             source?.AddUIControlReference(this);
-            if (source is SourceOption) 
+
+            if (source is not null) 
             {
                 foreach (IFilterOption option in source)
                     option.OnSelectionChanged += OnOptionSelected;
 
-                if (ItemsSource.Any(s => s.IsSelected)) 
+                if (ItemsSource.Any(s => s.IsSelected))
                 {
                     if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
                     PART_DropDownButton.Content = ClearFilter;
                 }
             }
+        }
+        
+        private void UnsubscribeEvents(SourceOption source)
+        {
+            foreach (IFilterOption option in source)
+                option.OnSelectionChanged -= OnOptionSelected;
+        }
+
+        private static void DisposeSource(SourceOption source) 
+        {
+            foreach (IFilterOption option in source)
+                option.Dispose();
+
+            source.Dispose();
         }
 
         private void OnOptionSelected(object? sender, EventArgs e)
@@ -231,20 +252,7 @@ namespace FrontEnd.Forms
         }
         #endregion
 
-        protected override void UnsubscribeEvents(object sender, RoutedEventArgs e)
-        {
-        }
-
-        protected void DisposeSource() 
-        {
-            if (ItemsSource != null)
-            {
-                foreach (IFilterOption option in ItemsSource)
-                    option.Dispose();
-
-                ((SourceOption?)ItemsSource)?.Dispose();
-            }
-        }
+        protected override void UnsubscribeEvents(object sender, RoutedEventArgs e) { }
 
         protected override void Dispose(bool disposing)
         {
@@ -257,11 +265,10 @@ namespace FrontEnd.Forms
                 if (PART_ClearButton != null)
                     PART_ClearButton.Click -= OnClearButtonClicked;
 
-                DisposeSource();
+                DisposeSource((SourceOption)ItemsSource);
 
-                Window? window = Helper.GetActiveWindow();
-                if (window != null)
-                    window.Closing -= OnClosing;
+                if (ParentWindow != null)
+                    ParentWindow.Closing -= OnClosing;
 
                 Loaded -= OnLoaded;
             }
