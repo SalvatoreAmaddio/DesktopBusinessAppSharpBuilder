@@ -24,6 +24,7 @@ namespace FrontEnd.Controller
     public abstract class AbstractFormController<M> : AbstractSQLModelController, IParentController, ISubFormController, IDisposable, IAbstractFormController<M> where M : AbstractModel, new()
     {
         #region backing fields
+        private bool _readOnly = false;
         private M? _currentRecord;
         private string _search = string.Empty;
         private bool _isloading = false;
@@ -34,7 +35,7 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Properties
-        public bool ReadOnly { get; set; } = false;
+        public bool ReadOnly { get => _readOnly; set => UpdateProperty(ref value, ref _readOnly); }
         public AbstractClause SearchQry { get; private set; }
         public UIElement? UI
         {
@@ -76,7 +77,7 @@ namespace FrontEnd.Controller
             set
             {
                 UpdateProperty(ref value, ref _currentModel);
-                RaisePropertyChanged(nameof(CurrentRecord));
+                SetCurrentRecordProperty((M?)value);
             }
         }
 
@@ -89,6 +90,7 @@ namespace FrontEnd.Controller
                 UpdateProperty(ref value, ref _currentRecord);
             } 
         }
+
         public override string Records { get => _records; protected set => UpdateProperty(ref value, ref _records); }        
         public bool IsLoading { get => _isloading; set => UpdateProperty(ref value, ref _isloading); }
         public string Search { get => _search; set => UpdateProperty(ref value, ref _search); }
@@ -120,6 +122,7 @@ namespace FrontEnd.Controller
             RequeryCMD = new CMDAsync(RequeryAsync);
             SearchQry = InstantiateSearchQry();
         }
+        private void SetCurrentRecordProperty(M? value) => UpdateProperty(ref value, ref _currentRecord, nameof(CurrentRecord));
 
         public void ReloadSearchQry()
         {
