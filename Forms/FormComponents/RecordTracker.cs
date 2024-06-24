@@ -83,13 +83,14 @@ namespace FrontEnd.Forms.FormComponents
 
         protected override void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.NewValue is not IAbstractFormController) throw new Exception("DataContext should be an instance of IAbstractFormController.");
+            if (e.NewValue is not IAbstractFormController) throw new ArgumentException("DataContext should be an instance of IAbstractFormController.");
 
             SetBinding(RecordsProperty, new Binding("Records") { Source = e.NewValue });
 
             SetBinding(GoNewVisibilityProperty, new Binding("AllowNewRecord") 
             {
                 Source = e.NewValue,
+                Mode = BindingMode.TwoWay,
                 Converter = new AllowNewRecordConverter()
             });
         }

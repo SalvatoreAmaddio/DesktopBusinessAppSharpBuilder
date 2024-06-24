@@ -35,6 +35,16 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Properties
+        public override bool AllowNewRecord
+        {
+            get => base.AllowNewRecord;
+            set
+            {
+                UpdateProperty(ref value, ref _allowNewRecord);
+                Navigator.AllowNewRecord = value;
+            }
+        }
+
         public bool ReadOnly { get => _readOnly; set => UpdateProperty(ref value, ref _readOnly); }
         public AbstractClause SearchQry { get; private set; }
         public UIElement? UI
