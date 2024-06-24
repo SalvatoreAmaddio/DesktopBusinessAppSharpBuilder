@@ -205,9 +205,9 @@ namespace FrontEnd.Controller
             }
 
             if (model == null) return false;
-            CurrentRecord = model;
+            _currentRecord = model;
             bool result = AlterRecord();
-            if (result) 
+            if (result)
                 NotifyParentControllerEvent?.Invoke(this, EventArgs.Empty);
             return result;
         }
