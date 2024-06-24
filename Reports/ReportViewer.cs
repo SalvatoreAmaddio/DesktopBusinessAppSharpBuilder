@@ -19,8 +19,10 @@ namespace FrontEnd.Reports
     /// <para/>
     /// see also: <seealso cref="ReportPage"/>, <seealso cref="ListPage"/>
     /// </summary>
-    public class ReportViewer : Control
+    public class ReportViewer : Control, IDisposable
     {
+        private Window? _parentWindow;
+
         #region OpenFile
         /// <summary>
         /// Sets this property to true to open the file after the printing process has completed.
@@ -154,7 +156,6 @@ namespace FrontEnd.Reports
                 FrontEndSettings.Default.ReportDefaultDirectory = Sys.Desktop;
 
             DirName = FrontEndSettings.Default.ReportDefaultDirectory;
-
         }
 
         protected virtual async void OnSendEmailClicked(object? sender, EventArgs e)
@@ -232,7 +233,13 @@ namespace FrontEnd.Reports
             PART_ChooseDir = (Button?)GetTemplateChild(nameof(PART_ChooseDir));
             if (PART_ChooseDir!=null)
                 PART_ChooseDir.Click += OnChooseDirClicked;
+
+            _parentWindow = Window.GetWindow(this);
+            if (_parentWindow!=null)
+                _parentWindow.Closed += OnParentWindowClosed;
         }
+
+        private void OnParentWindowClosed(object? sender, EventArgs e) => Dispose();
 
         private void OnChooseDirClicked(object sender, RoutedEventArgs e)
         {
@@ -363,6 +370,20 @@ namespace FrontEnd.Reports
             {
                 MessageBox.Show($"Could not open the PDF file. Error: {ex.Message}");
             }
+        }
+
+        public void Dispose()
+        {
+            if (PART_SendButton != null)
+                PART_SendButton.Click -= OnSendEmailClicked;
+
+            if (PART_ChooseDir != null)
+                PART_ChooseDir.Click -= OnChooseDirClicked;
+
+            if (_parentWindow != null)
+                _parentWindow.Closed -= OnParentWindowClosed;
+
+            GC.SuppressFinalize(this);
         }
     }
 }
