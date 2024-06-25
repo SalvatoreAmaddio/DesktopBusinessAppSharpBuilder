@@ -3,7 +3,6 @@ using FrontEnd.Events;
 using FrontEnd.Model;
 using System.Windows.Controls;
 using System.Windows;
-using System.Security.Policy;
 
 namespace FrontEnd.Forms
 {
@@ -12,7 +11,6 @@ namespace FrontEnd.Forms
     /// </summary>
     public class SubForm : ContentControl, IDisposable
     {
-        protected bool _disposed = false;
         private AbstractForm? abstractForm;
 
         private event ParentRecordChangedEventHandler? ParentRecordChangedEvent;
@@ -60,24 +58,12 @@ namespace FrontEnd.Forms
 
         public virtual void Dispose()
         {
-            Dispose(true);
+            // Unsubscribe from events
+            if (abstractForm!=null)
+                abstractForm.DataContextChanged -= OnAbstractFormDataContextChanged;
+            ParentRecord.OnDirtyChanged -= OnParentRecordDirtyChanged;
+            ParentRecordChangedEvent -= OnParentRecordChanged;
             GC.SuppressFinalize(this);
         }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed) return;
-
-            if (disposing)
-            {
-                // Unsubscribe from events
-                ParentRecord.OnDirtyChanged -= OnParentRecordDirtyChanged;
-                ParentRecordChangedEvent -= OnParentRecordChanged;
-            }
-
-            _disposed = true;
-        }
-
-        ~SubForm() => Dispose(false);
     }
 }

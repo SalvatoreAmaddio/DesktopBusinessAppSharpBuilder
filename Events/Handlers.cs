@@ -1,36 +1,23 @@
-﻿using FrontEnd.Model;
+﻿using Backend.Events;
+using FrontEnd.Model;
 using System.ComponentModel;
 using System.Windows;
 
 namespace FrontEnd.Events
 {
-    public delegate void BeforeWindowClosingEventHandler(object? sender, CancelEventArgs e);
     public delegate void WindowClosingEventHandler(object? sender, CancelEventArgs e);
     public delegate void WindowClosedEventHandler(object? sender, EventArgs e);
     public delegate void WindowLoadedEventHandler(object? sender, RoutedEventArgs e);
     public delegate void AfterSubFormFilterEventHandler(object? sender, EventArgs e);
     public delegate void NotifyParentControllerEventHandler(object? sender, EventArgs e);
     public delegate void OnPreparingCalendarFormEventHandler(object sender, OnPreparingCalendarFormEventArgs e);
-    public delegate void RecordMovingEventHandler(object? sender, AllowRecordMovementArgs e);
+    
     public delegate void ParentRecordChangedEventHandler(object? sender, ParentRecordChangedArgs e);
     public delegate void AfterUpdateEventHandler(object? sender, AfterUpdateArgs e);
     public delegate void BeforeUpdateEventHandler(object? sender, BeforeUpdateArgs e);
     public delegate void SelectionChangedEventHandler(object? sender, EventArgs e);
     public delegate void OnDirtyChangedEventHandler(object? sender, OnDirtyChangedEventArgs e);
 
-    public abstract class AbstractEventArgs : EventArgs 
-    {
-        public string[] Messages = [];
-
-        public bool HasMessages => Messages.Length > 0;
-
-        public bool MessageIs(int index, string value) => this[index].Equals(value);
-
-        public string this[int index]
-        {
-            get { return Messages[index]; }
-        }
-    }
 
     /// <summary>
     /// This delegate works as a bridge between the <see cref="Controller.AbstractFormListController{M}"/> and a <see cref="Source.RecordSource{M}"/>.
@@ -55,31 +42,6 @@ namespace FrontEnd.Events
             RoutedEvent = evt;
             Source = source;
         }
-    }
-
-    public enum RecordMovement 
-    { 
-        GoFirst = 1,
-        GoLast = 2,
-        GoNext = 3,
-        GoPrevious = 4,
-        GoNew = 5,
-        GoAt = 6,
-    }
-
-    public class AllowRecordMovementArgs(RecordMovement movement) : EventArgs
-    {
-        public RecordMovement Movement { get; } = movement;
-        
-        /// <summary>
-        /// If sets to True, the Form will not move to another record.
-        /// </summary>
-        public bool Cancel { get; set; } = false;
-        public bool NewRecord => Movement == RecordMovement.GoNew;
-        public bool GoFirst => Movement == RecordMovement.GoFirst;
-        public bool GoNext => Movement == RecordMovement.GoNext;
-        public bool GoLast => Movement == RecordMovement.GoLast;
-        public bool GoPrevious => Movement == RecordMovement.GoPrevious;
     }
 
     public class FilterEventArgs() : AbstractEventArgs

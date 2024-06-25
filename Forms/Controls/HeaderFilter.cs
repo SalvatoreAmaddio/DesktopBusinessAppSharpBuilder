@@ -109,7 +109,7 @@ namespace FrontEnd.Forms
 
             ParentWindow = Window.GetWindow(this);
             if (ParentWindow != null)
-                ParentWindow.Closing += OnClosing;
+                ParentWindow.Closed += OnClosed;
         }
 
         #region Events
@@ -231,7 +231,7 @@ namespace FrontEnd.Forms
         protected override void UnsubscribeEvents(object sender, RoutedEventArgs e) { }
 
         #region Event Subscriptions
-        private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e) => Dispose();
+        private void OnClosed(object? sender, EventArgs e) => Dispose();
         private void OnOptionSelected(object? sender, EventArgs e)
         {
             if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
@@ -262,9 +262,12 @@ namespace FrontEnd.Forms
             DisposeSource((SourceOption)ItemsSource);
 
             if (ParentWindow != null)
-                ParentWindow.Closing -= OnClosing;
+                ParentWindow.Closing -= OnClosed;
 
             Loaded -= OnLoaded;
+
+            if (ParentWindow != null)
+                ParentWindow.Closed -= OnClosed;
         }
 
     }

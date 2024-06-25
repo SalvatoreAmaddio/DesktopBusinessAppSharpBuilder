@@ -14,6 +14,7 @@ using FrontEnd.Source;
 using System.Windows.Controls;
 using Backend.Enums;
 using Backend.ExtensionMethods;
+using Backend.Events;
 
 namespace FrontEnd.Controller
 {
@@ -53,18 +54,20 @@ namespace FrontEnd.Controller
             {
                 if (value is not Window && value is not Page)
                     throw new Exception("UI Element is meant to be either a Window or a Page");
-                _uiElement = value;
-                if (_uiElement is Window _win) 
+
+                if (value is Page _page)
+                {
+                    _page.Loaded += OnPageLoaded;
+                }
+
+                if (value is Window _win) 
                 {
                     _win.Closed += OnWinClosed;
                     _win.Closing += OnWinClosing;
                     _win.Loaded += OnWinLoaded;
                 }
-                if (_uiElement is Page _page) 
-                {
-                    _page.Loaded += OnPageLoaded;
-                }
-                    
+
+                _uiElement = value;
             }
         }
 
@@ -112,7 +115,6 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Events
-        public event BeforeWindowClosingEventHandler? BeforeWindowClosing;
         public event WindowClosingEventHandler? WindowClosing;
         public event WindowClosedEventHandler? WindowClosed;
         public event WindowLoadedEventHandler? WindowLoaded;
@@ -120,8 +122,7 @@ namespace FrontEnd.Controller
         public event PropertyChangedEventHandler? PropertyChanged;
         public event AfterUpdateEventHandler? AfterUpdate;
         public event BeforeUpdateEventHandler? BeforeUpdate;
-        public event RecordMovingEventHandler? RecordMovingEvent;
-        public event NotifyParentControllerEventHandler? NotifyParentControllerEvent;
+        public event NotifyParentControllerEventHandler? NotifyParentController;
         #endregion
 
         public AbstractFormController() : base()
@@ -220,7 +221,7 @@ namespace FrontEnd.Controller
             _currentRecord = model;
             bool result = AlterRecord();
             if (result)
-                NotifyParentControllerEvent?.Invoke(this, EventArgs.Empty);
+                NotifyParentController?.Invoke(this, EventArgs.Empty);
             return result;
         }
 
@@ -238,11 +239,10 @@ namespace FrontEnd.Controller
                 CurrentRecord?.Clean();
                 return false;
             }
-            DialogResult result = ConfirmDialog.Ask("Are you sure you want to delete this record?");
-            if (result == DialogResult.No) return false;
+
             CurrentRecord = model;
             DeleteRecord();
-            NotifyParentControllerEvent?.Invoke(this, EventArgs.Empty);
+            NotifyParentController?.Invoke(this, EventArgs.Empty);
             return true;
         }
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
@@ -277,60 +277,19 @@ namespace FrontEnd.Controller
         public override bool GoNew()
         {
             if (!AllowNewRecord) return false;
-            if (InvokeOnRecordMovedEvent(RecordMovement.GoNew)) // if the event is cancelled.
-                return false;
             if (!CanMove()) return false;
+            if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoNew)) return false; //Event was cancelled
             bool moved = Navigator.MoveNew();
             if (!moved) return false;
             CurrentRecord = new M();
+            if (InvokeAfterRecordNavigationEvent(RecordMovement.GoNew)) return false; //Event was cancelled
             Records = Source.RecordPositionDisplayer();
             return moved;
-        }
-        public override bool GoFirst()
-        {
-            bool result = base.GoFirst();
-            if (InvokeOnRecordMovedEvent(RecordMovement.GoFirst)) // if the event is cancelled.
-                return false;
-            return result;
-        }
-        public override bool GoLast()
-        {
-            bool result = base.GoLast();
-            if (InvokeOnRecordMovedEvent(RecordMovement.GoLast)) // if the event is cancelled.
-                return false;
-            return result;
-        }
-        public override bool GoPrevious()
-        {
-            bool result = base.GoPrevious();
-            if (InvokeOnRecordMovedEvent(RecordMovement.GoPrevious)) // if the event is cancelled.
-                return false;
-            return result;
-        }
-        public override bool GoNext()
-        {
-            bool result = base.GoNext();
-            if (InvokeOnRecordMovedEvent(RecordMovement.GoNext)) // if the event is cancelled.
-                return false;
-            return result;
-        }
-        public override bool GoAt(int index)
-        {
-            bool result = base.GoAt(index);
-            if (InvokeOnRecordMovedEvent(RecordMovement.GoAt)) // if the event is cancelled.
-                return false;
-            return result;
         }
         #endregion
 
         #region Event Invokers
         public void InvokeAfterSubFormFilterEvent() => AfterSubFormFilter?.Invoke(this, EventArgs.Empty);
-        protected bool InvokeOnRecordMovedEvent(RecordMovement recordMovement)
-        {
-            AllowRecordMovementArgs args = new(recordMovement);
-            RecordMovingEvent?.Invoke(this, args);
-            return args.Cancel;
-        }
         #endregion
 
         #region Notifier
@@ -347,22 +306,22 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Event Subscriptions
-        private void OnWinClosed(object? sender, EventArgs e) => WindowClosed?.Invoke(sender, e);
+        private void OnWinClosed(object? sender, EventArgs e) 
+        {
+            if (UI is Window win)
+                win.Closed -= OnWinClosed;
+            WindowClosed?.Invoke(sender, e);
+        }
         private void OnPageLoaded(object sender, RoutedEventArgs e)
         {
-            Window? win = Window.GetWindow(UI);
-            if (win != null)
-            {
-                win.Closed += OnWinClosed;
-                win.Closing += OnWinClosing;
-                win.Loaded += OnWinLoaded;
+            if (UI is Page _page)
+                _page.Loaded -= OnPageLoaded;
 
-                if (win.IsLoaded) 
-                {
-                    OnWinLoaded(win, new());
-                }
-            }
+            UI = Window.GetWindow(UI);
+            if (UI is Window win && win.IsLoaded)
+               OnWinLoaded(win, new());
         }
+
         private void OnWinLoaded(object sender, RoutedEventArgs e) => WindowLoaded?.Invoke(sender, e);
         public async void OnWinClosing(object? sender, CancelEventArgs e)
         {
@@ -374,7 +333,7 @@ namespace FrontEnd.Controller
                 return; // if the Controller is on ReadOnly, there is nothing to check, close the window.
             }
 
-            BeforeWindowClosing?.Invoke(sender, e);
+            WindowClosing?.Invoke(sender, e);
 
             if (e.Cancel) return;
 
@@ -411,31 +370,22 @@ namespace FrontEnd.Controller
 
             if (!e.Cancel) 
                 await Task.Run(Dispose);
-
-            WindowClosing?.Invoke(sender, e);
         }
         #endregion
 
-        #region Disposers
-        public void UnsubscribeWindowClosedEvent()
+        protected override void DisposeEvents()
         {
-            if (_uiElement is Window _win)
-            {
-                _win.Closed -= OnWinClosed;
-            }
-
-            if (_uiElement is Page _page)
-                _page.Loaded -= OnPageLoaded;
-        }
-        public override void Dispose()
-        {
-            BeforeWindowClosing = null;
+            base.DisposeEvents();
             WindowClosing = null;
             WindowLoaded = null;
             AfterUpdate = null;
             BeforeUpdate = null;
-            RecordMovingEvent = null;
             AfterSubFormFilter = null;
+        }
+
+        public override void Dispose()
+        {
+            DisposeEvents();
 
             if (_uiElement is Window _win)
             {
@@ -454,9 +404,6 @@ namespace FrontEnd.Controller
                 }
             }
 
-            if (_uiElement is Page _page)
-                _page.Loaded -= OnPageLoaded;
-
             AsRecordSource().Dispose(false);
             foreach (ISubFormController subController in _subControllers)
                 subController.Dispose();
@@ -464,6 +411,5 @@ namespace FrontEnd.Controller
             _subControllers.Clear();
             GC.SuppressFinalize(this);
         }
-        #endregion
     }
 }

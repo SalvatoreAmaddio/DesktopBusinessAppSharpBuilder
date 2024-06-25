@@ -1,4 +1,5 @@
-﻿using FrontEnd.Events;
+﻿using Backend.Events;
+using FrontEnd.Events;
 using FrontEnd.Model;
 
 namespace FrontEnd.Controller
@@ -41,9 +42,9 @@ namespace FrontEnd.Controller
         /// }
         /// </code>
         /// </summary>
-        public event RecordMovingEventHandler? RecordMovingEvent;
+        public event AfterRecordNavigationEventHandler? AfterRecordNavigation;
 
-        public event NotifyParentControllerEventHandler? NotifyParentControllerEvent;
+        public event NotifyParentControllerEventHandler? NotifyParentController;
 
         /// <summary>
         /// Override this method to implement a custom logic to filter a SubForm object.

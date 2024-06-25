@@ -6,6 +6,7 @@ using FrontEnd.Source;
 using System.Windows.Input;
 using FrontEnd.Events;
 using Backend.Enums;
+using Backend.Events;
 
 namespace FrontEnd.Controller
 {
@@ -123,16 +124,21 @@ namespace FrontEnd.Controller
             if (!AllowNewRecord) return false;
             if (OpenWindowOnNew) 
             {
-                base.GoNew(); //tell the Navigator to add a new record.
-                OpenNew(); //open a new window displaying the new record.
-                return true;
+                if (base.GoNew()) //tell the Navigator to add a new record.
+                {
+                    OpenNew(); //open a new window displaying the new record.
+                    return true;
+                }
+                return false;
             }
             if (!CanMove()) return false; //Cannot move to a new record because the current record break integrity rules.
+            if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoNew)) return false; //Event was cancelled
+
             if (AsRecordSource().Any(s => s.IsNewRecord())) return false; //If there is already a new record exit the method.
             AsRecordSource().Add(new M()); //add a new record to the collection.
             Navigator.MoveLast(); //Therefore, you can now move to the last record which is indeed a new record.
             CurrentModel = Navigator.Current; //set the CurrentModel property.
-            InvokeOnRecordMovedEvent(RecordMovement.GoNew); //if you are using SubForms, Invoke the the OnNewRecordEvent().
+            if (InvokeAfterRecordNavigationEvent(RecordMovement.GoNew)) return false; //if you are using SubForms, Invoke the the OnNewRecordEvent().
             Records = "New Record"; //update RecordTracker's record displayer.
             return true;
         }
@@ -157,22 +163,33 @@ namespace FrontEnd.Controller
         public override bool GoAt(ISQLModel? record)
         {
             if (!CanMove()) return false;
-            if (record == null) 
+
+            if (record == null)
             {
                 CurrentModel = null;
                 Records = Source.RecordPositionDisplayer();
                 return false;
             }
+
             else if (record.IsNewRecord() && OpenWindowOnNew) return GoNew();
-            else if (record.IsNewRecord() && !OpenWindowOnNew) return Navigator.MoveNew();
+            else if (record.IsNewRecord() && !OpenWindowOnNew) 
+            {
+                if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoAt)) return false; //Event was cancelled
+                bool result = Navigator.MoveNew();
+                if (InvokeAfterRecordNavigationEvent(RecordMovement.GoAt)) return false; //Event was cancelled
+                return result;
+            }
             else
             {
                 CleanSource();
                 Navigator.MoveAt(record);
                 CurrentModel = Navigator.Current;
-                Records = Source.RecordPositionDisplayer();
-                return true;    
+                Records = Source.RecordPositionDisplayer();    
             }
+
+            if (InvokeAfterRecordNavigationEvent(RecordMovement.GoAt)) return false; //Event was cancelled
+
+            return true;
         }
         #endregion
 
