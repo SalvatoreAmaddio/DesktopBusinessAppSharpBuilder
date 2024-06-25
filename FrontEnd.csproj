@@ -28,7 +28,9 @@
 
   <ItemGroup>
     <None Remove="images\bin.png" />
+    <None Remove="images\brokenImage.png" />
     <None Remove="images\task.png" />
+    <None Remove="images\uploadImage.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +48,7 @@
 
 <ItemGroup>
     <Resource Include="images\bin.png" />
+    <Resource Include="images\brokenImage.png" />
     <Resource Include="images\clear_filter.png" />
     <Resource Include="images\delete.png" />
     <Resource Include="images\emailsetting.png" />
@@ -68,6 +71,7 @@
 	<Resource Include="images\stopIcon.png" />
 	<Resource Include="images\task.png" />
 	<Resource Include="images\thumbup.png" />
+	<Resource Include="images\uploadImage.jpg" />
 	<Resource Include="Themes\Controls.xaml" />
   </ItemGroup>
 

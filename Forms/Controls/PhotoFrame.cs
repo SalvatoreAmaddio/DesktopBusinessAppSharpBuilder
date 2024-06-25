@@ -1,6 +1,7 @@
 ﻿using FrontEnd.Controller;
 using FrontEnd.Dialogs;
 using FrontEnd.Utils;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,6 +11,7 @@ namespace FrontEnd.Forms
 {
     public class PhotoFrame : Control, IDisposable
     {
+        private Window? _parentWindow;
         private Image? PART_Picture;
 
         #region RemovePictureCommand
@@ -69,6 +71,25 @@ namespace FrontEnd.Forms
         }
         #endregion
 
+        #region DefaultBannerPath
+        /// <summary>
+        /// Gets and Sets a <see cref="ImageSource"/>
+        /// </summary>
+        public string DefaultBannerPath
+        {
+            get => (string)GetValue(DefaultBannerPathProperty);
+            set => SetValue(DefaultBannerPathProperty, value);
+        }
+
+        public static readonly DependencyProperty DefaultBannerPathProperty =
+            DependencyProperty.Register(
+                nameof(DefaultBannerPath),
+                typeof(string),
+                typeof(PhotoFrame),
+                new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+                );
+        #endregion
+
         #region CornerRadius
         /// <summary>
         /// Gets and Sets a <see cref="System.Windows.CornerRadius"/>
@@ -85,18 +106,28 @@ namespace FrontEnd.Forms
 
         static PhotoFrame() => DefaultStyleKeyProperty.OverrideMetadata(typeof(PhotoFrame), new FrameworkPropertyMetadata(typeof(PhotoFrame)));
 
-        public PhotoFrame() 
-        {
-            Unloaded += OnUnloaded;
-            RemovePictureCommand = new CMD(OnRemovePictureButtonClicked);
-        }
+        public PhotoFrame() => RemovePictureCommand = new CMD(OnRemovePictureButtonClicked);
 
-        private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
+        private void OnClosed(object? sender, EventArgs e) => Dispose();
 
-        private void SetImageSource(string? path) 
+        private void SetImageSource(string? path)
         {
-            if (string.IsNullOrEmpty(path)) return;
             if (PART_Picture == null) return;
+            if (string.IsNullOrEmpty(path))
+            {
+                if (string.IsNullOrEmpty(DefaultBannerPath))
+                    PART_Picture.Source = Helper.LoadFromImages("uploadBanner");
+                else
+                    PART_Picture.Source = Helper.LoadImg(DefaultBannerPath);
+                return;
+            }
+
+            if (!File.Exists(path)) 
+            {
+                PART_Picture.Source = Helper.LoadFromImages("brokenImage");
+                return;
+            }
+                
             PART_Picture.Source = Helper.LoadImg(Source);
         }
 
@@ -109,12 +140,15 @@ namespace FrontEnd.Forms
 
             if (PART_Picture != null)
                 PART_Picture.MouseUp += OnPictureMouseUp;
+
+            _parentWindow = Window.GetWindow(this);
+            if (_parentWindow != null)
+                _parentWindow.Closed += OnClosed;
         }
 
         private void OnRemovePictureButtonClicked() 
         {
-            if (PART_Picture == null) return;
-            PART_Picture.Source = null;
+            SetImageSource(null);
             FilePickedCommand?.Execute(new FilePickerCatch(Source));
         }
 
@@ -127,7 +161,7 @@ namespace FrontEnd.Forms
 
             filePicker.ShowDialog();
             string? path = filePicker.SelectedFile;
-            if (path!=null) 
+            if (path!=null)
                 if (path.Length > 0) 
                 {
                     Source = path;
@@ -138,14 +172,15 @@ namespace FrontEnd.Forms
 
         public void Dispose()
         {
-            if (PART_Picture != null) 
+            if (PART_Picture != null)
             {
                 PART_Picture.MouseUp -= OnPictureMouseUp;
                 PART_Picture.Source = null;
                 PART_Picture = null;
             }
 
-            Unloaded -= OnUnloaded;
+            if (_parentWindow!=null)
+                _parentWindow.Closed -= OnClosed;
 
             ClearValue(SourceProperty);
             GC.Collect();

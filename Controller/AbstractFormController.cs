@@ -239,6 +239,9 @@ namespace FrontEnd.Controller
                 CurrentRecord?.Clean();
                 return false;
             }
+            
+            DialogResult result = UnsavedDialog.Ask("Are you sure you want to delete this record?");
+            if (result == DialogResult.No) return false;
 
             CurrentRecord = model;
             DeleteRecord();

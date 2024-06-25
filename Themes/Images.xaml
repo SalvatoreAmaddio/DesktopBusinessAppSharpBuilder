@@ -24,4 +24,6 @@
     <BitmapImage x:Key="logout" UriSource="pack://application:,,,/FrontEnd;component/Images/logout.png"/>
     <BitmapImage x:Key="task" UriSource="pack://application:,,,/FrontEnd;component/Images/task.png"/>
     <BitmapImage x:Key="bin" UriSource="pack://application:,,,/FrontEnd;component/Images/bin.png"/>
+    <BitmapImage x:Key="uploadBanner" UriSource="pack://application:,,,/FrontEnd;component/Images/uploadImage.jpg"/>
+    <BitmapImage x:Key="brokenImage" UriSource="pack://application:,,,/FrontEnd;component/Images/brokenImage.png"/>
 </ResourceDictionary>

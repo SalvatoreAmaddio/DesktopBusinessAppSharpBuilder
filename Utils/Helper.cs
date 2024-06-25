@@ -49,8 +49,11 @@ namespace FrontEnd.Utils
         /// </summary>
         /// <param name="strKey">The resource's key</param>
         /// <returns>A string</returns>
-        public static string? LoadFromStrings(string strKey) =>
-        GetDictionary("Strings")[strKey]?.ToString();
+        public static string LoadFromStrings(string strKey) 
+        {
+            string? str = GetDictionary("Strings")[strKey].ToString();
+            return string.IsNullOrEmpty(str) ? string.Empty : str;
+        }
 
         /// <summary>
         /// Load a BitmapImage from the Images.xaml dictionary.

@@ -15,4 +15,5 @@
     <clr:String x:Key="magnifier">🔍</clr:String>
     <clr:String x:Key="closeCurtain">⮜</clr:String>
     <clr:String x:Key="openCurtain">⮞</clr:String>
+    <clr:String x:Key="uploadImagePath">pack://application:,,,/FrontEnd;component/Images/uploadImage.jpg</clr:String>
 </ResourceDictionary>
