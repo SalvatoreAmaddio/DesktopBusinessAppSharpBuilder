@@ -115,6 +115,8 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Events
+        public event BeforeRecordDeleteEventHandler? BeforeRecordDelete;
+        public event AfterRecordDeleteEventHandler? AfterRecordDelete;
         public event WindowClosingEventHandler? WindowClosing;
         public event WindowClosedEventHandler? WindowClosed;
         public event WindowLoadedEventHandler? WindowLoaded;
@@ -239,15 +241,18 @@ namespace FrontEnd.Controller
                 CurrentRecord?.Clean();
                 return false;
             }
-            
+
             DialogResult result = UnsavedDialog.Ask("Are you sure you want to delete this record?");
             if (result == DialogResult.No) return false;
 
             CurrentRecord = model;
+            BeforeRecordDelete?.Invoke(this, EventArgs.Empty);
             DeleteRecord();
             NotifyParentController?.Invoke(this, EventArgs.Empty);
+            AfterRecordDelete?.Invoke(this, EventArgs.Empty);
             return true;
         }
+
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
         {
             if (CurrentRecord == null) throw new NoModelException();
@@ -379,6 +384,8 @@ namespace FrontEnd.Controller
         protected override void DisposeEvents()
         {
             base.DisposeEvents();
+            BeforeRecordDelete = null;
+            AfterRecordDelete = null;
             WindowClosing = null;
             WindowLoaded = null;
             AfterUpdate = null;

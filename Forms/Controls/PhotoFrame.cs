@@ -122,7 +122,7 @@ namespace FrontEnd.Forms
                 return;
             }
 
-            if (!File.Exists(path)) 
+            if (!File.Exists(path) && (!path.Equals(DefaultBannerPath) && !path.Equals(Helper.LoadFromStrings("uploadImagePath"))))
             {
                 PART_Picture.Source = Helper.LoadFromImages("brokenImage");
                 return;

@@ -5,11 +5,17 @@ using System.Windows;
 
 namespace FrontEnd.Events
 {
+    public delegate void BeforeRecordDeleteEventHandler(object? sender, EventArgs e);
+
+    public delegate void AfterRecordDeleteEventHandler(object? sender, EventArgs e);
+
     public delegate void WindowClosingEventHandler(object? sender, CancelEventArgs e);
     public delegate void WindowClosedEventHandler(object? sender, EventArgs e);
     public delegate void WindowLoadedEventHandler(object? sender, RoutedEventArgs e);
+
     public delegate void AfterSubFormFilterEventHandler(object? sender, EventArgs e);
     public delegate void NotifyParentControllerEventHandler(object? sender, EventArgs e);
+
     public delegate void OnPreparingCalendarFormEventHandler(object sender, OnPreparingCalendarFormEventArgs e);
     
     public delegate void ParentRecordChangedEventHandler(object? sender, ParentRecordChangedArgs e);
