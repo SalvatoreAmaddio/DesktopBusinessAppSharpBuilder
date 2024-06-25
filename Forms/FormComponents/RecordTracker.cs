@@ -102,8 +102,10 @@ namespace FrontEnd.Forms.FormComponents
             if (DataContext is not IAbstractFormController Controller) return;
 
             AbstractModel? record = (AbstractModel?)Controller.CurrentModel;
+            if (record != null && record.IsNewRecord() && movement == 5) return;
+            if (record != null && record.IsNewRecord() && movement == 3) return;
 
-            if (!Controller.ReadOnly) 
+            if (!Controller.ReadOnly)
             {
                 if (record != null && record.IsDirty)
                 {
