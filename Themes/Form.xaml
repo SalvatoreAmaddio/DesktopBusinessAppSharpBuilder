@@ -8,7 +8,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:Form}">
-                    <Grid>
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="{TemplateBinding MenuRow}"/>
                                 <RowDefinition Height="{TemplateBinding HeaderRow}"/>
@@ -25,8 +25,8 @@
                             <Border Grid.Row="2" Grid.Column="1" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
                                 <ContentPresenter Content="{TemplateBinding Content}"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                          HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
                             </Border>
                             <formComp:RecordStatus Grid.Row="0" Grid.RowSpan="3" DataContext="{TemplateBinding DataContext}"/>
                             <ProgressBar Grid.Row="3" Grid.ColumnSpan="2" IsIndeterminate="{TemplateBinding IsLoading}"/>
