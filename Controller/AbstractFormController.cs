@@ -194,8 +194,8 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Alter Record
-        public bool PerformUpdate() => Update(CurrentRecord);
-        public Task<bool> PerformUpdateAsync() 
+        public virtual bool PerformUpdate() => Update(CurrentRecord);
+        public virtual Task<bool> PerformUpdateAsync()
         {
             bool result = Update(CurrentRecord);
             return Task.FromResult(result);
