@@ -245,7 +245,6 @@ namespace FrontEnd.Controller
 
             CurrentRecord = model;
             CurrentRecord?.InvokeBeforeRecordDelete();
-            //AbstractFormController<M>.DeleteOrphan(model);
             DeleteRecord();
             NotifyParentController?.Invoke(this, EventArgs.Empty);
             return true;
