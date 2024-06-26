@@ -255,7 +255,7 @@ namespace FrontEnd.Controller
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                tree.NotifyChildren(record);
+                tree.NotifyMasterSourceChildren(record);
             });
         }
 
