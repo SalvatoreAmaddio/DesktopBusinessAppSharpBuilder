@@ -240,16 +240,17 @@ namespace FrontEnd.Controller
                 return false;
             }
 
+            if (!AllowDelete(model)) return false;
             DialogResult result = UnsavedDialog.Ask("Are you sure you want to delete this record?");
             if (result == DialogResult.No) return false;
 
             CurrentRecord = model;
-            CurrentRecord?.InvokeBeforeRecordDelete();
             DeleteRecord();
             NotifyParentController?.Invoke(this, EventArgs.Empty);
             return true;
         }
 
+        public virtual bool AllowDelete(M? model) => true;
         protected override void OnUIApplication(IAbstractDatabase? db, ISQLModel record)
         {
             Application.Current.Dispatcher.Invoke(() =>
