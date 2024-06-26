@@ -251,7 +251,7 @@ namespace FrontEnd.Controller
             return true;
         }
 
-        protected override void OnApplication(IAbstractDatabase? db, ISQLModel record)
+        protected override void OnUIApplication(IAbstractDatabase? db, ISQLModel record)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
