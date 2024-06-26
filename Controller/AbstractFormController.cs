@@ -245,34 +245,52 @@ namespace FrontEnd.Controller
 
             CurrentRecord = model;
             CurrentRecord?.InvokeBeforeRecordDelete();
-            DeleteOrphan(model);
+            AbstractFormController<M>.DeleteOrphan(model);
             DeleteRecord();
             NotifyParentController?.Invoke(this, EventArgs.Empty);
             return true;
         }
 
-        private async void DeleteOrphan(ISQLModel? model)
+        private static async void DeleteOrphan(ISQLModel? model)
         {
             if (model == null) return;
             await Task.Run(() =>
             {
                 IEnumerable<EntityTree> trees = DatabaseManager.Map.FetchParentsOfNode(model.GetType().Name);
-                foreach (EntityTree tree in trees)
+                Parallel.ForEachAsync(trees, async (tree, t) =>
                 {
                     IAbstractDatabase? db = DatabaseManager.Find(tree.Name);
                     IEnumerable<ISQLModel>? toRemove = db?.MasterSource.Where(s => AbstractFormController<M>.FetchToRemove(s, model)).ToList();
-                    if (toRemove == null) continue;
+                    if (toRemove == null) return;
                     foreach (ISQLModel record in toRemove)
                     {
-                        DeleteOrphan(record);
+                        AbstractFormController<M>.DeleteOrphan(record);
                         record.InvokeBeforeRecordDelete();
                         db?.MasterSource.Remove(record);
-                        Application.Current.Dispatcher.Invoke(() => 
+                        await Task.Delay(1);
+                        Application.Current.Dispatcher.Invoke(() =>
                         {
                             db?.MasterSource?.NotifyChildren(CRUD.DELETE, record);
                         });
                     }
-                }
+                });
+
+                //foreach (EntityTree tree in trees)
+                //{
+                //    IAbstractDatabase? db = DatabaseManager.Find(tree.Name);
+                //    IEnumerable<ISQLModel>? toRemove = db?.MasterSource.Where(s => AbstractFormController<M>.FetchToRemove(s, model)).ToList();
+                //    if (toRemove == null) continue;
+                //    foreach (ISQLModel record in toRemove)
+                //    {
+                //        DeleteOrphan(record);
+                //        record.InvokeBeforeRecordDelete();
+                //        db?.MasterSource.Remove(record);
+                //        Application.Current.Dispatcher.Invoke(() => 
+                //        {
+                //            db?.MasterSource?.NotifyChildren(CRUD.DELETE, record);
+                //        });
+                //    }
+                //}
             });
         }
 
