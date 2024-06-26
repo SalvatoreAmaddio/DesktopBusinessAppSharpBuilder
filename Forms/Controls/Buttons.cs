@@ -10,25 +10,20 @@ namespace FrontEnd.Forms
     /// <summary>
     /// Abstract class that defines a set of common properties and methods for custom buttons which are to be bound to the Command objects defined in the <see cref="AbstractFormController{M}"/> and <see cref="AbstractFormListController{M}"/>.
     /// </summary>
-    public abstract class AbstractButton : Button 
+    public abstract class AbstractButton : Button, IDisposable 
     {
+        private Window? _parentWindow;
         protected abstract string ToolTipText { get; }
         protected abstract string ImgKey { get; }
         protected abstract string CommandName { get; }
         public AbstractButton() 
         {
-            Unloaded += OnUnloaded;
             DataContextChanged += OnDataContextChanged;
             ToolTip = ToolTipText;
             Content = new Image()
             {
                 Source = Helper.LoadFromImages(ImgKey),
             };
-        }
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            DataContextChanged -= OnDataContextChanged;
-            Unloaded -= OnUnloaded;
         }
 
         #region IsWithinList
@@ -65,6 +60,24 @@ namespace FrontEnd.Forms
         }
 
         private static Binding CreateBinding(string property, object source) => new(property) { Source = source };
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            _parentWindow = Window.GetWindow(this);
+            if (_parentWindow!=null)
+                _parentWindow.Closed += OnClosed;
+        }
+
+        private void OnClosed(object? sender, EventArgs e) => Dispose();
+
+        public void Dispose()
+        {
+            DataContextChanged -= OnDataContextChanged;
+            if (_parentWindow != null)
+                _parentWindow.Closed -= OnClosed;
+            GC.SuppressFinalize(this);
+        }
     }
 
     /// <summary>
