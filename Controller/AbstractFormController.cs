@@ -251,11 +251,11 @@ namespace FrontEnd.Controller
         }
 
         public virtual bool AllowDelete(M? model) => true;
-        protected override void OnUIApplication(IAbstractDatabase? db, ISQLModel record)
+        protected override void OnUIApplication(EntityTree tree, ISQLModel record)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                db?.MasterSource?.NotifyChildren(CRUD.DELETE, record);
+                tree.NotifyChildren(record);
             });
         }
 
