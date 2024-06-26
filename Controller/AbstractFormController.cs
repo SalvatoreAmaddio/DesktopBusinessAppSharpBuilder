@@ -247,7 +247,18 @@ namespace FrontEnd.Controller
             CurrentRecord?.InvokeBeforeRecordDelete();
             DeleteRecord();
             NotifyParentController?.Invoke(this, EventArgs.Empty);
+            DeleteOrphan();
             return true;
+        }
+        
+        private void DeleteOrphan() 
+        {
+            IEnumerable<EntityTree> trees = DatabaseManager.Map.FetchParentsOfNode<M>();
+
+            foreach (var tree in trees)
+            {
+                string s = $"DELETE ALL {tree.Name}";
+            }
         }
 
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
