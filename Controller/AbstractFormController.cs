@@ -115,8 +115,6 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Events
-        public event BeforeRecordDeleteEventHandler? BeforeRecordDelete;
-        public event AfterRecordDeleteEventHandler? AfterRecordDelete;
         public event WindowClosingEventHandler? WindowClosing;
         public event WindowClosedEventHandler? WindowClosed;
         public event WindowLoadedEventHandler? WindowLoaded;
@@ -246,10 +244,9 @@ namespace FrontEnd.Controller
             if (result == DialogResult.No) return false;
 
             CurrentRecord = model;
-            BeforeRecordDelete?.Invoke(this, EventArgs.Empty);
+            CurrentRecord?.InvokeBeforeRecordDelete();
             DeleteRecord();
             NotifyParentController?.Invoke(this, EventArgs.Empty);
-            AfterRecordDelete?.Invoke(this, EventArgs.Empty);
             return true;
         }
 
@@ -384,8 +381,6 @@ namespace FrontEnd.Controller
         protected override void DisposeEvents()
         {
             base.DisposeEvents();
-            BeforeRecordDelete = null;
-            AfterRecordDelete = null;
             WindowClosing = null;
             WindowLoaded = null;
             AfterUpdate = null;
