@@ -245,20 +245,45 @@ namespace FrontEnd.Controller
 
             CurrentRecord = model;
             CurrentRecord?.InvokeBeforeRecordDelete();
+            DeleteOrphan(model);
             DeleteRecord();
             NotifyParentController?.Invoke(this, EventArgs.Empty);
-            DeleteOrphan();
             return true;
         }
-        
-        private void DeleteOrphan() 
-        {
-            IEnumerable<EntityTree> trees = DatabaseManager.Map.FetchParentsOfNode<M>();
 
-            foreach (var tree in trees)
+        private async void DeleteOrphan(ISQLModel? model)
+        {
+            if (model == null) return;
+            await Task.Run(() =>
             {
-                string s = $"DELETE ALL {tree.Name}";
-            }
+                IEnumerable<EntityTree> trees = DatabaseManager.Map.FetchParentsOfNode(model.GetType().Name);
+                foreach (EntityTree tree in trees)
+                {
+                    IAbstractDatabase? db = DatabaseManager.Find(tree.Name);
+                    IEnumerable<ISQLModel>? toRemove = db?.MasterSource.Where(s => AbstractFormController<M>.FetchToRemove(s, model)).ToList();
+                    if (toRemove == null) continue;
+                    foreach (ISQLModel record in toRemove)
+                    {
+                        DeleteOrphan(record);
+                        record.InvokeBeforeRecordDelete();
+                        db?.MasterSource.Remove(record);
+                        Application.Current.Dispatcher.Invoke(() => 
+                        {
+                            db?.MasterSource?.NotifyChildren(CRUD.DELETE, record);
+                        });
+                    }
+                }
+            });
+        }
+
+        private static bool FetchToRemove(ISQLModel model, ISQLModel? mod) 
+        {
+            string? propName = mod?.GetTableName();
+            if (string.IsNullOrEmpty(propName)) return false;
+            object? obj = model.GetPropertyValue(propName);
+            if (obj == null) return false;
+            bool res = obj.Equals(mod);
+            return res;
         }
 
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
