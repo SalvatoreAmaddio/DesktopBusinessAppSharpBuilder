@@ -22,7 +22,7 @@ namespace FrontEnd.Forms
             ToolTip = ToolTipText;
             Content = new Image()
             {
-                Source = Helper.LoadFromImages(ImgKey)
+                Source = Helper.LoadFromImages(ImgKey),
             };
         }
         private void OnUnloaded(object sender, RoutedEventArgs e)
