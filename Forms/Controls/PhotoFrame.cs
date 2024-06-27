@@ -172,7 +172,9 @@ namespace FrontEnd.Forms
 
         private void OnRemovePictureButtonClicked() 
         {
-            SetImageSource(null);
+            string? temp = Path.Combine(Sys.AppPath(), Folder, Source);
+            Source = string.Empty;
+            Sys.AttemptFileDelete(temp);
             FilePickedCommand?.Execute(new FilePickerCatch(Source));
         }
 
