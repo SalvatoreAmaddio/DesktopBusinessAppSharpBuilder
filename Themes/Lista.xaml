@@ -43,7 +43,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <ScrollViewer x:Name="outerScrollViewer" Grid.Row="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top">
+                            <ScrollViewer x:Name="outerScrollViewer" Grid.Row="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
                                 <ContentPresenter Content="{TemplateBinding Header}"/>
                             </ScrollViewer>
 
