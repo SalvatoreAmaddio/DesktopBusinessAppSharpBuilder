@@ -88,6 +88,8 @@ namespace FrontEnd.Controller
         public abstract Task<IEnumerable<M>> SearchRecordAsync();
         public abstract void OnOptionFilterClicked(FilterEventArgs e);
 
+        public override abstract AbstractClause InstantiateSearchQry();
+
         #region Open Windows
         /// <summary>
         /// Override this method to open a new window to view the selected record. <para/>
