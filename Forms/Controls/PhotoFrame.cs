@@ -1,4 +1,5 @@
-﻿using FrontEnd.Controller;
+﻿using Backend.Utils;
+using FrontEnd.Controller;
 using FrontEnd.Dialogs;
 using FrontEnd.Utils;
 using System.IO;
@@ -43,6 +44,25 @@ namespace FrontEnd.Forms
                 typeof(ICommand),
                 typeof(PhotoFrame),
                 new FrameworkPropertyMetadata(null)
+                );
+        #endregion
+
+        #region Folder
+        /// <summary>
+        /// Gets and Sets a <see cref="ImageSource"/>
+        /// </summary>
+        public string Folder
+        {
+            get => (string)GetValue(FolderProperty);
+            set => SetValue(FolderProperty, value);
+        }
+
+        public static readonly DependencyProperty FolderProperty =
+            DependencyProperty.Register(
+                nameof(Folder),
+                typeof(string),
+                typeof(PhotoFrame),
+                new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
                 );
         #endregion
 
@@ -122,14 +142,18 @@ namespace FrontEnd.Forms
                 return;
             }
 
-            if (!File.Exists(path) && (!path.Equals(DefaultBannerPath) && !path.Equals(Helper.LoadFromStrings("uploadImagePath"))))
+            path = Path.Combine(Sys.AppPath(), Folder, path);
+
+            if (!File.Exists(path) && !path.Equals(DefaultBannerPath) && !path.Equals(Helper.LoadFromStrings("uploadImagePath")))
             {
-                PART_Picture.Source = Helper.LoadFromImages("brokenImage");
+                SetBrokenImage();
                 return;
             }
-                
-            PART_Picture.Source = Helper.LoadImg(Source);
+
+            PART_Picture.Source = Helper.LoadImg(path);
         }
+        
+        private void SetBrokenImage() => PART_Picture!.Source = Helper.LoadFromImages("brokenImage");
 
         public override void OnApplyTemplate()
         {
