@@ -387,6 +387,7 @@ namespace FrontEnd.Controller
         }
         #endregion
 
+        public void SetLoading(bool val) => IsLoading = val;
         protected override void DisposeEvents()
         {
             base.DisposeEvents();

@@ -80,7 +80,7 @@ namespace FrontEnd.ExtensionMethods
         /// <returns>A <see cref="IAbstractFormController"/> object</returns>
         public static IAbstractFormController? CurrentTabController(this TabControl tabControl) 
         {
-            Frame frame = (Frame) tabControl.SelectedContent;
+            Frame frame = (Frame)tabControl.SelectedContent;
             Page page = (Page)frame.Content;
             return page.DataContext as IAbstractFormController;
         }

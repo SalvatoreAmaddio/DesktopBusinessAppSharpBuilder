@@ -66,6 +66,11 @@ namespace FrontEnd.Controller
 
         public C? GetSubController<C>(int index) where C : IAbstractFormController;
 
+        /// <summary>
+        /// Sets the <see cref="IsLoading"/> property to true
+        /// </summary>
+        public void SetLoading(bool value);
+
     }
 
     /// <summary>
@@ -101,6 +106,5 @@ namespace FrontEnd.Controller
         public ICommand RequeryCMD { get; set; }
 
         public RecordSource<M> AsRecordSource();
-
     }
 }
