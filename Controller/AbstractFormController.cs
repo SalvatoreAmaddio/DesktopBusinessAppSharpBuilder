@@ -274,10 +274,6 @@ namespace FrontEnd.Controller
         #endregion
 
         #region GoTo
-        /// <summary>
-        /// It checks if the <see cref="CurrentRecord"/>'s property meets the conditions to be updated. This method is called whenever the <see cref="Navigator"/> moves.
-        /// </summary>
-        /// <returns>true if the Navigator can move.</returns>
         protected override bool CanMove()
         {
             if (CurrentRecord != null)
@@ -286,18 +282,6 @@ namespace FrontEnd.Controller
                 if (!CurrentRecord.AllowUpdate()) return false; //the record has changed but it did not met the conditions to be updated.
             }
             return true;
-        }
-        public override bool GoNew()
-        {
-            if (!AllowNewRecord) return false;
-            if (!CanMove()) return false;
-            if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoNew)) return false; //Event was cancelled
-            bool moved = Navigator.GoNew();
-            if (!moved) return false;
-            CurrentRecord = new M();
-            if (InvokeAfterRecordNavigationEvent(RecordMovement.GoNew)) return false; //Event was cancelled
-            Records = Source.RecordPositionDisplayer();
-            return moved;
         }
         #endregion
 
