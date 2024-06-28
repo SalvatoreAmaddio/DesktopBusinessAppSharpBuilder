@@ -3,6 +3,7 @@ using FrontEnd.Dialogs;
 using FrontEnd.Events;
 using FrontEnd.Notifier;
 using System.ComponentModel;
+using System.Data.Common;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -38,6 +39,7 @@ namespace FrontEnd.Model
         public void Clean();
 
     }
+
 
     /// <summary>
     /// This class extends the <see cref="AbstractSQLModel"/> and adds extra functionalities for UI purposes
@@ -133,5 +135,17 @@ namespace FrontEnd.Model
             }
         }
 
+    }
+
+    public abstract class AbstractModel<M> : AbstractModel where M : ISQLModel, new()
+    {
+        public override ISQLModel Read(DbDataReader reader) => CreateFromDbRecord(reader);
+        public M CreateFromDbRecord(DbDataReader reader) 
+        {
+            Type myClassType = typeof(M);
+            ConstructorInfo? constructor = myClassType.GetConstructor([typeof(DbDataReader)]) ?? throw new NullReferenceException($"Class {myClassType.Name} is missing a Constructor that takes a DbDataReader object as parameter!");
+            object myClassInstance = constructor.Invoke([reader]);
+            return (M)myClassInstance;
+        }
     }
 }
