@@ -5,10 +5,10 @@ using FrontEnd.Events;
 namespace FrontEnd.Source
 {
     /// <summary>
-    /// This interface serves as a bridge between a <see cref="RecordSource"/> object and a Combo object in the contest of GUI Development.
-    /// The main purpose of this interface is to update the ComboBox control to reflect changes that occured in the ComboBox's ItemSource which is an instance of <see cref="RecordSource"/>
+    /// This interface serves as a bridge between a <see cref="DataSource"/> object and a Combo object in the contest of GUI Development.
+    /// The main purpose of this interface is to update the ComboBox control to reflect changes that occured in the ComboBox's ItemSource which is an instance of <see cref="DataSource"/>
     /// <para/>
-    /// Indeed, the <see cref="OnItemSourceUpdated"/> is called in <see cref="RecordSource.Update(CRUD, ISQLModel)"/>.
+    /// Indeed, the <see cref="OnItemSourceUpdated"/> is called in <see cref="DataSource.Update(CRUD, ISQLModel)"/>.
     /// </summary>
     public interface IUIControl
     {
@@ -20,10 +20,10 @@ namespace FrontEnd.Source
 
     }
 
-    public interface IRecordSource<M> : ICollection<M>, IRecordSource where M : AbstractModel, new()
+    public interface IRecordSource<M> : ICollection<M>, IDataSource where M : AbstractModel, new()
     {
         /// <summary>
-        /// This delegate works as a bridge between the <see cref="Controller.IAbstractSQLModelController"/> and this <see cref="Backend.Source.RecordSource"/>.
+        /// This delegate works as a bridge between the <see cref="Controller.IAbstractSQLModelController"/> and this <see cref="Backend.Source.DataSource"/>.
         /// If any filter operations has been implemented in the Controller, The RecordSource can trigger them.
         /// </summary>
         public event FilterEventHandler? RunFilter;

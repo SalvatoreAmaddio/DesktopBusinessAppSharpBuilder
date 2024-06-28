@@ -143,11 +143,11 @@ namespace FrontEnd.Controller
         public virtual AbstractClause InstantiateSearchQry() => new M().From();
 
         public RecordSource<M> AsRecordSource() => (RecordSource<M>)Source;
-        protected override IRecordSource InitSource() => new RecordSource<M>(Db, this);
+        protected override IDataSource InitSource() => new RecordSource<M>(Db, this);
 
         /// <summary>
         /// This method is called by <see cref="RequeryCMD"/> command to Requery the database table.
-        /// It awaits the <see cref="RecordSource.CreateFromAsyncList(IAsyncEnumerable{ISQLModel})"/> whose result is then used to replace the records kept in the <see cref="IAbstractSQLModelController.Db"/> property and in the <see cref="IAbstractSQLModelController.Source"/> property.
+        /// It awaits the <see cref="DataSource.CreateFromAsyncList(IAsyncEnumerable{ISQLModel})"/> whose result is then used to replace the records kept in the <see cref="IAbstractSQLModelController.Db"/> property and in the <see cref="IAbstractSQLModelController.Source"/> property.
         /// </summary>
         public virtual async Task RequeryAsync()
         {

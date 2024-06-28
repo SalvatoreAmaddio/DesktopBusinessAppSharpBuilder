@@ -15,16 +15,16 @@ namespace FrontEnd.Source
     public class RecordSource<M> : ObservableRangeCollection<M>, IRecordSource<M>, IChildSource, IUISource where M : AbstractModel, new()
     {
         /// <summary>
-        /// This delegate works as a bridge between the <see cref="Controller.IAbstractSQLModelController"/> and this <see cref="Backend.Source.RecordSource"/>.
+        /// This delegate works as a bridge between the <see cref="Controller.IAbstractSQLModelController"/> and this <see cref="Backend.Source.DataSource"/>.
         /// If any filter operations has been implemented in the Controller, The RecordSource can trigger them.
         /// </summary>
         public event FilterEventHandler? RunFilter;
-        private INavigator? navigator;
+        private Navigator? navigator;
         public IParentSource? ParentSource { get; set; }
         public IAbstractSQLModelController? Controller { get; set; }
 
         /// <summary>
-        /// A list of <see cref="IUIControl"/> associated to this <see cref="RecordSource"/>.
+        /// A list of <see cref="IUIControl"/> associated to this <see cref="DataSource"/>.
         /// </summary>
         private List<IUIControl>? UIControls;
 
@@ -116,7 +116,7 @@ namespace FrontEnd.Source
 
         /// <summary>
         /// This method is called in <see cref="Update(CRUD, ISQLModel)"/>.
-        /// It loops through the <see cref="UIControls"/> to notify the <see cref="IUIControl"/> object to reflect changes that occured to their ItemsSource which is an instance of <see cref="RecordSource"/>.
+        /// It loops through the <see cref="UIControls"/> to notify the <see cref="IUIControl"/> object to reflect changes that occured to their ItemsSource which is an instance of <see cref="DataSource"/>.
         /// </summary>
         public void NotifyUIControl(object[] args)
         {

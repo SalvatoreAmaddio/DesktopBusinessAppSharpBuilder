@@ -11,8 +11,8 @@ namespace FrontEnd.Forms
 {
     /// <summary>
     /// This class extends <see cref="ComboBox"/> and adds some extra functionalities for dealing with the SelectedItem property.
-    /// Furthermore, its ItemsSource is meant to be a <see cref="Backend.Source.RecordSource"/> object.
-    /// Also, this class implements <see cref="IUIControl"/> to provide a better communication between the <see cref="RecordSource"/> and the Combo.
+    /// Furthermore, its ItemsSource is meant to be a <see cref="Backend.Source.DataSource"/> object.
+    /// Also, this class implements <see cref="IUIControl"/> to provide a better communication between the <see cref="DataSource"/> and the Combo.
     /// </summary>
     public partial class Combo : ComboBox, IUIControl
     {

@@ -13,7 +13,7 @@ namespace FrontEnd.Forms
     /// Such as column's header, see the <see cref="Header"/> property and handles some user's inputs.
     /// The DataContext of this object is meant to be an instance of <see cref="IAbstractFormListController"/>.
     /// <para/>
-    /// Its ItemsSource property should be a IEnumerable&lt;<see cref="AbstractModel"/>&gt; such as a <see cref="Backend.Source.RecordSource"/>
+    /// Its ItemsSource property should be a IEnumerable&lt;<see cref="AbstractModel"/>&gt; such as a <see cref="Backend.Source.DataSource"/>
     /// </summary>
     public class Lista : ListView, IDisposable
     {

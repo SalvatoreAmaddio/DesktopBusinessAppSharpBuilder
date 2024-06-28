@@ -19,10 +19,10 @@ namespace FrontEnd.FilterSource
     {
         #region Variables
         /// <summary>
-        /// A list of <see cref="IUIControl"/> associated to this <see cref="RecordSource"/>.
+        /// A list of <see cref="IUIControl"/> associated to this <see cref="DataSource"/>.
         /// </summary>
         protected List<IUIControl>? UIControls;
-        protected IRecordSource? Source;
+        protected IDataSource? Source;
         protected string _displayProperty = string.Empty;
         protected OrderBy _orderBy;
         private string _orderByProperty = string.Empty;
@@ -33,7 +33,7 @@ namespace FrontEnd.FilterSource
         public SourceOption() { }
       //  public SourceOption(IEnumerable<IFilterOption> source) : base(source) { }
 
-        public SourceOption(IRecordSource source, string displayProperty, OrderBy orderBy = OrderBy.ASC, string orderByProperty = "") : base(source.Cast<AbstractModel>().Select(s => new FilterOption(s, displayProperty)))
+        public SourceOption(IDataSource source, string displayProperty, OrderBy orderBy = OrderBy.ASC, string orderByProperty = "") : base(source.Cast<AbstractModel>().Select(s => new FilterOption(s, displayProperty)))
         {
             _orderByProperty = orderByProperty;
             _orderBy = orderBy;
@@ -121,7 +121,7 @@ namespace FrontEnd.FilterSource
 
         /// <summary>
         /// This method is called in <see cref="Update(CRUD, ISQLModel)"/>.
-        /// It loops through the <see cref="UIControls"/> to notify the <see cref="IUIControl"/> object to reflect changes that occured to their ItemsSource which is an instance of <see cref="RecordSource"/>.
+        /// It loops through the <see cref="UIControls"/> to notify the <see cref="IUIControl"/> object to reflect changes that occured to their ItemsSource which is an instance of <see cref="DataSource"/>.
         /// </summary>
         protected void NotifyUIControl(object[] args)
         {
@@ -173,7 +173,7 @@ namespace FrontEnd.FilterSource
         public PrimitiveSourceOption(IAbstractFormController controller, string displayProperty, OrderBy orderby = OrderBy.ASC) : this(controller.Source, displayProperty, orderby)
         { }
 
-        public PrimitiveSourceOption(IRecordSource source, string displayProperty, OrderBy orderby = OrderBy.ASC)
+        public PrimitiveSourceOption(IDataSource source, string displayProperty, OrderBy orderby = OrderBy.ASC)
         {
             this._orderBy = orderby;
             _displayProperty = displayProperty;
