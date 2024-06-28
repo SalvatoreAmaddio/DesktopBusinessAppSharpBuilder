@@ -35,7 +35,7 @@ namespace FrontEnd.Controller
         {
             OpenCMD = new CMD<M>(Open);
             OpenNewCMD = new CMD(OpenNew);
-            AsRecordSource().RunFilter += OnSourceRunFilter;
+            RecordSource.RunFilter += OnSourceRunFilter;
         }
         public override async Task RequeryAsync()
         {
@@ -74,13 +74,13 @@ namespace FrontEnd.Controller
                 }
             }
 
-            AsRecordSource().ReplaceRecords(results); //Update also its child source for this controller.
+            RecordSource.ReplaceRecords(results); //Update also its child source for this controller.
             IsLoading = false; //Notify the GUI the process has terminated
         }
         protected async Task OnSearchPropertyRequeryAsync(object? sender)
         {
             IEnumerable<M> results = await Task.Run(SearchRecordAsync);
-            AsRecordSource().ReplaceRecords(results);
+            RecordSource.ReplaceRecords(results);
 
             if (sender is not FilterEventArgs filterEvtArgs)
                 GoFirst();
@@ -116,10 +116,10 @@ namespace FrontEnd.Controller
         public void CleanSource()
         {
             if (OpenWindowOnNew) return;
-            List<M> toRemove = AsRecordSource().Where(s => s.IsNewRecord()).ToList(); //get only the records which are new in the collection.
+            List<M> toRemove = RecordSource.Where(s => s.IsNewRecord()).ToList(); //get only the records which are new in the collection.
 
             foreach (var item in toRemove)
-                AsRecordSource().Remove(item); //get rid of them.
+                RecordSource.Remove(item); //get rid of them.
         }
         public override bool GoNew()
         {
@@ -136,10 +136,11 @@ namespace FrontEnd.Controller
             if (!CanMove()) return false; //Cannot move to a new record because the current record break integrity rules.
             if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoNew)) return false; //Event was cancelled
 
-            if (AsRecordSource().Any(s => s.IsNewRecord())) return false; //If there is already a new record exit the method.
-            AsRecordSource().Add(new M()); //add a new record to the collection.
-            Navigator.MoveLast(); //Therefore, you can now move to the last record which is indeed a new record.
+            if (RecordSource.Any(s => s.IsNewRecord())) return false; //If there is already a new record exit the method.
+            RecordSource.Add(new M()); //add a new record to the collection.
+            Navigator.GoLast(); //Therefore, you can now move to the last record which is indeed a new record.
             CurrentModel = Navigator.Current; //set the CurrentModel property.
+            var x = CurrentModel.IsNewRecord();
             if (InvokeAfterRecordNavigationEvent(RecordMovement.GoNew)) return false; //if you are using SubForms, Invoke the the OnNewRecordEvent().
             Records = "New Record"; //update RecordTracker's record displayer.
             return true;
@@ -177,14 +178,14 @@ namespace FrontEnd.Controller
             else if (record.IsNewRecord() && !OpenWindowOnNew) 
             {
                 if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoAt)) return false; //Event was cancelled
-                bool result = Navigator.MoveNew();
+                bool result = Navigator.GoNew();
                 if (InvokeAfterRecordNavigationEvent(RecordMovement.GoAt)) return false; //Event was cancelled
                 return result;
             }
             else
             {
                 CleanSource();
-                Navigator.MoveAt(record);
+                Navigator.GoAt(record);
                 CurrentModel = Navigator.Current;
                 Records = Source.RecordPositionDisplayer();    
             }
@@ -206,10 +207,10 @@ namespace FrontEnd.Controller
 
             if (crud == CRUD.INSERT) 
             {   //INSERT must follow a slighlty different logic if it the user is allowed to insert new rows himself. This is to avoid unexpected behaviour between the RecordSource and the Lista object.
-                if (AsRecordSource().Count > 0 && !OpenWindowOnNew) 
+                if (RecordSource.Count > 0 && !OpenWindowOnNew) 
                 {
-                    temp = AsRecordSource()[Source.Count - 1];
-                    AsRecordSource().RemoveAt(Source.Count - 1);
+                    temp = RecordSource[Source.Count - 1];
+                    RecordSource.RemoveAt(Source.Count - 1);
                 }
                 ExecuteCRUD(ref temp, crud, sql, parameters);
             } 

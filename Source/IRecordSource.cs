@@ -20,7 +20,7 @@ namespace FrontEnd.Source
 
     }
 
-    public interface IRecordSource<M> : ICollection<M>, IDataSource where M : AbstractModel, new()
+    public interface IRecordSource<M> : ICollection<M>, IDataSource<M> where M : AbstractModel, new()
     {
         /// <summary>
         /// This delegate works as a bridge between the <see cref="Controller.IAbstractSQLModelController"/> and this <see cref="Backend.Source.DataSource"/>.

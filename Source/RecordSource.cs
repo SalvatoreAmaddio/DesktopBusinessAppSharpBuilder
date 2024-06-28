@@ -19,7 +19,7 @@ namespace FrontEnd.Source
         /// If any filter operations has been implemented in the Controller, The RecordSource can trigger them.
         /// </summary>
         public event FilterEventHandler? RunFilter;
-        private Navigator? navigator;
+        private Navigator<M>? navigator;
         public IParentSource? ParentSource { get; set; }
         public IAbstractSQLModelController? Controller { get; set; }
 
@@ -45,7 +45,7 @@ namespace FrontEnd.Source
         /// This constructor will consider this RecordSource object as a child of the <see cref="IAbstractDatabase.MasterSource"/>
         /// </summary>
         /// <param name="db">An instance of <see cref="IAbstractDatabase"/></param>
-        public RecordSource(IAbstractDatabase db) : this(db.MasterSource.Cast<M>()) 
+        public RecordSource(IAbstractDatabase db) : this(db.MasterSource.Cast<M>())
         {
             db.MasterSource.AddChild(this);
         } 
@@ -67,18 +67,19 @@ namespace FrontEnd.Source
         /// Override the default <c>GetEnumerator()</c> method to replace it with a <see cref="ISourceNavigator"></see> object./>
         /// </summary>
         /// <returns>An Enumerator object.</returns>
-        public new IEnumerator<ISQLModel> GetEnumerator()
+        public new IEnumerator<M> GetEnumerator()
         {
+            var s = typeof(M).Name;
             if (navigator != null)
             {
-                navigator = new Navigator(this, navigator.Index, navigator.AllowNewRecord);
+                navigator = new Navigator<M>(this, navigator.Index, navigator.AllowNewRecord);
                 return navigator;
             }
-            navigator = new Navigator(this);
+            navigator = new Navigator<M>(this);
             return navigator;
         }
 
-        public INavigator Navigate() => (INavigator)GetEnumerator();
+        public INavigator<M> Navigate() => (INavigator<M>)GetEnumerator();
         #endregion
 
         public virtual void Update(CRUD crud, ISQLModel model)
@@ -151,7 +152,7 @@ namespace FrontEnd.Source
 
         public void ReplaceRecords(IEnumerable<M> newSource)
         {
-            ISQLModel? current = null;
+            M? current = null;
             try 
             {
                 current = navigator?.Current;
@@ -159,6 +160,7 @@ namespace FrontEnd.Source
             catch { }
 
             Clear();
+
             ReplaceRange(newSource);
 
             if (current!=null && Controller != null) 
@@ -183,10 +185,10 @@ namespace FrontEnd.Source
         {
             ParentSource?.RemoveChild(this);
             UIControls?.Clear();
-            navigator = null;
             RunFilter = null;
             try
             {
+                //navigator?.Dispose();
                 Clear();
             }
             catch 

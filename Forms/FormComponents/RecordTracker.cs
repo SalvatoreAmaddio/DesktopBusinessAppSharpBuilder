@@ -125,7 +125,7 @@ namespace FrontEnd.Forms.FormComponents
                     Controller.GoPrevious();
                     break;
                 case 3:
-                    if (Controller.Source.Navigate().EOF) 
+                    if (Controller.EOF)
                     {
                         if (Controller is IAbstractFormListController listController && listController.OpenWindowOnNew)
                             break;

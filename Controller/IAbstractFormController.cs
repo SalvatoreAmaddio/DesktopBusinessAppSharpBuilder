@@ -84,6 +84,7 @@ namespace FrontEnd.Controller
         /// </summary>
         public IEnumerable<M>? MasterSource { get; }
 
+        public RecordSource<M> RecordSource { get; }
         /// <summary>
         /// A more concrete version of <see cref="IAbstractSQLModelController.CurrentModel"/>
         /// </summary>
@@ -105,6 +106,5 @@ namespace FrontEnd.Controller
         /// </summary>
         public ICommand RequeryCMD { get; set; }
 
-        public RecordSource<M> AsRecordSource();
     }
 }

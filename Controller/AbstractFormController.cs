@@ -22,7 +22,7 @@ namespace FrontEnd.Controller
     /// This class extends <see cref="AbstractSQLModelController"/> and implementats <see cref="IAbstractFormController{M}"/>
     /// </summary>
     /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
-    public abstract class AbstractFormController<M> : AbstractSQLModelController, IParentController, ISubFormController, IDisposable, IAbstractFormController<M> where M : AbstractModel, new()
+    public abstract class AbstractFormController<M> : AbstractSQLModelController<M>, IParentController, ISubFormController, IDisposable, IAbstractFormController<M> where M : AbstractModel, new()
     {
         #region backing fields
         private bool _readOnly = false;
@@ -102,7 +102,7 @@ namespace FrontEnd.Controller
                 UpdateProperty(ref value, ref _currentRecord);
             } 
         }
-
+        public RecordSource<M> RecordSource => (RecordSource<M>)DataSource;
         public override string Records { get => _records; protected set => UpdateProperty(ref value, ref _records); }        
         public bool IsLoading { get => _isloading; set => UpdateProperty(ref value, ref _isloading); }
         public string Search { get => _search; set => UpdateProperty(ref value, ref _search); }
@@ -132,6 +132,8 @@ namespace FrontEnd.Controller
             RequeryCMD = new CMDAsync(RequeryAsync);
             SearchQry = InstantiateSearchQry();
         }
+        protected override IDataSource<M> InitSource() => new RecordSource<M>(Db, this);
+
         private void SetCurrentRecordProperty(M? value) => UpdateProperty(ref value, ref _currentRecord, nameof(CurrentRecord));
 
         public void ReloadSearchQry()
@@ -141,9 +143,6 @@ namespace FrontEnd.Controller
         }
 
         public virtual AbstractClause InstantiateSearchQry() => new M().From();
-
-        public RecordSource<M> AsRecordSource() => (RecordSource<M>)Source;
-        protected override IDataSource InitSource() => new RecordSource<M>(Db, this);
 
         /// <summary>
         /// This method is called by <see cref="RequeryCMD"/> command to Requery the database table.
@@ -160,7 +159,7 @@ namespace FrontEnd.Controller
 
             if (results == null) throw new Exception("Source is null"); //Something has gone wrong.
             Db.ReplaceRecords(results.ToList<ISQLModel>()); //Replace the Master RecordSource's records with the newly fetched ones.
-            AsRecordSource().ReplaceRecords(results); //Update also its child source for this controller.
+            RecordSource.ReplaceRecords(results); //Update also its child source for this controller.
             IsLoading = false; //Notify the GUI the process has terminated
         }
 
@@ -293,7 +292,7 @@ namespace FrontEnd.Controller
             if (!AllowNewRecord) return false;
             if (!CanMove()) return false;
             if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoNew)) return false; //Event was cancelled
-            bool moved = Navigator.MoveNew();
+            bool moved = Navigator.GoNew();
             if (!moved) return false;
             CurrentRecord = new M();
             if (InvokeAfterRecordNavigationEvent(RecordMovement.GoNew)) return false; //Event was cancelled
@@ -351,7 +350,7 @@ namespace FrontEnd.Controller
 
             if (e.Cancel) return;
 
-            bool dirty = AsRecordSource().Any(s => s.IsDirty);
+            bool dirty = RecordSource.Any(s => s.IsDirty);
 
             if (CurrentRecord!=null) 
                 dirty = CurrentRecord.IsDirty;
@@ -419,7 +418,7 @@ namespace FrontEnd.Controller
                 }
             }
 
-            AsRecordSource().Dispose(false);
+            RecordSource.Dispose(false);
             foreach (ISubFormController subController in _subControllers)
                 subController.Dispose();
 
