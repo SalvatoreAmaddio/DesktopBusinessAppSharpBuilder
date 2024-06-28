@@ -77,7 +77,7 @@ namespace FrontEnd.Controller
     /// This Interface extends <see cref="IAbstractFormController"/> and adds a set of ICommand properties.
     /// </summary>
     /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
-    public interface IAbstractFormController<M> : IAbstractFormController where M : AbstractModel, new()
+    public interface IAbstractFormController<M> : IAbstractFormController where M : IAbstractModel, new()
     {
         /// <summary>
         /// Gets the <see cref="IAbstractDatabase.MasterSource"/> as an <see cref="IEnumerable{T}"/> 

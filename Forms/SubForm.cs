@@ -30,7 +30,7 @@ namespace FrontEnd.Forms
         private void OnAbstractFormDataContextChanged(object sender, DependencyPropertyChangedEventArgs e) => NotifyAbstractForm(null, ParentRecord);
         private ISubFormController? GetController() => (ISubFormController?)abstractForm?.DataContext;
 
-        private void NotifyAbstractForm(AbstractModel? oldRecord, AbstractModel? parentRecord)
+        private void NotifyAbstractForm(IAbstractModel? oldRecord, IAbstractModel? parentRecord)
         {
             GetController()?.SetParentRecord(parentRecord);
             if (oldRecord != null)
@@ -46,13 +46,13 @@ namespace FrontEnd.Forms
         /// <summary>
         /// Gets and Sets the <see cref="Form"/>'s <see cref="IAbstractFormController"/> CurrentRecord property which filter the records of the this SubForm.
         /// </summary>
-        public AbstractModel ParentRecord
+        public IAbstractModel ParentRecord
         {
-            get => (AbstractModel)GetValue(ParentRecordProperty);
+            get => (IAbstractModel)GetValue(ParentRecordProperty);
             set => SetValue(ParentRecordProperty, value);
         }
 
-        public static readonly DependencyProperty ParentRecordProperty = DependencyProperty.Register(nameof(ParentRecord), typeof(AbstractModel), typeof(SubForm), new PropertyMetadata(OnParentRecordPropertyChanged));
+        public static readonly DependencyProperty ParentRecordProperty = DependencyProperty.Register(nameof(ParentRecord), typeof(IAbstractModel), typeof(SubForm), new PropertyMetadata(OnParentRecordPropertyChanged));
         private static void OnParentRecordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((SubForm)d).OnParentRecordChanged(d, new(e.OldValue, e.NewValue));
         #endregion
 

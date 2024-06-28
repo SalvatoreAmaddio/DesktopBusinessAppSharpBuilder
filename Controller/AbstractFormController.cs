@@ -22,7 +22,7 @@ namespace FrontEnd.Controller
     /// This class extends <see cref="AbstractSQLModelController"/> and implementats <see cref="IAbstractFormController{M}"/>
     /// </summary>
     /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
-    public abstract class AbstractFormController<M> : AbstractSQLModelController<M>, IParentController, ISubFormController, IDisposable, IAbstractFormController<M> where M : AbstractModel, new()
+    public abstract class AbstractFormController<M> : AbstractSQLModelController<M>, IParentController, ISubFormController, IDisposable, IAbstractFormController<M> where M : IAbstractModel, new()
     {
         #region backing fields
         private bool _readOnly = false;
@@ -82,7 +82,7 @@ namespace FrontEnd.Controller
         public bool AllowAutoSave { get; set; } = false;
         public IEnumerable<M>? MasterSource => DatabaseManager.Find<M>()?.MasterSource.Cast<M>();
         public IAbstractFormController? ParentController { get; set; }
-        public AbstractModel? ParentRecord { get; protected set; }
+        public IAbstractModel? ParentRecord { get; protected set; }
         public override ISQLModel? CurrentModel
         {
             get => _currentModel;
@@ -158,13 +158,13 @@ namespace FrontEnd.Controller
             });
 
             if (results == null) throw new Exception("Source is null"); //Something has gone wrong.
-            Db.ReplaceRecords(results.ToList<ISQLModel>()); //Replace the Master RecordSource's records with the newly fetched ones.
+            Db.ReplaceRecords(results.Cast<ISQLModel>().ToList()); //Replace the Master RecordSource's records with the newly fetched ones.
             RecordSource.ReplaceRecords(results); //Update also its child source for this controller.
             IsLoading = false; //Notify the GUI the process has terminated
         }
 
         #region SubForm Methods
-        public void SetParentRecord(AbstractModel? parentRecord)
+        public void SetParentRecord(IAbstractModel? parentRecord)
         {
             ParentRecord = parentRecord;
             OnSubFormFilter();

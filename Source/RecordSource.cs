@@ -12,7 +12,7 @@ using System.Windows;
 
 namespace FrontEnd.Source
 {
-    public class RecordSource<M> : ObservableRangeCollection<M>, IRecordSource<M>, IChildSource, IUISource where M : AbstractModel, new()
+    public class RecordSource<M> : ObservableRangeCollection<M>, IRecordSource<M>, IChildSource, IUISource where M : IAbstractModel, new()
     {
         /// <summary>
         /// This delegate works as a bridge between the <see cref="Controller.IAbstractSQLModelController"/> and this <see cref="Backend.Source.DataSource"/>.
@@ -152,10 +152,11 @@ namespace FrontEnd.Source
 
         public void ReplaceRecords(IEnumerable<M> newSource)
         {
-            M? current = null;
+            M? current = default(M?);
             try 
             {
-                current = navigator?.Current;
+                if (navigator!=null)
+                    current = navigator.Current;
             }
             catch { }
 
@@ -163,7 +164,7 @@ namespace FrontEnd.Source
 
             ReplaceRange(newSource);
 
-            if (current!=null && Controller != null) 
+            if (current != null && Controller != null)
             {
                 Controller.CurrentModel = this.FirstOrDefault(s => s.Equals(current));
                 if (Controller.CurrentModel == null)

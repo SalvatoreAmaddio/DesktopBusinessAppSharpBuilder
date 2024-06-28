@@ -16,13 +16,13 @@ namespace FrontEnd.Controller
         /// <summary>
         /// Holds a reference to the SubForm's ParentRecord property. This property is set by the <see cref="SetParentRecord(AbstractModel?)"/>  called within the SubForm object.
         /// </summary>
-        public AbstractModel? ParentRecord { get; }
+        public IAbstractModel? ParentRecord { get; }
 
         /// <summary>
         /// This method is called by the <see cref="SubForm"/> class to notify that its ParentController has moved to another Record.
         /// </summary>
         /// <param name="ParentRecord"></param>
-        public void SetParentRecord(AbstractModel? ParentRecord);
+        public void SetParentRecord(IAbstractModel? ParentRecord);
 
         /// <summary>
         /// Occurs when the SubForm is going to add a new Record.

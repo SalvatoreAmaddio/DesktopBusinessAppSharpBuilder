@@ -74,7 +74,7 @@ namespace FrontEnd.Controller
     /// Objects of this class are tipically used to deal with CRUD operations.
     /// </summary>
     /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
-    public class CMD<M> : ICommand where M : AbstractModel, new()
+    public class CMD<M> : ICommand where M : IAbstractModel, new()
     {
         public event EventHandler? CanExecuteChanged;
         private readonly Action<M>? _action;

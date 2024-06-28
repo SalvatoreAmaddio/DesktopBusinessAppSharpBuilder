@@ -44,7 +44,7 @@ namespace FrontEnd.Model
     /// <summary>
     /// This class extends the <see cref="AbstractSQLModel"/> and adds extra functionalities for UI purposes
     /// </summary>
-    public abstract class AbstractModel : AbstractSQLModel, IAbstractModel
+    public abstract class AbstractModel<M> : AbstractSQLModel, IAbstractModel where M : ISQLModel, new()
     {
         bool _isDirty = false;
         public bool IsDirty
@@ -129,12 +129,8 @@ namespace FrontEnd.Model
             }
         }
 
-    }
-
-    public abstract class AbstractModel<M> : AbstractModel where M : ISQLModel, new()
-    {
         public override ISQLModel Read(DbDataReader reader) => CreateFromDbRecord(reader);
-        public M CreateFromDbRecord(DbDataReader reader) 
+        public M CreateFromDbRecord(DbDataReader reader)
         {
             Type myClassType = typeof(M);
             ConstructorInfo? constructor = myClassType.GetConstructor([typeof(DbDataReader)]) ?? throw new NullReferenceException($"Class {myClassType.Name} is missing a Constructor that takes a DbDataReader object as parameter!");

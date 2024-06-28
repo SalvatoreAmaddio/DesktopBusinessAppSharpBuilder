@@ -285,7 +285,7 @@ namespace FrontEnd.Forms.Calendar
             CurrentSlots.Add(slot);
             return slot;
         }
-        private IEnumerable<AbstractModel>? RaiseOnPreparing(DateTime date) 
+        private IEnumerable<IAbstractModel>? RaiseOnPreparing(DateTime date)
         {
             OnPreparingCalendarFormEventArgs args = new(date, OnPreparingEvent, this);
             RaiseEvent(args);

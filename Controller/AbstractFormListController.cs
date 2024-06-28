@@ -14,7 +14,7 @@ namespace FrontEnd.Controller
     /// This class extends <see cref="AbstractFormListController{M}"/> and implements <see cref="IAbstractFormListController{M}"/>
     /// </summary>
     /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
-    public abstract class AbstractFormListController<M> : AbstractFormController<M>, IAbstractFormListController<M> where M : AbstractModel, new()
+    public abstract class AbstractFormListController<M> : AbstractFormController<M>, IAbstractFormListController<M> where M : IAbstractModel, new()
     {
         bool _openWindowOnNew = true;
 
@@ -48,7 +48,7 @@ namespace FrontEnd.Controller
             });
 
             if (results == null) throw new Exception("Source is null"); //Something has gone wrong.
-            Db.ReplaceRecords(results.ToList<ISQLModel>()); //Replace the Master RecordSource's records with the newly fetched ones.
+            Db.ReplaceRecords(results.Cast<ISQLModel>().ToList()); //Replace the Master RecordSource's records with the newly fetched ones.
 
             try
             {
@@ -203,7 +203,7 @@ namespace FrontEnd.Controller
             if (!CurrentRecord.IsDirty) return false; //if the record has not been changed there is nothing to update.
             if (!CurrentRecord.AllowUpdate()) return false; //the record did not meet the criteria to be updated.
             CRUD crud = (!CurrentRecord.IsNewRecord()) ? CRUD.UPDATE : CRUD.INSERT;
-            AbstractModel temp = CurrentRecord;
+            IAbstractModel temp = CurrentRecord;
 
             if (crud == CRUD.INSERT) 
             {   //INSERT must follow a slighlty different logic if it the user is allowed to insert new rows himself. This is to avoid unexpected behaviour between the RecordSource and the Lista object.
@@ -222,7 +222,7 @@ namespace FrontEnd.Controller
         /// <summary>
         /// Execute a CRUD Operation. This method is only used in <see cref="AlterRecord(string?, List{QueryParameter}?)"/> to avoid code repition.
         /// </summary>
-        private void ExecuteCRUD(ref AbstractModel temp, CRUD crud, string? sql = null, List<QueryParameter>? parameters = null) 
+        private void ExecuteCRUD(ref IAbstractModel temp, CRUD crud, string? sql = null, List<QueryParameter>? parameters = null) 
         {
             Db.Model = temp;
             Db.Crud(crud, sql, parameters);

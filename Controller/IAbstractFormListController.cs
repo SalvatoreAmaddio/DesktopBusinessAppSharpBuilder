@@ -65,7 +65,7 @@ namespace FrontEnd.Controller
     /// This Interface extends <see cref="IAbstractFormController{M}"/> and <see cref="IAbstractFormListController"/> and adds a set of properties necessary to deal with <see cref="FormList"/> objects.
     /// </summary>
     /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
-    public interface IAbstractFormListController<M> : IAbstractFormController<M>, IAbstractFormListController where M : AbstractModel, new()
+    public interface IAbstractFormListController<M> : IAbstractFormController<M>, IAbstractFormListController where M : IAbstractModel, new()
     {
         /// <summary>
         /// Gets and Sets the command to execute to open a Record.

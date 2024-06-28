@@ -33,7 +33,7 @@ namespace FrontEnd.FilterSource
         public SourceOption() { }
       //  public SourceOption(IEnumerable<IFilterOption> source) : base(source) { }
 
-        public SourceOption(IDataSource source, string displayProperty, OrderBy orderBy = OrderBy.ASC, string orderByProperty = "") : base(source.Cast<AbstractModel>().Select(s => new FilterOption(s, displayProperty)))
+        public SourceOption(IDataSource source, string displayProperty, OrderBy orderBy = OrderBy.ASC, string orderByProperty = "") : base(source.Cast<IAbstractModel>().Select(s => new FilterOption(s, displayProperty)))
         {
             _orderByProperty = orderByProperty;
             _orderBy = orderBy;
@@ -216,7 +216,7 @@ namespace FrontEnd.FilterSource
 
         protected override IEnumerable<IFilterOption> OrderSource()
         {
-            IEnumerable<IAbstractModel?>? range = Source?.Cast<AbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
+            IEnumerable<IAbstractModel?>? range = Source?.Cast<IAbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
             if (range == null) throw new NullReferenceException();
             if (_orderBy == OrderBy.ASC)
                 return range.Select(s => new FilterOption(s, _displayProperty)).OrderBy(s => s.Value).ToList();

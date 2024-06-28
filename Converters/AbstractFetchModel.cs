@@ -11,7 +11,7 @@ namespace FrontEnd.Converters
     /// </summary>
     /// <typeparam name="M"></typeparam>
     /// <typeparam name="D"></typeparam>
-    public abstract class AbstractFetchModel<M, D> : IValueConverter where M : AbstractModel, new() where D : AbstractModel, new()
+    public abstract class AbstractFetchModel<M, D> : IValueConverter where M : IAbstractModel, new() where D : IAbstractModel, new()
     {
         protected M? Record;
         protected IAbstractDatabase? Db => DatabaseManager.Find<D>();

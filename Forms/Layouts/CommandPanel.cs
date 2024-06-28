@@ -37,14 +37,14 @@ namespace FrontEnd.Forms
         public static readonly DependencyProperty DeleteCMDProperty =
         DependencyProperty.Register(nameof(DeleteCMD), typeof(ICommand), typeof(CommandPanel), new PropertyMetadata());
 
-        public AbstractModel CommandParameter
+        public IAbstractModel CommandParameter
         {
-            get => (AbstractModel)GetValue(CommandParameterProperty);
+            get => (IAbstractModel)GetValue(CommandParameterProperty);
             set => SetValue(CommandParameterProperty, value);
         }
 
         public static readonly DependencyProperty CommandParameterProperty =
-        DependencyProperty.Register(nameof(CommandParameter), typeof(AbstractModel), typeof(CommandPanel), new PropertyMetadata());
+        DependencyProperty.Register(nameof(CommandParameter), typeof(IAbstractModel), typeof(CommandPanel), new PropertyMetadata());
 
         static CommandPanel() => DefaultStyleKeyProperty.OverrideMetadata(typeof(CommandPanel), new FrameworkPropertyMetadata(typeof(CommandPanel)));
     }

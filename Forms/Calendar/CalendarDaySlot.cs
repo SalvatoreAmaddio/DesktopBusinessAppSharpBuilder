@@ -42,12 +42,12 @@ namespace FrontEnd.Forms.Calendar
             DependencyProperty.Register(nameof(IsFestive), typeof(bool), typeof(CalendarDaySlot), new PropertyMetadata(false, null));
         #endregion
 
-        private IEnumerable<AbstractModel>? _model;
+        private IEnumerable<IAbstractModel>? _model;
         
         /// <summary>
         /// Gets a <see cref="IEnumerable{AbstractModel}"/> containing the records associated with this Slot.
         /// </summary>
-        public IEnumerable<AbstractModel>? Records
+        public IEnumerable<IAbstractModel>? Records
         { 
             get => _model;
             set 

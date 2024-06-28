@@ -5,7 +5,7 @@ using System.Data.Common;
 namespace FrontEnd.Model
 {
     [Table(nameof(User))]
-    public class User : AbstractModel, IUser
+    public class User : AbstractModel<User>, IUser
     {
         private long _userid;
         private string _username = string.Empty;
@@ -51,8 +51,6 @@ namespace FrontEnd.Model
         public virtual void Logout() => CredentialManager.Delete(Target);
 
         public virtual void SaveCredentials() => CredentialManager.Store(new(Target, UserName, Password));
-
-        public override ISQLModel Read(DbDataReader reader) => new User(reader);
 
         public void ResetAttempts() => Attempts = 3;
 

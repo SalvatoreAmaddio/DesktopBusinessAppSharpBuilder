@@ -35,7 +35,7 @@ namespace FrontEnd.Events
 
     public class OnPreparingCalendarFormEventArgs : RoutedEventArgs
     {
-        public IEnumerable<AbstractModel>? Records { get; set; }
+        public IEnumerable<IAbstractModel>? Records { get; set; }
 
         public DateTime Date { get; }
 
@@ -51,15 +51,15 @@ namespace FrontEnd.Events
     {
     }
 
-    public class OnDirtyChangedEventArgs(AbstractModel Model) : EventArgs
+    public class OnDirtyChangedEventArgs(IAbstractModel Model) : EventArgs
     {
-        public AbstractModel Model { get; } = Model;
+        public IAbstractModel Model { get; } = Model;
     }
 
     public class ParentRecordChangedArgs(object? oldValue, object? newValue) : EventArgs 
     {
-        public AbstractModel? OldValue { get; } = (AbstractModel?)oldValue;
-        public AbstractModel? NewValue { get; } = (AbstractModel?)newValue;
+        public IAbstractModel? OldValue { get; } = (IAbstractModel?)oldValue;
+        public IAbstractModel? NewValue { get; } = (IAbstractModel?)newValue;
     }
 
     public abstract class UpdateArgs(string propertyName) : AbstractEventArgs

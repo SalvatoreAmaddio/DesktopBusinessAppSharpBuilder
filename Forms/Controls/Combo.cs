@@ -24,7 +24,7 @@ namespace FrontEnd.Forms
             Style = (Style)resourceDict["ComboStyle"];
         }
 
-        public AbstractModel? ParentModel => DataContext as AbstractModel;
+        public IAbstractModel? ParentModel => DataContext as IAbstractModel;
         
         /// <summary>
         /// Adjust the <see cref="ComboBox.Text"/> property to relect the Selected Item.
