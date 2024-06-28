@@ -101,7 +101,7 @@ namespace FrontEnd.Forms.FormComponents
         {
             if (DataContext is not IAbstractFormController Controller) return;
 
-            IAbstractModel? record = (IAbstractModel?)Controller.CurrentModel;
+            IAbstractModel? record = (IAbstractModel?)Controller.GetCurrentRecord();
             if (record != null && record.IsNewRecord() && movement == 5) return;
             if (record != null && record.IsNewRecord() && movement == 3) return;
 

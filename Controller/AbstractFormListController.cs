@@ -139,8 +139,7 @@ namespace FrontEnd.Controller
             if (RecordSource.Any(s => s.IsNewRecord())) return false; //If there is already a new record exit the method.
             RecordSource.Add(new M()); //add a new record to the collection.
             Navigator.GoLast(); //Therefore, you can now move to the last record which is indeed a new record.
-            CurrentModel = Navigator.Current; //set the CurrentModel property.
-            var x = CurrentModel.IsNewRecord();
+            CurrentRecord = Navigator.Current; //set the CurrentModel property.
             if (InvokeAfterRecordNavigationEvent(RecordMovement.GoNew)) return false; //if you are using SubForms, Invoke the the OnNewRecordEvent().
             Records = "New Record"; //update RecordTracker's record displayer.
             return true;
@@ -169,7 +168,7 @@ namespace FrontEnd.Controller
 
             if (record == null)
             {
-                CurrentModel = null;
+                CurrentRecord = default;
                 Records = Source.RecordPositionDisplayer();
                 return false;
             }
@@ -186,7 +185,7 @@ namespace FrontEnd.Controller
             {
                 CleanSource();
                 Navigator.GoAt(record);
-                CurrentModel = Navigator.Current;
+                CurrentRecord = Navigator.Current;
                 Records = Source.RecordPositionDisplayer();    
             }
 

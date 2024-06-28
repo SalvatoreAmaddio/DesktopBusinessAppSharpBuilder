@@ -14,7 +14,6 @@ using FrontEnd.Source;
 using System.Windows.Controls;
 using Backend.Enums;
 using Backend.ExtensionMethods;
-using Backend.Events;
 
 namespace FrontEnd.Controller
 {
@@ -28,7 +27,7 @@ namespace FrontEnd.Controller
         private bool _readOnly = false;
         private M? _currentRecord;
         private string _search = string.Empty;
-        private bool _isloading = false;
+        private bool _isLoading = false;
         protected ISQLModel? _currentModel;
         private string _records = string.Empty;
         private UIElement? _uiElement;
@@ -56,9 +55,7 @@ namespace FrontEnd.Controller
                     throw new Exception("UI Element is meant to be either a Window or a Page");
 
                 if (value is Page _page)
-                {
                     _page.Loaded += OnPageLoaded;
-                }
 
                 if (value is Window _win) 
                 {
@@ -83,28 +80,10 @@ namespace FrontEnd.Controller
         public IEnumerable<M>? MasterSource => DatabaseManager.Find<M>()?.MasterSource.Cast<M>();
         public IAbstractFormController? ParentController { get; set; }
         public IAbstractModel? ParentRecord { get; protected set; }
-        public override ISQLModel? CurrentModel
-        {
-            get => _currentModel;
-            set
-            {
-                UpdateProperty(ref value, ref _currentModel);
-                SetCurrentRecordProperty((M?)value);
-            }
-        }
-
-        public M? CurrentRecord
-        {
-            get => (M?)CurrentModel;
-            set 
-            {
-                CurrentModel = value;
-                UpdateProperty(ref value, ref _currentRecord);
-            } 
-        }
+        public override M? CurrentRecord { get => _currentRecord; set => UpdateProperty(ref value, ref _currentRecord); }
         public RecordSource<M> RecordSource => (RecordSource<M>)DataSource;
-        public override string Records { get => _records; protected set => UpdateProperty(ref value, ref _records); }        
-        public bool IsLoading { get => _isloading; set => UpdateProperty(ref value, ref _isloading); }
+        public override string Records { get => _records; protected set => UpdateProperty(ref value, ref _records); }
+        public bool IsLoading { get => _isLoading; set => UpdateProperty(ref value, ref _isLoading); }
         public string Search { get => _search; set => UpdateProperty(ref value, ref _search); }
         #endregion
 
@@ -133,8 +112,6 @@ namespace FrontEnd.Controller
             SearchQry = InstantiateSearchQry();
         }
         protected override IDataSource<M> InitSource() => new RecordSource<M>(Db, this);
-
-        private void SetCurrentRecordProperty(M? value) => UpdateProperty(ref value, ref _currentRecord, nameof(CurrentRecord));
 
         public void ReloadSearchQry()
         {

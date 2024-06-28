@@ -166,8 +166,8 @@ namespace FrontEnd.Source
 
             if (current != null && Controller != null)
             {
-                Controller.CurrentModel = this.FirstOrDefault(s => s.Equals(current));
-                if (Controller.CurrentModel == null)
+                Controller.SetCurrentRecord(this.FirstOrDefault(s => s.Equals(current)));
+                if (Controller.GetCurrentRecord()== null)
                     Controller.GoFirst();
                 return;
             }
