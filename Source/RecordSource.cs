@@ -188,14 +188,18 @@ namespace FrontEnd.Source
             RunFilter = null;
             try
             {
-                //navigator?.Dispose();
                 Clear();
+                navigator?.Dispose();
             }
-            catch 
+            catch
             {
-                Application.Current.Dispatcher.BeginInvoke(Clear);                
+                Application.Current.Dispatcher.BeginInvoke(() =>
+                {
+                    Clear();
+                    navigator?.Dispose();
+                });
             }
-            finally 
+            finally
             {
                 GC.SuppressFinalize(this);
             }

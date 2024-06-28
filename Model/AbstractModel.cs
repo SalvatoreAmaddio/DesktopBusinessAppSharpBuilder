@@ -71,12 +71,9 @@ namespace FrontEnd.Model
         #endregion
 
         public AbstractModel() : base() => AllFields = new(GetAllTableFields());
-
         public void Dirt() => IsDirty = true;
         public void Clean() => IsDirty = false;
-
         public void RaisePropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
-
         public void UpdateProperty<T>(ref T value, ref T _backProp, [CallerMemberName] string propName = "")
         {
             SimpleTableField? field = AllFields.Find(s => s.Name.Equals(propName));
@@ -90,7 +87,6 @@ namespace FrontEnd.Model
             AfterUpdate?.Invoke(this, args);
             RaisePropertyChanged(propName);
         }
-
         public void Undo() 
         { 
             foreach (var field in AllFields.Where(s=>s.Changed)) 
@@ -101,7 +97,6 @@ namespace FrontEnd.Model
 
             IsDirty = false;
         }
-
         public override bool AllowUpdate()
         {
             bool result = base.AllowUpdate();
@@ -111,7 +106,6 @@ namespace FrontEnd.Model
 
             return result;
         }
-
         public override void Dispose()
         {
             base.Dispose();
