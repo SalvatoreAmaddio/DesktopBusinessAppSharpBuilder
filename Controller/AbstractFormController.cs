@@ -18,12 +18,12 @@ using Backend.ExtensionMethods;
 namespace FrontEnd.Controller
 {
     /// <summary>
-    /// This class extends <see cref="AbstractSQLModelController"/> and implementats <see cref="IAbstractFormController{M}"/>
+    /// Extends <see cref="AbstractSQLModelController{M}"/> and implements <see cref="IAbstractFormController{M}"/> to manage form-specific functionality.
     /// </summary>
-    /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
+    /// <typeparam name="M">An <see cref="IAbstractModel"/> object.</typeparam>
     public abstract class AbstractFormController<M> : AbstractSQLModelController<M>, IParentController, ISubFormController, IDisposable, IAbstractFormController<M> where M : IAbstractModel, new()
     {
-        #region backing fields
+        #region Backing Fields
         private bool _readOnly = false;
         private M? _currentRecord;
         private string _search = string.Empty;
@@ -31,7 +31,7 @@ namespace FrontEnd.Controller
         protected ISQLModel? _currentModel;
         private string _records = string.Empty;
         private UIElement? _uiElement;
-        private readonly List<ISubFormController> _subControllers = [];
+        private readonly List<ISubFormController> _subControllers = new();
         #endregion
 
         #region Properties
@@ -44,8 +44,15 @@ namespace FrontEnd.Controller
                 Navigator.AllowNewRecord = value;
             }
         }
-        public bool ReadOnly { get => _readOnly; set => UpdateProperty(ref value, ref _readOnly); }
+
+        public bool ReadOnly
+        {
+            get => _readOnly;
+            set => UpdateProperty(ref value, ref _readOnly);
+        }
+
         public AbstractClause SearchQry { get; private set; }
+
         public UIElement? UI
         {
             get => _uiElement;
@@ -57,7 +64,7 @@ namespace FrontEnd.Controller
                 if (value is Page _page)
                     _page.Loaded += OnPageLoaded;
 
-                if (value is Window _win) 
+                if (value is Window _win)
                 {
                     _win.Closed += OnWinClosed;
                     _win.Closing += OnWinClosing;
@@ -69,22 +76,47 @@ namespace FrontEnd.Controller
         }
 
         /// <summary>
-        /// Wrap up method for the <see cref="RecordSource{M}.CreateFromAsyncList(IAsyncEnumerable{ISQLModel})"/>
+        /// Wrap-up method for creating a <see cref="RecordSource{M}"/> from an async list.
         /// </summary>
-        /// <param name="qry">The query to be used, can be null</param>
-        /// <param name="parameters">A list of parameters to be used, can be null</param>
-        /// <returns>A RecordSource</returns>
+        /// <param name="qry">The query to be used, can be null.</param>
+        /// <param name="parameters">A list of parameters to be used, can be null.</param>
+        /// <returns>A <see cref="RecordSource{M}"/>.</returns>
         public Task<RecordSource<M>> CreateFromAsyncList(string? qry = null, List<QueryParameter>? parameters = null) =>
-        RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync(qry, parameters).Cast<M>());
+            RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync(qry, parameters).Cast<M>());
+
         public bool AllowAutoSave { get; set; } = false;
+
         public IEnumerable<M>? MasterSource => DatabaseManager.Find<M>()?.MasterSource.Cast<M>();
+
         public IAbstractFormController? ParentController { get; set; }
+
         public IAbstractModel? ParentRecord { get; protected set; }
-        public override M? CurrentRecord { get => _currentRecord; set => UpdateProperty(ref value, ref _currentRecord); }
+
+        public override M? CurrentRecord
+        {
+            get => _currentRecord;
+            set => UpdateProperty(ref value, ref _currentRecord);
+        }
+
         public RecordSource<M> RecordSource => (RecordSource<M>)DataSource;
-        public override string Records { get => _records; protected set => UpdateProperty(ref value, ref _records); }
-        public bool IsLoading { get => _isLoading; set => UpdateProperty(ref value, ref _isLoading); }
-        public string Search { get => _search; set => UpdateProperty(ref value, ref _search); }
+
+        public override string Records
+        {
+            get => _records;
+            protected set => UpdateProperty(ref value, ref _records);
+        }
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => UpdateProperty(ref value, ref _isLoading);
+        }
+
+        public string Search
+        {
+            get => _search;
+            set => UpdateProperty(ref value, ref _search);
+        }
         #endregion
 
         #region Commands
@@ -111,58 +143,80 @@ namespace FrontEnd.Controller
             RequeryCMD = new CMDAsync(RequeryAsync);
             SearchQry = InstantiateSearchQry();
         }
+
         protected override IDataSource<M> InitSource() => new RecordSource<M>(Db, this);
 
+        /// <summary>
+        /// Reloads the search query.
+        /// </summary>
         public void ReloadSearchQry()
         {
             SearchQry.Dispose();
             SearchQry = InstantiateSearchQry();
         }
 
-        public virtual AbstractClause InstantiateSearchQry() => new M().From();
+        /// <summary>
+        /// Instantiates a search query.
+        /// </summary>
+        /// <returns>An <see cref="AbstractClause"/> object.</returns>
+        public virtual AbstractClause InstantiateSearchQry() => new M().Select().All().From();
 
         /// <summary>
-        /// This method is called by <see cref="RequeryCMD"/> command to Requery the database table.
-        /// It awaits the <see cref="DataSource.CreateFromAsyncList(IAsyncEnumerable{ISQLModel})"/> whose result is then used to replace the records kept in the <see cref="IAbstractSQLModelController.Db"/> property and in the <see cref="IAbstractSQLModelController.Source"/> property.
+        /// Requeries the database table. This method is called by the <see cref="RequeryCMD"/> command.
+        /// It retrieves the records and replaces the existing ones in the <see cref="Db"/> and <see cref="Source"/> properties.
         /// </summary>
         public virtual async Task RequeryAsync()
         {
-            IsLoading = true; //notify the GUI that there is a process going on.
+            IsLoading = true; // Notify the GUI that a process is ongoing.
             IEnumerable<M>? results = null;
-            await Task.Run(async () => //retrieve the records. Do not freeze the GUI.
+            await Task.Run(async () => // Retrieve the records without freezing the GUI.
             {
                 results = await RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync().Cast<M>());
             });
 
-            if (results == null) throw new Exception("Source is null"); //Something has gone wrong.
-            Db.ReplaceRecords(results.Cast<ISQLModel>().ToList()); //Replace the Master RecordSource's records with the newly fetched ones.
-            RecordSource.ReplaceRecords(results); //Update also its child source for this controller.
-            IsLoading = false; //Notify the GUI the process has terminated
+            if (results == null) throw new Exception("Source is null"); // Handle error case.
+            Db.ReplaceRecords(results.Cast<ISQLModel>().ToList()); // Replace master record source records.
+            RecordSource.ReplaceRecords(results); // Update child source for this controller.
+            IsLoading = false; // Notify the GUI that the process has completed.
         }
 
         #region SubForm Methods
+        /// <summary>
+        /// Sets the parent record and filters the subform.
+        /// </summary>
+        /// <param name="parentRecord">The parent record to set.</param>
         public void SetParentRecord(IAbstractModel? parentRecord)
         {
             ParentRecord = parentRecord;
             OnSubFormFilter();
-            if (ParentRecord != null)
+            if (ParentRecord != null && ParentRecord.IsNewRecord())
             {
-                if (ParentRecord.IsNewRecord())
-                    Records = "NO RECORDS";
+                Records = "NO RECORDS";
             }
-            else Records = "NO RECORDS";
+            else
+            {
+                Records = "NO RECORDS";
+            }
         }
+
+        /// <summary>
+        /// Invoked to filter the subform based on the parent record. Override this method to implement custom filtering logic.
+        /// </summary>
         public virtual void OnSubFormFilter()
         {
-            throw new NotImplementedException("You have not override the OnSubFormFilter() method in the Controller class that handles the SubForm.");
+            throw new NotImplementedException("You have not overridden the OnSubFormFilter() method in the Controller class that handles the SubForm.");
         }
+
         public ISubFormController GetSubController(int index) => _subControllers[index];
+
         public C? GetSubController<C>(int index) where C : IAbstractFormController => (C?)_subControllers[index];
+
         public void AddSubControllers(ISubFormController controller)
         {
             controller.ParentController = this;
             _subControllers.Add(controller);
         }
+
         public void RemoveSubControllers(ISubFormController controller)
         {
             controller.ParentController = null;
@@ -171,23 +225,28 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Alter Record
+        /// <summary>
+        /// Performs an update or insert CRUD operation. This method is called by the <see cref="UpdateCMD"/> command.
+        /// </summary>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
         public virtual bool PerformUpdate() => Update(CurrentRecord);
+
         public virtual Task<bool> PerformUpdateAsync()
         {
             bool result = Update(CurrentRecord);
             return Task.FromResult(result);
-        } 
+        }
 
         /// <summary>
-        /// This method is called by <see cref="UpdateCMD"/> command to perform an Update or Insert CRUD operation.
+        /// Performs an update or insert CRUD operation.
         /// </summary>
-        /// <param name="model">The record that must be inserted or updated</param>
-        /// <returns>true if the operation was successful</returns>
+        /// <param name="model">The record to update or insert.</param>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
         protected virtual bool Update(M? model)
         {
             if (ReadOnly)
             {
-                Failure.Allert("This view is read only","Action Denied");
+                Failure.Allert("This view is read only", "Action Denied");
                 CurrentRecord?.Undo();
                 CurrentRecord?.Clean();
                 return false;
@@ -202,10 +261,10 @@ namespace FrontEnd.Controller
         }
 
         /// <summary>
-        /// This method is called by <see cref="DeleteCMD"/> command to perform a Delete CRUD operation.
+        /// Performs a delete CRUD operation. This method is called by the <see cref="DeleteCMD"/> command.
         /// </summary>
-        /// <param name="model">The record that must be deleted</param>
-        /// <returns>true if the operation was successful</returns>
+        /// <param name="model">The record to delete.</param>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
         protected virtual bool Delete(M? model)
         {
             if (ReadOnly)
@@ -227,6 +286,7 @@ namespace FrontEnd.Controller
         }
 
         public virtual bool AllowDelete(M? model) => true;
+
         protected override void OnUIApplication(EntityTree tree, ISQLModel record)
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -238,14 +298,14 @@ namespace FrontEnd.Controller
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
         {
             if (CurrentRecord == null) throw new NoModelException();
-            if (!CurrentRecord.IsDirty) return false; //if the record has not been changed there is nothing to update.
-            if (!CurrentRecord.AllowUpdate()) return false; //the record did not meet the criteria to be updated.
+            if (!CurrentRecord.IsDirty) return false; // No changes to update.
+            if (!CurrentRecord.AllowUpdate()) return false; // Record did not meet update criteria.
             CRUD crud = (!CurrentRecord.IsNewRecord()) ? CRUD.UPDATE : CRUD.INSERT;
             Db.Model = CurrentRecord;
             Db.Crud(crud, sql, parameters);
             CurrentRecord.IsDirty = false;
-            Db.MasterSource?.NotifyChildren(crud, Db.Model); //tell children sources to reflect the changes occured in the master source's collection.
-            if (crud == CRUD.INSERT) GoLast(); //if the we have inserted a new record instruct the Navigator to move to the last record.
+            Db.MasterSource?.NotifyChildren(crud, Db.Model); // Notify children sources of changes.
+            if (crud == CRUD.INSERT) GoLast(); // Move to the last record if a new record was inserted.
             return true;
         }
         #endregion
@@ -255,8 +315,8 @@ namespace FrontEnd.Controller
         {
             if (CurrentRecord != null)
             {
-                if (CurrentRecord.IsNewRecord() && !CurrentRecord.IsDirty) return true; //the record is a new record and no changes have been made yet.
-                if (!CurrentRecord.AllowUpdate()) return false; //the record has changed but it did not met the conditions to be updated.
+                if (CurrentRecord.IsNewRecord() && !CurrentRecord.IsDirty) return true; // New record with no changes.
+                if (!CurrentRecord.AllowUpdate()) return false; // Record did not meet update criteria.
             }
             return true;
         }
@@ -268,6 +328,7 @@ namespace FrontEnd.Controller
 
         #region Notifier
         public void RaisePropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+
         public void UpdateProperty<T>(ref T value, ref T _backProp, [CallerMemberName] string propName = "")
         {
             BeforeUpdateArgs args = new(value, _backProp, propName);
@@ -280,12 +341,13 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Event Subscriptions
-        private void OnWinClosed(object? sender, EventArgs e) 
+        private void OnWinClosed(object? sender, EventArgs e)
         {
             if (UI is Window win)
                 win.Closed -= OnWinClosed;
             WindowClosed?.Invoke(sender, e);
         }
+
         private void OnPageLoaded(object sender, RoutedEventArgs e)
         {
             if (UI is Page _page)
@@ -293,10 +355,11 @@ namespace FrontEnd.Controller
 
             UI = Window.GetWindow(UI);
             if (UI is Window win && win.IsLoaded)
-               OnWinLoaded(win, new());
+                OnWinLoaded(win, new());
         }
 
         private void OnWinLoaded(object sender, RoutedEventArgs e) => WindowLoaded?.Invoke(sender, e);
+
         public async void OnWinClosing(object? sender, CancelEventArgs e)
         {
             if (ReadOnly)
@@ -304,7 +367,7 @@ namespace FrontEnd.Controller
                 CurrentRecord?.Undo();
                 CurrentRecord?.Clean();
                 Dispose();
-                return; // if the Controller is on ReadOnly, there is nothing to check, close the window.
+                return; // If the Controller is read-only, close the window without further checks.
             }
 
             WindowClosing?.Invoke(sender, e);
@@ -313,41 +376,44 @@ namespace FrontEnd.Controller
 
             bool dirty = RecordSource.Any(s => s.IsDirty);
 
-            if (CurrentRecord!=null) 
+            if (CurrentRecord != null)
                 dirty = CurrentRecord.IsDirty;
 
-            if (!dirty) 
+            if (!dirty)
             {
                 Dispose();
-                return; // if the record is not dirty, there is nothing to check, close the window.
+                return; // If the record is not dirty, close the window.
             }
-            e.Cancel = dirty; 
-            
-            if (AllowAutoSave) 
+
+            e.Cancel = dirty;
+
+            if (AllowAutoSave)
             {
                 e.Cancel = !PerformUpdate();
                 return;
             }
 
-            //the record has been changed, check its integrity before closing.
+            // Check record integrity before closing.
             DialogResult result = UnsavedDialog.Ask("Do you want to save your changes before closing?");
-            if (result == DialogResult.No) //the user has decided to undo its changes to the record. 
+            if (result == DialogResult.No)
             {
-                CurrentRecord?.Undo(); //set the record's property to how they were before changing.
-                e.Cancel = false; //can close the window.
+                CurrentRecord?.Undo();
+                e.Cancel = false; // Allow closing the window.
             }
-            else //the user has decided to apply its changes to the record. 
+            else
             {
-                bool updateResult = PerformUpdate(); //perform an update against the Database.
-                e.Cancel = !updateResult; //if the update fails, force the User to stay on the Windwow. If the update was successful, close the window.
+                bool updateResult = PerformUpdate();
+                e.Cancel = !updateResult; // Prevent closing if the update fails.
             }
 
-            if (!e.Cancel) 
+            if (!e.Cancel)
                 await Task.Run(Dispose);
         }
         #endregion
 
         public void SetLoading(bool val) => IsLoading = val;
+
+        #region Disposers
         protected override void DisposeEvents()
         {
             base.DisposeEvents();
@@ -364,15 +430,15 @@ namespace FrontEnd.Controller
 
             if (_uiElement is Window _win)
             {
-                try 
+                try
                 {
                     _win.Closing -= OnWinClosing;
                     _win.Loaded -= OnWinLoaded;
                 }
-                catch 
+                catch
                 {
-                    Application.Current.Dispatcher.Invoke(() => 
-                    {                    
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
                         _win.Closing -= OnWinClosing;
                         _win.Loaded -= OnWinLoaded;
                     });
@@ -386,5 +452,8 @@ namespace FrontEnd.Controller
             _subControllers.Clear();
             GC.SuppressFinalize(this);
         }
+        #endregion
+
     }
+
 }

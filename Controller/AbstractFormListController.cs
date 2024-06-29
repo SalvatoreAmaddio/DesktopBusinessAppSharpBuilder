@@ -11,9 +11,10 @@ using Backend.Events;
 namespace FrontEnd.Controller
 {
     /// <summary>
-    /// This class extends <see cref="AbstractFormListController{M}"/> and implements <see cref="IAbstractFormListController{M}"/>
+    /// Extends <see cref="AbstractFormController{M}"/> and implements <see cref="IAbstractFormListController{M}"/> 
+    /// to provide functionality for managing form lists and opening windows for records.
     /// </summary>
-    /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
+    /// <typeparam name="M">An <see cref="IAbstractModel"/> object.</typeparam>
     public abstract class AbstractFormListController<M> : AbstractFormController<M>, IAbstractFormListController<M> where M : IAbstractModel, new()
     {
         bool _openWindowOnNew = true;
@@ -24,6 +25,9 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Gets or sets a value indicating whether a new window should be opened when a new record is created.
+        /// </summary>
         public bool OpenWindowOnNew
         {
             get => _openWindowOnNew;
@@ -37,18 +41,23 @@ namespace FrontEnd.Controller
             OpenNewCMD = new CMD(OpenNew);
             RecordSource.RunFilter += OnSourceRunFilter;
         }
+
+        /// <summary>
+        /// Requeries the database table asynchronously. This method is called by the <see cref="RequeryCMD"/> command.
+        /// It retrieves the records and replaces the existing ones in the <see cref="Db"/> and <see cref="Source"/> properties.
+        /// </summary>
         public override async Task RequeryAsync()
         {
-            IsLoading = true; //notify the GUI that there is a process going on.
+            IsLoading = true; // Notify the GUI that a process is ongoing.
             await Task.Delay(10);
             IEnumerable<M>? results = null;
-            await Task.Run(async () => //retrieve the records. Do not freeze the GUI.
+            await Task.Run(async () => // Retrieve the records without freezing the GUI.
             {
                 results = await RecordSource<M>.CreateFromAsyncList(Db.RetrieveAsync().Cast<M>());
             });
 
-            if (results == null) throw new Exception("Source is null"); //Something has gone wrong.
-            Db.ReplaceRecords(results.Cast<ISQLModel>().ToList()); //Replace the Master RecordSource's records with the newly fetched ones.
+            if (results == null) throw new Exception("Source is null"); // Handle error case.
+            Db.ReplaceRecords(results.Cast<ISQLModel>().ToList()); // Replace master record source records.
 
             try
             {
@@ -74,9 +83,14 @@ namespace FrontEnd.Controller
                 }
             }
 
-            RecordSource.ReplaceRecords(results); //Update also its child source for this controller.
-            IsLoading = false; //Notify the GUI the process has terminated
+            RecordSource.ReplaceRecords(results); // Update child source for this controller.
+            IsLoading = false; // Notify the GUI that the process has completed.
         }
+
+        /// <summary>
+        /// Handles requerying the data source based on the search property asynchronously.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
         protected async Task OnSearchPropertyRequeryAsync(object? sender)
         {
             IEnumerable<M> results = await Task.Run(SearchRecordAsync);
@@ -85,83 +99,97 @@ namespace FrontEnd.Controller
             if (sender is not FilterEventArgs filterEvtArgs)
                 GoFirst();
         }
+
+        /// <summary>
+        /// Searches for records asynchronously.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation, containing the search results.</returns>
         public abstract Task<IEnumerable<M>> SearchRecordAsync();
+
         public abstract void OnOptionFilterClicked(FilterEventArgs e);
 
         public override abstract AbstractClause InstantiateSearchQry();
 
         #region Open Windows
         /// <summary>
-        /// Override this method to open a new window to view the selected record. <para/>
-        /// For Example:
-        /// <code>
-        ///  EmployeeForm win = new (model);
-        ///  win.Show();
-        /// </code>
+        /// Opens a new window to view the selected record. Override this method to provide custom logic for opening windows.
         /// </summary>
-        /// <param name="model">An <see cref="AbstractModel"/> object which is the record to visualise in the new Window</param>
+        /// <param name="model">An <see cref="AbstractModel"/> object representing the record to visualize in the new window.</param>
         protected abstract void Open(M model);
 
         /// <summary>
-        /// Calls the <see cref="Open(M)"/> by passing a new instance of <see cref="AbstractModel"/>.
+        /// Calls the <see cref="Open(M)"/> method, passing a new instance of <see cref="AbstractModel"/>.
         /// </summary>
         protected void OpenNew() => Open(new());
         #endregion
 
         #region Event Subscriptions
+        /// <summary>
+        /// Handles the run filter event of the data source.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
         private void OnSourceRunFilter(object? sender, FilterEventArgs e) => OnOptionFilterClicked(e);
         #endregion
 
-        #region Go At
+        #region Go To
+        /// <summary>
+        /// Cleans the data source by removing new records if <see cref="OpenWindowOnNew"/> is false.
+        /// </summary>
         public void CleanSource()
         {
             if (OpenWindowOnNew) return;
-            List<M> toRemove = RecordSource.Where(s => s.IsNewRecord()).ToList(); //get only the records which are new in the collection.
+            List<M> toRemove = RecordSource.Where(s => s.IsNewRecord()).ToList(); // Get only the new records in the collection.
 
             foreach (var item in toRemove)
-                RecordSource.Remove(item); //get rid of them.
+                RecordSource.Remove(item); // Remove them.
         }
+
         public override bool GoNew()
         {
             if (!AllowNewRecord) return false;
-            if (OpenWindowOnNew) 
+            if (OpenWindowOnNew)
             {
-                if (base.GoNew()) //tell the Navigator to add a new record.
+                if (base.GoNew()) // Tell the Navigator to add a new record.
                 {
-                    OpenNew(); //open a new window displaying the new record.
+                    OpenNew(); // Open a new window displaying the new record.
                     return true;
                 }
                 return false;
             }
-            if (!CanMove()) return false; //Cannot move to a new record because the current record break integrity rules.
-            if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoNew)) return false; //Event was cancelled
+            if (!CanMove()) return false; // Cannot move to a new record because the current record breaks integrity rules.
+            if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoNew)) return false; // Event was cancelled.
 
-            if (RecordSource.Any(s => s.IsNewRecord())) return false; //If there is already a new record exit the method.
-            RecordSource.Add(new M()); //add a new record to the collection.
-            Navigator.GoLast(); //Therefore, you can now move to the last record which is indeed a new record.
-            CurrentRecord = Navigator.Current; //set the CurrentModel property.
-            if (InvokeAfterRecordNavigationEvent(RecordMovement.GoNew)) return false; //if you are using SubForms, Invoke the the OnNewRecordEvent().
-            Records = "New Record"; //update RecordTracker's record displayer.
+            if (RecordSource.Any(s => s.IsNewRecord())) return false; // If there is already a new record, exit the method.
+            RecordSource.Add(new M()); // Add a new record to the collection.
+            Navigator.GoLast(); // Move to the last record, which is a new record.
+            CurrentRecord = Navigator.Current; // Set the CurrentModel property.
+            if (InvokeAfterRecordNavigationEvent(RecordMovement.GoNew)) return false; // If using SubForms, invoke the OnNewRecordEvent().
+            Records = "New Record"; // Update RecordTracker's record displayer.
             return true;
         }
+
         public override bool GoPrevious()
         {
             if (!CanMove()) return false;
-            CleanSource();            
+            CleanSource();
             return base.GoPrevious();
         }
+
         public override bool GoLast()
         {
             if (!CanMove()) return false;
             CleanSource();
             return base.GoLast();
         }
+
         public override bool GoFirst()
         {
             if (!CanMove()) return false;
             CleanSource();
             return base.GoFirst();
         }
+
         public override bool GoAt(ISQLModel? record)
         {
             if (!CanMove()) return false;
@@ -173,61 +201,67 @@ namespace FrontEnd.Controller
                 return false;
             }
 
-            else if (record.IsNewRecord() && OpenWindowOnNew) return GoNew();
-            else if (record.IsNewRecord() && !OpenWindowOnNew) 
+            if (record.IsNewRecord() && OpenWindowOnNew) return GoNew();
+            if (record.IsNewRecord() && !OpenWindowOnNew)
             {
-                if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoAt)) return false; //Event was cancelled
+                if (InvokeBeforeRecordNavigationEvent(RecordMovement.GoAt)) return false; // Event was cancelled.
                 bool result = Navigator.GoNew();
-                if (InvokeAfterRecordNavigationEvent(RecordMovement.GoAt)) return false; //Event was cancelled
+                if (InvokeAfterRecordNavigationEvent(RecordMovement.GoAt)) return false; // Event was cancelled.
                 return result;
             }
-            else
-            {
-                CleanSource();
-                Navigator.GoAt(record);
-                CurrentRecord = Navigator.Current;
-                Records = Source.RecordPositionDisplayer();    
-            }
 
-            if (InvokeAfterRecordNavigationEvent(RecordMovement.GoAt)) return false; //Event was cancelled
+            CleanSource();
+            Navigator.GoAt(record);
+            CurrentRecord = Navigator.Current;
+            Records = Source.RecordPositionDisplayer();
+
+            if (InvokeAfterRecordNavigationEvent(RecordMovement.GoAt)) return false; // Event was cancelled.
 
             return true;
         }
         #endregion
 
-        #region AlterRecord
+        #region Alter Record
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
         {
             if (CurrentRecord == null) throw new NoModelException();
-            if (!CurrentRecord.IsDirty) return false; //if the record has not been changed there is nothing to update.
-            if (!CurrentRecord.AllowUpdate()) return false; //the record did not meet the criteria to be updated.
+            if (!CurrentRecord.IsDirty) return false; // No changes to update.
+            if (!CurrentRecord.AllowUpdate()) return false; // Record did not meet update criteria.
             CRUD crud = (!CurrentRecord.IsNewRecord()) ? CRUD.UPDATE : CRUD.INSERT;
             IAbstractModel temp = CurrentRecord;
 
-            if (crud == CRUD.INSERT) 
-            {   //INSERT must follow a slighlty different logic if it the user is allowed to insert new rows himself. This is to avoid unexpected behaviour between the RecordSource and the Lista object.
-                if (RecordSource.Count > 0 && !OpenWindowOnNew) 
+            if (crud == CRUD.INSERT)
+            {   // INSERT must follow a slightly different logic if the user is allowed to insert new rows themselves. This is to avoid unexpected behavior between the RecordSource and the list object.
+                if (RecordSource.Count > 0 && !OpenWindowOnNew)
                 {
                     temp = RecordSource[Source.Count - 1];
                     RecordSource.RemoveAt(Source.Count - 1);
                 }
                 ExecuteCRUD(ref temp, crud, sql, parameters);
-            } 
+            }
             else ExecuteCRUD(ref temp, crud, sql, parameters);
             Db.MasterSource?.NotifyChildren(crud, temp);
             return true;
         }
 
         /// <summary>
-        /// Execute a CRUD Operation. This method is only used in <see cref="AlterRecord(string?, List{QueryParameter}?)"/> to avoid code repition.
+        /// Executes a CRUD operation. This method is used in <see cref="AlterRecord(string?, List{QueryParameter}?)"/> to avoid code repetition.
         /// </summary>
-        private void ExecuteCRUD(ref IAbstractModel temp, CRUD crud, string? sql = null, List<QueryParameter>? parameters = null) 
+        /// <param name="temp">The model to alter.</param>
+        /// <param name="crud">The CRUD operation to perform.</param>
+        /// <param name="sql">The optional SQL query.</param>
+        /// <param name="parameters">The optional query parameters.</param>
+        private void ExecuteCRUD(ref IAbstractModel temp, CRUD crud, string? sql = null, List<QueryParameter>? parameters = null)
         {
             Db.Model = temp;
             Db.Crud(crud, sql, parameters);
             temp.IsDirty = false;
         }
         #endregion
+
+        /// <summary>
+        /// Disposes the resources used by the controller.
+        /// </summary>
         public override void Dispose()
         {
             SearchQry.Dispose();
@@ -235,4 +269,5 @@ namespace FrontEnd.Controller
             GC.SuppressFinalize(this);
         }
     }
+
 }

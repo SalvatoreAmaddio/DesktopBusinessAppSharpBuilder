@@ -6,105 +6,162 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Backend.Database;
 using Backend.Model;
 
 namespace FrontEnd.Controller
 {
-    public interface IParentController 
+    /// <summary>
+    /// Defines a set of methods for <see cref="IAbstractFormController"/> objects that act as parent controllers for other controllers.
+    /// </summary>
+    public interface IParentController
     {
-        public ISubFormController GetSubController(int index);
+        /// <summary>
+        /// Retrieves a <see cref="ISubFormController"/> based on its zero-based index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the sub-controller.</param>
+        /// <returns>A <see cref="ISubFormController"/> object.</returns>
+        ISubFormController GetSubController(int index);
 
-        public void AddSubControllers(ISubFormController controller);
+        /// <summary>
+        /// Retrieves a <see cref="ISubFormController"/> of type <typeparamref name="C"/> based on its zero-based index.
+        /// </summary>
+        /// <typeparam name="C">The type of <see cref="IAbstractModel"/> handled by the controller.</typeparam>
+        /// <param name="index">The zero-based index of the sub-controller.</param>
+        /// <returns>An instance of type <typeparamref name="C"/>.</returns>
+        C? GetSubController<C>(int index) where C : IAbstractFormController;
 
-        public void RemoveSubControllers(ISubFormController controller);
+        /// <summary>
+        /// Adds a sub-controller to the parent controller.
+        /// </summary>
+        /// <param name="controller">The sub-controller to add.</param>
+        void AddSubControllers(ISubFormController controller);
+
+        /// <summary>
+        /// Removes a sub-controller from the parent controller.
+        /// </summary>
+        /// <param name="controller">The sub-controller to remove.</param>
+        void RemoveSubControllers(ISubFormController controller);
     }
 
     /// <summary>
-    /// This interface extends <see cref="IAbstractSQLModelController"/> and adds properties and methods to work as a bridge between <see cref="AbstractModel"/> objects and <see cref="Form"/> objects.
+    /// Extends <see cref="IAbstractSQLModelController"/> and adds properties and methods to bridge between <see cref="IAbstractModel"/> objects and <see cref="Forms.Form"/> objects.
     /// </summary>
     public interface IAbstractFormController : IAbstractSQLModelController, IParentController, INotifier
     {
-        public bool ReadOnly { get; set; }
-
         /// <summary>
-        /// Gets and sets a reference to a <see cref="Window"/> or <see cref="Page"/> object that the Controller is associated to. <para/>
-        /// If the element is a Window, its Closing event gets subscribed to the  <see cref="OnWinClosing(object?, CancelEventArgs)"/>.<para/>
-        /// Whereas, a Page gets its Unloaded event subscribed. Both subscriptions aim at calling <see cref="IDisposable.Dispose"/> 
+        /// Gets or sets a value indicating whether updates to the record should be saved automatically.
         /// </summary>
-        public UIElement? UI { get; set; }
+        bool AllowAutoSave { get; set; }
 
         /// <summary>
-        /// Notify the GUI that a process involving an instance of <see cref="AbstractForm"/> is running.
+        /// Gets or sets a value indicating whether the associated <see cref="Forms.Form"/> object is read-only, preventing CRUD operations.
         /// </summary>
-        public bool IsLoading { get; set; }
-        public AbstractClause InstantiateSearchQry();
-        public void ReloadSearchQry();
+        bool ReadOnly { get; set; }
 
         /// <summary>
-        /// Perform an Insert/Update CRUD operation on the <see cref="IAbstractSQLModelController.CurrentModel"/> property.
+        /// Gets or sets a reference to a <see cref="Window"/> or <see cref="Page"/> object associated with the controller.
+        /// If the element is a Window, its Closing event is subscribed to <see cref="OnWinClosing"/>. 
+        /// If it is a Page, its Unloaded event is subscribed to ensure <see cref="IDisposable.Dispose"/> is called.
         /// </summary>
-        /// <returns>true if the operation was successful.</returns>
-        public bool PerformUpdate();
-        public Task<bool> PerformUpdateAsync();
+        UIElement? UI { get; set; }
 
         /// <summary>
-        /// Handles record's integrity checks before the Window closes. <para/>
-        /// For Example; Subscribe the Closing event of your Window and implement it as follow:
+        /// Notifies the GUI that a process involving an instance of <see cref="AbstractForm"/> is running.
+        /// </summary>
+        bool IsLoading { get; set; }
+
+        /// <summary>
+        /// Defines an <see cref="AbstractClause"/> object.
+        /// </summary>
+        /// <returns>An instance of <see cref="AbstractClause"/>.</returns>
+        AbstractClause InstantiateSearchQry();
+
+        /// <summary>
+        /// Calls the <see cref="InstantiateSearchQry"/> method to reload the search query.
+        /// </summary>
+        void ReloadSearchQry();
+
+        /// <summary>
+        /// Performs an insert/update CRUD operation on the <see cref="IAbstractSQLModelController.CurrentModel"/> property.
+        /// </summary>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
+        bool PerformUpdate();
+
+        /// <summary>
+        /// Performs an insert/update CRUD operation on the <see cref="IAbstractSQLModelController.CurrentModel"/> property asynchronously.
+        /// </summary>
+        /// <returns>A <see cref="Task{bool}"/> representing the asynchronous operation.</returns>
+        Task<bool> PerformUpdateAsync();
+
+        /// <summary>
+        /// Handles record integrity checks before the Window closes.
+        /// For example, subscribe the Closing event of your Window and implement it as follows:
         /// <code>
-        ///private void Window_Closing(object sender, CancelEventArgs e)
-        ///{
-        ///    ((EmployeeController) DataContext).OnWindowClosing(e);
-        ///}
+        /// private void Window_Closing(object sender, CancelEventArgs e)
+        /// {
+        ///     ((EmployeeController) DataContext).OnWindowClosing(e);
+        /// }
         /// </code>
         /// </summary>
-        public void OnWinClosing(object? sender, CancelEventArgs e);
-
-        public bool AllowAutoSave { get; set; }
-
-        public Task RequeryAsync();
-
-        public C? GetSubController<C>(int index) where C : IAbstractFormController;
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">A <see cref="CancelEventArgs"/> that contains the event data.</param>
+        void OnWinClosing(object? sender, CancelEventArgs e);
 
         /// <summary>
-        /// Sets the <see cref="IsLoading"/> property to true
+        /// Requeries the <see cref="IAbstractSQLModelController.Source"/> object asynchronously.
         /// </summary>
-        public void SetLoading(bool value);
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        Task RequeryAsync();
 
+        /// <summary>
+        /// Retrieves a <see cref="ISubFormController"/> of type <typeparamref name="C"/> based on its zero-based index.
+        /// </summary>
+        /// <typeparam name="C">The type of <see cref="IAbstractModel"/> handled by the controller.</typeparam>
+        /// <param name="index">The zero-based index of the sub-controller.</param>
+        /// <returns>An instance of type <typeparamref name="C"/>.</returns>
+        new C? GetSubController<C>(int index) where C : IAbstractFormController;
+
+        /// <summary>
+        /// Sets the <see cref="IsLoading"/> property to the specified value.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        void SetLoading(bool value);
     }
 
     /// <summary>
-    /// This Interface extends <see cref="IAbstractFormController"/> and adds a set of ICommand properties.
+    /// Extends <see cref="IAbstractFormController"/> and adds a set of <see cref="ICommand"/> properties.
     /// </summary>
-    /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
+    /// <typeparam name="M">An <see cref="IAbstractModel"/> object.</typeparam>
     public interface IAbstractFormController<M> : IAbstractFormController where M : IAbstractModel, new()
     {
         /// <summary>
-        /// Gets the <see cref="IAbstractDatabase.MasterSource"/> as an <see cref="IEnumerable{T}"/> 
+        /// Gets the master source as an <see cref="IEnumerable{M}"/>.
         /// </summary>
-        public IEnumerable<M>? MasterSource { get; }
-
-        public RecordSource<M> RecordSource { get; }
-        /// <summary>
-        /// A more concrete version of <see cref="IAbstractSQLModelController.CurrentModel"/>
-        /// </summary>
-        /// <value>The actual object that implements <see cref="IAbstractSQLModelController.CurrentModel"/></value>
-        public M? CurrentRecord { get; set; }
+        IEnumerable<M>? MasterSource { get; }
 
         /// <summary>
-        /// Gets and Sets the Command to perform CRUD operations such as Insert or Update.
+        /// Gets the source object as a <see cref="RecordSource{M}"/>, which handles binding operations for GUI elements.
         /// </summary>
-        public ICommand UpdateCMD { get; set; }
+        RecordSource<M> RecordSource { get; }
 
         /// <summary>
-        /// Gets and Sets the Command to perform Delete CRUD operation.
+        /// Gets or sets the record on which the <see cref="Navigator"/> is currently pointing.
         /// </summary>
-        public ICommand DeleteCMD { get; set; }
+        M? CurrentRecord { get; set; }
 
         /// <summary>
-        /// Gets and Sets the Command to requery the database table.
+        /// Gets or sets the command to perform CRUD operations such as insert or update.
         /// </summary>
-        public ICommand RequeryCMD { get; set; }
+        ICommand UpdateCMD { get; set; }
 
+        /// <summary>
+        /// Gets or sets the command to perform delete CRUD operations.
+        /// </summary>
+        ICommand DeleteCMD { get; set; }
+
+        /// <summary>
+        /// Gets or sets the command to requery the database table.
+        /// </summary>
+        ICommand RequeryCMD { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Backend.Model;
+using Backend.Controller;
 using FrontEnd.Events;
 using FrontEnd.Model;
 using System.Windows.Input;
@@ -6,46 +7,37 @@ using System.Windows.Input;
 namespace FrontEnd.Controller
 {
     /// <summary>
-    /// This interface extends <see cref="IAbstractFormController"/> and adds a set of methods and properties to work as a bridge between <see cref="AbstractModel"/> objects and <see cref="FormList"/> objects.
-    /// <para/>
-    /// see also <seealso cref="RecordTracker"/>, <seealso cref="HeaderFilter"/>
+    /// Extends <see cref="IAbstractFormController"/> and adds a set of methods and properties to bridge between <see cref="IAbstractModel"/> objects and <see cref="Forms.FormList"/> objects.
     /// </summary>
     public interface IAbstractFormListController : IAbstractFormController
     {
-
         /// <summary>
-        /// This method is called by the <see cref="Forms.HeaderFilter"/> object when an option is selected or unselected.
-        /// It instructs the Controller to filter its RecordSource.
+        /// Called by the <see cref="Forms.HeaderFilter"/> object when an option is selected or unselected.
+        /// Instructs the controller to filter its RecordSource.
         /// <para/>
-        /// For Example:
+        /// For example:
         /// <code>
         /// public override async void OnOptionFilter()
         /// {
-        ///     QueryBuiler.Clear();
-        ///     QueryBuiler.AddCondition(GenderOptions.Conditions(QueryBuiler));
-        ///     ... // Other conditions if needed
-        ///     await SearchRecordAsync();
+        ///     ReloadSearchQry();
+        ///     GenderOptions.Conditions&lt;WhereClause>(SearchQry);
+        ///     TitleOptions.Conditions&lt;WhereClause>(SearchQry);
+        ///     // Other conditions if needed
+        ///     await SearchRecordAsync(); //OR// OnAfterUpdate(e, new(null, null, nameof(Search)));
         /// }
         /// </code>
         /// </summary>
-        public void OnOptionFilterClicked(FilterEventArgs e);
+        /// <param name="e">The filter event arguments.</param>
+        void OnOptionFilterClicked(FilterEventArgs e);
 
         /// <summary>
-        /// Gets and Sets the Search Query to be used. This property works in conjunction with a <see cref="FilterQueryBuilder"/> object.
-        /// <para/>
-        /// Your statement must have a WHERE clause.
-        /// <para/>
-        /// For Example:
-        /// <code>
-        /// public override string SearchQry { get; set; } = $"SELECT * FROM Payslip WHERE EmployeeID = @ID;";
-        /// //OR
-        /// public override string SearchQry { get; set; } = $"SELECT * FROM Employee WHERE (LOWER(FirstName) LIKE @name OR LOWER(LastName) LIKE @name)";
-        /// </code>
+        /// Gets or sets the <see cref="AbstractClause"/> to be used. This property is set in the constructor through the <see cref="IAbstractFormController.InstantiateSearchQry"/>.
         /// </summary>
-        public AbstractClause SearchQry { get; }
+        AbstractClause SearchQry { get; }
 
         /// <summary>
-        /// Tells if the Controller shall open a Window or add a new row to the <see cref="Lista"/> to add a New Record.<para/>
+        /// Indicates whether the controller should open a window or add a new row to the <see cref="Lista"/> to add a new record.
+        /// <para/>
         /// <c>KEEP IN MIND THAT:</c>
         /// <list type="bullet">
         /// <item>If set to true, the <see cref="VoidParentUpdate"/> property gets set to false.</item>
@@ -53,54 +45,50 @@ namespace FrontEnd.Controller
         /// </list>
         /// Default value is true.
         /// </summary>
-        public bool OpenWindowOnNew { get; set; }
+        bool OpenWindowOnNew { get; set; }
 
         /// <summary>
-        /// Removes empty new records from the Source.
+        /// Removes empty new records from the <see cref="IAbstractSQLModelController.Source"/>.
         /// </summary>
-        public void CleanSource();
+        void CleanSource();
     }
 
     /// <summary>
-    /// This Interface extends <see cref="IAbstractFormController{M}"/> and <see cref="IAbstractFormListController"/> and adds a set of properties necessary to deal with <see cref="FormList"/> objects.
+    /// Extends <see cref="IAbstractFormController{M}"/> and <see cref="IAbstractFormListController"/> and adds a set of properties necessary to deal with <see cref="FormList"/> objects.
     /// </summary>
-    /// <typeparam name="M">An <see cref="AbstractModel"/> object</typeparam>
+    /// <typeparam name="M">An <see cref="AbstractModel"/> object.</typeparam>
     public interface IAbstractFormListController<M> : IAbstractFormController<M>, IAbstractFormListController where M : IAbstractModel, new()
     {
         /// <summary>
-        /// Gets and Sets the command to execute to open a Record.
+        /// Gets or sets the command to execute to open a record.
         /// </summary>
-        public ICommand OpenCMD { get; set; }
+        ICommand OpenCMD { get; set; }
 
         /// <summary>
-        /// Gets and Sets the command to execute to open a New Record.
+        /// Gets or sets the command to execute to open a new record.
         /// </summary>
-        public ICommand OpenNewCMD { get; set; }
+        ICommand OpenNewCMD { get; set; }
 
         /// <summary>
-        /// Gets and Sets the string parameter used in a search textbox to filter the RecordSource.
+        /// Gets or sets the string parameter used in a search textbox to filter the RecordSource.
         /// </summary>
-        public string Search { get; set; }
+        string Search { get; set; }
 
         /// <summary>
-        /// Override this method to implement your filter logic. 
-        /// For Example:
+        /// Override this method to implement your filter logic.
+        /// For example:
         /// <code>
-        /// //overide SearchQry Property.
+        /// // Override SearchQry property.
         /// public override string SearchQry { get; set; } = $"SELECT * FROM {nameof(Employee)} WHERE (LOWER(FirstName) LIKE @name OR LOWER(LastName) LIKE @name)";
         /// ...
         /// public override async Task SearchRecordAsync() 
         /// {
-        ///     QueryBuiler.AddParameter("name", Search.ToLower() + "%");
-        ///     QueryBuiler.AddParameter("name", Search.ToLower() + "%");
-        ///     var results = await CreateFromAsyncList(QueryBuiler.Query, QueryBuiler.Params);
-        ///     Source.ReplaceRange(results);
-        ///     GoFirst();
+        ///     SearchQry.AddParameter("name", Search.ToLower() + "%");
+        ///     return await CreateFromAsyncList(SearchQry.Statement(), SearchQry.Params());
         /// }
         /// </code>
         /// </summary>
-        /// <returns>A Taks</returns>
-        public Task<IEnumerable<M>> SearchRecordAsync();
+        /// <returns>A task representing the asynchronous operation, containing the search results.</returns>
+        Task<IEnumerable<M>> SearchRecordAsync();
     }
-
 }
