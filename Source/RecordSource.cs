@@ -12,76 +12,81 @@ using System.Windows;
 
 namespace FrontEnd.Source
 {
+    /// <summary>
+    /// Represents a collection of objects implementing <see cref="IAbstractModel"/> and extends <see cref="ObservableRangeCollection{M}"/>.
+    /// Implements <see cref="IRecordSource{M}"/>, <see cref="IChildSource"/>, and <see cref="IUISource"/> interfaces.
+    /// </summary>
+    /// <typeparam name="M">The type of objects that implement <see cref="IAbstractModel"/> and have a parameterless constructor.</typeparam>
     public class RecordSource<M> : ObservableRangeCollection<M>, IRecordSource<M>, IChildSource, IUISource where M : IAbstractModel, new()
     {
+        private Navigator<M>? _navigator;
+
         /// <summary>
-        /// This delegate works as a bridge between the <see cref="Controller.IAbstractSQLModelController"/> and this <see cref="Backend.Source.DataSource"/>.
-        /// If any filter operations has been implemented in the Controller, The RecordSource can trigger them.
-        /// </summary>
+        /// A list of <see cref="IUIControl"/> objects associated with this data source.
+        /// </summary>        
+        private List<IUIControl>? _uiControls;
+
         public event FilterEventHandler? RunFilter;
-        private Navigator<M>? navigator;
         public IParentSource? ParentSource { get; set; }
         public IAbstractSQLModelController? Controller { get; set; }
 
-        /// <summary>
-        /// A list of <see cref="IUIControl"/> associated to this <see cref="DataSource"/>.
-        /// </summary>
-        private List<IUIControl>? UIControls;
-
         #region Constructor
         /// <summary>
-        /// Parameterless Constructor to instantiate a RecordSource object.
+        /// Initializes a new instance of the <see cref="RecordSource{M}"/> class.
         /// </summary>
         public RecordSource() { }
 
         /// <summary>
-        /// It instantiates a RecordSource object filled with the given IEnumerable&lt;<see cref="ISQLModel"/>&gt;.
+        /// Initializes a new instance of the <see cref="RecordSource{M}"/> class filled with the provided source.
         /// </summary>
-        /// <param name="source">An IEnumerable&lt;<see cref="ISQLModel"/>&gt;</param>
+        /// <param name="source">An enumerable collection of objects implementing <see cref="ISQLModel"/>.</param>
         public RecordSource(IEnumerable<M> source) : base(source) { }
 
         /// <summary>
-        /// It instantiates a RecordSource object filled with the given <see cref="IAbstractDatabase.MasterSource"/> IEnumerable.
-        /// This constructor will consider this RecordSource object as a child of the <see cref="IAbstractDatabase.MasterSource"/>
+        /// Initializes a new instance of the <see cref="RecordSource{M}"/> class filled with the <see cref="MasterSource"/> from the specified <paramref name="database"/>.
+        /// This constructor treats this <see cref="IRecordSource{M}"/> as a child of the <see cref="MasterSource"/>.
         /// </summary>
-        /// <param name="db">An instance of <see cref="IAbstractDatabase"/></param>
-        public RecordSource(IAbstractDatabase db) : this(db.MasterSource.Cast<M>())
+        /// <param name="database">An instance of <see cref="IAbstractDatabase"/>.</param>
+        public RecordSource(IAbstractDatabase database) : this(database.MasterSource.Cast<M>())
         {
-            db.MasterSource.AddChild(this);
-        } 
+            database.MasterSource.AddChild(this);
+        }
 
         /// <summary>
-        /// It instantiates a RecordSource object filled with the given <see cref="IAbstractDatabase.MasterSource"/> IEnumerable.
-        /// This constructor will consider this RecordSource object as a child of the <see cref="IAbstractDatabase.MasterSource"/>
+        /// Initializes a new instance of the <see cref="RecordSource{M}"/> class filled with the <see cref="MasterSource"/> from the specified <paramref name="database"/>.
+        /// This constructor treats this <see cref="IRecordSource{M}"/> as a child of the <see cref="MasterSource"/> and sets the <see cref="Controller"/> property.
         /// </summary>
-        /// <param name="db">An instance of <see cref="IAbstractDatabase"/></param>
-        /// <param name="controller">An instance of <see cref="IAbstractSQLModelController"/></param>
-        public RecordSource(IAbstractDatabase db, IAbstractFormController controller) : this(db)
-        { 
+        /// <param name="database">An instance of <see cref="IAbstractDatabase"/>.</param>
+        /// <param name="controller">An instance of <see cref="IAbstractSQLModelController"/>.</param>
+        public RecordSource(IAbstractDatabase database, IAbstractFormController controller) : this(database)
+        {
             Controller = controller;
         }
         #endregion
 
         #region Enumerator
         /// <summary>
-        /// Override the default <c>GetEnumerator()</c> method to replace it with a <see cref="ISourceNavigator"></see> object./>
+        /// Returns an enumerator that iterates through the collection.
         /// </summary>
-        /// <returns>An Enumerator object.</returns>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <remarks>
+        /// This method uses the <see cref="_navigator"/> as enumerator.
+        /// </remarks>
         public new IEnumerator<M> GetEnumerator()
         {
-            var s = typeof(M).Name;
-            if (navigator != null)
+            if (_navigator != null)
             {
-                navigator = new Navigator<M>(this, navigator.Index, navigator.AllowNewRecord);
-                return navigator;
+                _navigator = new Navigator<M>(this, _navigator.Index, _navigator.AllowNewRecord);
+                return _navigator;
             }
-            navigator = new Navigator<M>(this);
-            return navigator;
+            _navigator = new Navigator<M>(this);
+            return _navigator;
         }
 
         public INavigator<M> Navigate() => (INavigator<M>)GetEnumerator();
         #endregion
 
+        #region IChildSource
         public virtual void Update(CRUD crud, ISQLModel model)
         {
             int removedIndex = -1;
@@ -97,10 +102,10 @@ namespace FrontEnd.Source
                 case CRUD.DELETE:
                     removedIndex = IndexOf((M)model);
                     if (!Remove((M)model)) break;
-                    if (navigator != null)
+                    if (_navigator != null)
                     {
-                        if (navigator.BOF && !navigator.NoRecords) Controller?.GoFirst();
-                        if (navigator.EOF && !navigator.NoRecords) Controller?.GoPrevious();
+                        if (_navigator.BOF && !_navigator.NoRecords) Controller?.GoFirst();
+                        if (_navigator.EOF && !_navigator.NoRecords) Controller?.GoPrevious();
                         if (Count == 0) Controller?.GoAt(null);
                         else Controller?.GoAt(removedIndex);
                     }
@@ -114,49 +119,50 @@ namespace FrontEnd.Source
             catch { }
 
         }
+        #endregion
 
-        /// <summary>
-        /// This method is called in <see cref="Update(CRUD, ISQLModel)"/>.
-        /// It loops through the <see cref="UIControls"/> to notify the <see cref="IUIControl"/> object to reflect changes that occured to their ItemsSource which is an instance of <see cref="DataSource"/>.
-        /// </summary>
+        #region IUISource
         public void NotifyUIControl(object[] args)
         {
-            if (UIControls != null && UIControls.Count > 0)
-                foreach (IUIControl combo in UIControls) combo.OnItemSourceUpdated(args);
+            if (_uiControls != null && _uiControls.Count > 0)
+                foreach (IUIControl combo in _uiControls) combo.OnItemSourceUpdated(args);
         }
 
         public void AddUIControlReference(IUIControl control)
         {
-            if (UIControls == null) UIControls = [];
-            UIControls.Add(control);
+            if (_uiControls == null) _uiControls = [];
+            _uiControls.Add(control);
         }
+        #endregion
 
         /// <summary>
-        /// It takes an IAsyncEnumerable, converts it to a List and returns a RecordSource object.
+        /// Creates a <see cref="RecordSource{M}"/> object asynchronously from an <see cref="IAsyncEnumerable{M}"/>.
         /// </summary>
-        /// <param name="source"> An IAsyncEnumerable&lt;ISQLModel></param>
-        /// <returns>Task&lt;RecordSource></returns>
+        /// <param name="source">An <see cref="IAsyncEnumerable{M}"/> source.</param>
+        /// <returns>A task representing the asynchronous operation that returns a <see cref="RecordSource{M}"/>.</returns>
         public static async Task<RecordSource<M>> CreateFromAsyncList(IAsyncEnumerable<M> source) =>
         new RecordSource<M>(await source.ToListAsync());
 
+        #region IDataSource
         public virtual string RecordPositionDisplayer()
         {
-            if (navigator == null) throw new NoNavigatorException();
+            if (_navigator == null) throw new NoNavigatorException();
             return true switch
             {
-                true when navigator.NoRecords => "NO RECORDS",
-                true when navigator.IsNewRecord => "New Record",
-                _ => $"Record {navigator?.RecNum} of {navigator?.RecordCount}",
+                true when _navigator.NoRecords => "NO RECORDS",
+                true when _navigator.IsNewRecord => "New Record",
+                _ => $"Record {_navigator?.RecNum} of {_navigator?.RecordCount}",
             };
         }
+        #endregion
 
         public void ReplaceRecords(IEnumerable<M> newSource)
         {
             M? current = default(M?);
             try
             {
-                if (navigator!=null)
-                    current = navigator.CurrentRecord;
+                if (_navigator!=null)
+                    current = _navigator.CurrentRecord;
             }
             catch { }
 
@@ -175,6 +181,11 @@ namespace FrontEnd.Source
             Controller?.GoFirst();
         }
 
+        #region Disposers
+        /// <summary>
+        /// Disposes resources used by the record source, optionally disposing the associated controller.
+        /// </summary>
+        /// <param name="disposeController">True to dispose the associated controller; otherwise, false.</param>
         public void Dispose(bool disposeController)
         {
             if (disposeController)
@@ -182,22 +193,25 @@ namespace FrontEnd.Source
             Dispose();
         }
 
+        /// <summary>
+        /// Disposes resources used by the record source.
+        /// </summary>
         public void Dispose()
         {
             ParentSource?.RemoveChild(this);
-            UIControls?.Clear();
+            _uiControls?.Clear();
             RunFilter = null;
             try
             {
                 Clear();
-                navigator?.Dispose();
+                _navigator?.Dispose();
             }
             catch
             {
                 Application.Current.Dispatcher.BeginInvoke(() =>
                 {
                     Clear();
-                    navigator?.Dispose();
+                    _navigator?.Dispose();
                 });
             }
             finally
@@ -205,6 +219,9 @@ namespace FrontEnd.Source
                 GC.SuppressFinalize(this);
             }
         }
+        #endregion
+
+        public override string? ToString() => $"RecordSource<{typeof(M).Name}> - Count: {Count}";
 
     }
 }

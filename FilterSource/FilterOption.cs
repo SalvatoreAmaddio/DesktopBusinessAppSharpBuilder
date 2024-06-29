@@ -7,13 +7,15 @@ using SelectionChangedEventHandler = FrontEnd.Events.SelectionChangedEventHandle
 namespace FrontEnd.FilterSource
 {
     /// <summary>
-    /// Concrete impementation of the <see cref="IFilterOption"/>
+    /// Represents a concrete implementation of the <see cref="IFilterOption"/> interface.
     /// <para/>
-    /// This class works in conjunction with the <see cref="HeaderFilter"/> GUI Control.
+    /// This class is designed to work with the <see cref="HeaderFilter"/> GUI Control.
     /// </summary>
     public class FilterOption : IFilterOption
     {
         private bool _isSelected = false;
+
+        #region Properties
         public object? Value { get; private set; }
         public ISQLModel Record { get; private set; }
         public bool IsSelected
@@ -26,10 +28,19 @@ namespace FrontEnd.FilterSource
                 OnSelectionChanged?.Invoke(this, new EventArgs());
             }
         }
+        #endregion
 
+        #region Events
         public event PropertyChangedEventHandler? PropertyChanged;
         public event SelectionChangedEventHandler? OnSelectionChanged;
+        #endregion
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilterOption"/> class with the specified record and display property.
+        /// </summary>
+        /// <param name="record">The <see cref="ISQLModel"/> associated with this filter option.</param>
+        /// <param name="displayProperty">The name of the property used to display the value.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="record"/> is null.</exception>
         public FilterOption(ISQLModel? record, string displayProperty)
         {
             if (record == null) throw new ArgumentNullException(nameof(record));

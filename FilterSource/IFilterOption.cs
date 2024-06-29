@@ -6,46 +6,48 @@ using FrontEnd.Forms;
 namespace FrontEnd.FilterSource
 {
     /// <summary>
-    /// This interface extends <see cref="INotifyPropertyChanged"/> and defines the properties and methods to be implemented by the <see cref="FilterOption"/> class.
+    /// Defines properties and methods required by options in a filter control, extending <see cref="INotifyPropertyChanged"/> and <see cref="IDisposable"/>.
     /// <para/>
-    /// This interface works in conjunction with the <see cref="HeaderFilter"/> GUI Control.
+    /// This interface is used in conjunction with the <see cref="HeaderFilter"/> GUI control.
     /// </summary>
     public interface IFilterOption : INotifyPropertyChanged, IDisposable
     {
         /// <summary>
-        /// Gets and sets a boolean indicating if an option has been selected. This property triggers the <see cref="OnSelectionChanged"/> event.
+        /// Gets or sets a boolean indicating whether the option is selected. 
+        /// Changing this property triggers the <see cref="OnSelectionChanged"/> event.
         /// </summary>
-        public bool IsSelected { get; set; }
+        bool IsSelected { get; set; }
 
         /// <summary>
-        /// Gets the ISQLModel that can be selected as option.
+        /// Gets the underlying <see cref="ISQLModel"/> associated with the filter option.
         /// </summary>
-        public ISQLModel Record { get; }
+        ISQLModel Record { get; }
 
         /// <summary>
         /// Gets the value of the <see cref="Record"/> property to be displayed.
         /// </summary>
-        public object? Value { get; }        
-        
-        /// <summary>
-        /// Occurs when an option is selected or deselected.
-        /// </summary>
-        public event SelectionChangedEventHandler? OnSelectionChanged;
-        
-        /// <summary>
-        /// Deselects an option bypassing the <see cref="OnSelectionChanged"/> event.
-        /// </summary>
-        public void Deselect();
+        object? Value { get; }
 
         /// <summary>
-        /// It copies the <see cref="Value"/> and <see cref="Record"/> properties from the provided argument. This method is called in <see cref="SourceOption.Update(CRUD, ISQLModel)"/>
+        /// Occurs when the selection state of the filter option changes.
         /// </summary>
-        /// <param name="obj"></param>
-        public void Copy(IFilterOption obj);
-        
+        event SelectionChangedEventHandler? OnSelectionChanged;
+
         /// <summary>
-        /// It sets the <see cref="IsSelected"/> property to true.
+        /// Deselects the option without triggering the <see cref="OnSelectionChanged"/> event.
         /// </summary>
-        public void Select();
+        void Deselect();
+
+        /// <summary>
+        /// Copies the <see cref="Value"/> and <see cref="Record"/> properties from another <see cref="IFilterOption"/> instance.
+        /// This method is typically called in <see cref="SourceOption.Update(CRUD, ISQLModel)"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="IFilterOption"/> instance to copy from.</param>
+        void Copy(IFilterOption obj);
+
+        /// <summary>
+        /// Selects the option by setting the <see cref="IsSelected"/> property to true.
+        /// </summary>
+        void Select();
     }
 }

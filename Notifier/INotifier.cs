@@ -1,49 +1,40 @@
 ﻿using FrontEnd.Events;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using FrontEnd.Model;
+using FrontEnd.Controller;
 
 namespace FrontEnd.Notifier
 {
     /// <summary>
-    /// This interface extends <see cref="INotifyPropertyChanged"/> and adds extra functionalities for UI purposes.
-    /// This interface is extended by <see cref="Model.IAbstractModel"/> and extended by <see cref="Controller.IAbstractFormController"/>
+    /// Represents an interface that extends <see cref="INotifyPropertyChanged"/> and adds additional UI-related functionalities.
+    /// Implemented by <see cref="IAbstractModel"/> and extended by <see cref="IAbstractFormController"/>.
     /// </summary>
     public interface INotifier : INotifyPropertyChanged
     {
-
         /// <summary>
-        /// This method should be used in a Property's Set Accessor as it sets the property value and triggers the <see cref="RaisePropertyChanged(string)"/>. Plus it sets the <see cref="IsDirty"/> property.
-        /// <para/>
-        /// For Example:
-        /// <code>
-        ///string _firstName = string.Empty; //the back property.
-        ///
-        ///[Field]
-        ///public string FirstName { get => _firstName; set => UpdateProperty(ref value, ref _firstName); }
-        /// </code>
+        /// Updates a property's value and triggers <see cref="RaisePropertyChanged(string)"/>. Sets the <see cref="IAbstractModel.IsDirty"/> property.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value">the value keyword provided by the Set Accessor</param>
-        /// <param name="_backProp">The back property used in the Accessors</param>
-        /// <param name="propName">The Property's name</param>
+        /// <typeparam name="T">The type of the property.</typeparam>
+        /// <param name="value">The new value to set.</param>
+        /// <param name="_backProp">The backing field of the property.</param>
+        /// <param name="propName">The name of the property.</param>
         public void UpdateProperty<T>(ref T value, ref T _backProp, [CallerMemberName] string propName = "");
 
         /// <summary>
-        /// It triggers the PropertyChanged event which tells the GUI to update.
+        /// Raises the <see cref="PropertyChanged"/> event to notify the UI of property changes.
         /// </summary>
-        /// <param name="propName">The name of the property</param>
+        /// <param name="propName">The name of the property that changed.</param>
         public void RaisePropertyChanged(string propName);
 
         /// <summary>
-        /// Occurs when a property, whose Set Accessor uses <see cref="UpdateProperty{T}(ref T?, ref T?, string)"/>, has been updated.
+        /// Occurs after a property, using <see cref="UpdateProperty{T}(ref T, ref T, string)"/>, has been updated.
         /// </summary>
         public event AfterUpdateEventHandler? AfterUpdate;
 
         /// <summary>
-        /// Occurs before a property, whose Set Accessor uses <see cref="UpdateProperty{T}(ref T?, ref T?, string)"/>, has been updated.
+        /// Occurs before a property, using <see cref="UpdateProperty{T}(ref T, ref T, string)"/>, is updated.
         /// </summary>
         public event BeforeUpdateEventHandler? BeforeUpdate;
-
     }
-
 }

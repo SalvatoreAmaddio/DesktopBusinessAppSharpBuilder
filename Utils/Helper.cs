@@ -10,16 +10,19 @@ using FrontEnd.Dialogs;
 
 namespace FrontEnd.Utils
 {
+    /// <summary>
+    /// Provides utility methods for common operations in a WPF application, including managing tab closing,
+    /// loading resources, finding visual tree elements, interacting with windows, and handling images.
+    /// </summary>
     public class Helper
     {
         /// <summary>
-        /// Subscribes the Closing Event of the <see cref="Window"/> containg the <see cref="TabControl"/>. <para/>
-        /// For each Tab, the event calls the <see cref="IAbstractFormController.OnWinClosing(object?, CancelEventArgs)"/> method
-        /// which determines if the Window can close or not.
+        /// Subscribes to the Closing event of the <see cref="Window"/> containing the <see cref="TabControl"/>.
+        /// For each tab, the event invokes the <see cref="IAbstractFormController.OnWinClosing(object?, CancelEventArgs)"/> method
+        /// to determine if the window can close or not.
         /// </summary>
-        /// <param name="tabControl">A TabControl object</param>
-        /// <exception cref="Exception"></exception>
-        public static void ManageTabClosing(TabControl tabControl) 
+        /// <param name="tabControl">The TabControl object.</param>
+        public static void ManageTabClosing(TabControl tabControl)
         {
             //Get the Window
             Window? window = Window.GetWindow(tabControl);
@@ -44,11 +47,12 @@ namespace FrontEnd.Utils
             };
         }
 
+        #region Resource Dictionary
         /// <summary>
-        /// Load a Resource string from the Strings.xaml dictionary.
+        /// Loads a resource string from the Strings.xaml dictionary.
         /// </summary>
-        /// <param name="strKey">The resource's key</param>
-        /// <returns>A string</returns>
+        /// <param name="strKey">The key of the resource string.</param>
+        /// <returns>The loaded string.</returns>
         public static string LoadFromStrings(string strKey) 
         {
             string? str = GetDictionary("Strings")[strKey].ToString();
@@ -56,24 +60,33 @@ namespace FrontEnd.Utils
         }
 
         /// <summary>
-        /// Load a BitmapImage from the Images.xaml dictionary.
+        /// Loads a BitmapImage from the Images.xaml dictionary.
         /// </summary>
-        /// <param name="imgKey">The resource's key</param>
-        /// <returns>A BitmapImage</returns>
-        public static BitmapImage? LoadFromImages(string imgKey) =>
-        LoadImg(GetDictionary("Images")[imgKey]?.ToString());
+        /// <param name="imgKey">The key of the image resource.</param>
+        /// <returns>The loaded BitmapImage.</returns>
+        public static BitmapImage? LoadFromImages(string imgKey) => LoadImg(GetDictionary("Images")[imgKey]?.ToString());
 
         /// <summary>
-        /// Gets a dictionary from the Themes directory.
+        /// Retrieves a ResourceDictionary from the Framework Themes directory.
         /// </summary>
-        /// <param name="name">The name of the dictionary</param>
-        /// <returns>A ResourceDictionary</returns>
+        /// <param name="name">The name of the dictionary.</param>
+        /// <returns>The retrieved ResourceDictionary.</returns>
+        /// <remarks>
+        /// <c>ATTENTION:</c> it does not retrieve the ResourceDictionary from the current application Themes directory.
+        /// </remarks>
         public static ResourceDictionary GetDictionary(string name) =>
-        new() 
+        new()
         {
             Source = new Uri($"pack://application:,,,/FrontEnd;component/Themes/{name}.xaml")
         };
+        #endregion
 
+        /// <summary>
+        /// Finds an ancestor of type T in the visual or logical tree.
+        /// </summary>
+        /// <typeparam name="T">The type of ancestor to find.</typeparam>
+        /// <param name="current">The current DependencyObject to start searching from.</param>
+        /// <returns>The found ancestor of type T, or null if not found.</returns>
         public static T? FindAncestor<T>(DependencyObject? current) where T : DependencyObject
         {
             while (current != null)
@@ -93,19 +106,11 @@ namespace FrontEnd.Utils
         }
 
         /// <summary>
-        /// Gets the active window.
+        /// Finds the first child of type T in the visual tree under the given parent.
         /// </summary>
-        /// <returns>A Window</returns>
-        public static Window? GetActiveWindow()
-        {
-            foreach (Window window in Application.Current.Windows)
-            {
-                if (window.IsActive)
-                    return window;
-            }
-            return null;
-        }
-
+        /// <typeparam name="T">The type of child to find.</typeparam>
+        /// <param name="parent">The parent DependencyObject to search under.</param>
+        /// <returns>The found child of type T, or null if not found.</returns>
         public static T? FindFirstChildOfType<T>(DependencyObject? parent) where T : DependencyObject
         {
             if (parent == null) return null;
@@ -126,11 +131,11 @@ namespace FrontEnd.Utils
         }
 
         /// <summary>
-        /// Loads a BitmapImage which can be used as a Source in a Image Control.
+        /// Loads a BitmapImage from the specified path.
         /// </summary>
-        /// <param name="path">The path to the image</param>
-        /// <returns>A BitmapImage</returns>
-        /// <exception cref="ArgumentException">Path cannot be null</exception>
+        /// <param name="path">The path to the image file.</param>
+        /// <returns>The loaded BitmapImage, or null if loading fails.</returns>
+        /// <exception cref="ArgumentException">Thrown when the path is null or empty.</exception>
         public static BitmapImage? LoadImg(string? path)
         {
             if (string.IsNullOrEmpty(path)) return null;
@@ -150,6 +155,29 @@ namespace FrontEnd.Utils
 
         }
 
+        #region Window object.
+        /// <summary>
+        /// Retrieves the currently active window in the application.
+        /// </summary>
+        /// <returns>The active Window object.</returns>
+        public static Window? GetActiveWindow()
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.IsActive)
+                    return window;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Opens a modal dialog window with specified title, content, size, and resize mode.
+        /// </summary>
+        /// <param name="title">The title of the dialog window.</param>
+        /// <param name="content">The content to display within the dialog window.</param>
+        /// <param name="width">Optional width of the dialog window.</param>
+        /// <param name="height">Optional height of the dialog window.</param>
+        /// <param name="mode">Optional resize mode of the dialog window.</param>
         public static void OpenWindowDialog(string title, object content, double? width = null, double? height = null, ResizeMode mode = ResizeMode.CanResize)
         {
             Window window = new()
@@ -165,15 +193,16 @@ namespace FrontEnd.Utils
                         
             window.ShowDialog();
         }
+        #endregion
 
         /// <summary>
-        /// It logs the user out and remove the login <see cref="Credential"/> saved in the local computer.
+        /// Logs out the current user and removes the saved login <see cref="Credential"/> from the local computer.
         /// </summary>
-        /// <param name="loginForm">The window to open once logged out occured, usually a Login Window</param>
+        /// <param name="loginForm">The window to open after logout, typically a login window.</param>
         public static void Logout(Window loginForm)
         {
             DialogResult result = ConfirmDialog.Ask("Are you sure you want to logout?");
-            if (result == DialogResult.No) 
+            if (result == DialogResult.No)
             {
                 loginForm.Close(); //Windows in WPF stay in memory even if they are not shown.
                 return;
@@ -181,6 +210,5 @@ namespace FrontEnd.Utils
             CurrentUser.Logout();
             GetActiveWindow()?.GoToWindow(loginForm);
         }
-
     }
 }

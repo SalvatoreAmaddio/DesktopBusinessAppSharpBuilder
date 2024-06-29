@@ -9,21 +9,17 @@ using System.Windows.Data;
 namespace FrontEnd.Forms
 {
     /// <summary>
-    /// This class extends <see cref="AbstractControl"/> and displays a <see cref="SourceOption"/> object in a <see cref="Lista"/>'s header.
+    /// Represents a UI control that extends <see cref="AbstractControl"/> and displays a <see cref="SourceOption"/> object within a <see cref="Lista"/>'s header.
     /// <para/>
-    /// For Example:
+    /// Example usage within XAML:
     /// <code>
     /// &lt;fr:Lista.Header>
-    ///     ...
-    ///     &lt;fr:HeaderFilter Grid.Column="4" DataContext= "{Binding RelativeSource={RelativeSource AncestorType=fr:Lista}, Path=DataContext}" Controller= "{Binding}" ItemsSource="{Binding GenderOptions}" Text="Gender"/>
-    ///     
-    ///     &lt;fr:HeaderFilter Grid.Column= "5" DataContext= "{Binding RelativeSource={RelativeSource AncestorType=fr:Lista}, Path=DataContext}" Controller= "{Binding}" ItemsSource="{Binding TitleOptions}" Text="Job Title"/>
-    ///     
-    ///     &lt;fr:HeaderFilter Grid.Column= "6" DataContext= "{Binding RelativeSource={RelativeSource AncestorType=fr:Lista}, Path=DataContext}" Controller= "{Binding}" ItemsSource="{Binding DepartmentOptions}" Text="Department"/>
-    ///     ...
-    ///&lt;/fr:Lista.Header>
+    ///     &lt;fr:HeaderFilter Grid.Column="4" DataContext="{Binding RelativeSource={RelativeSource AncestorType=fr:Lista}, Path=DataContext}" Controller="{Binding}" ItemsSource="{Binding GenderOptions}" Text="Gender"/>
+    ///     &lt;fr:HeaderFilter Grid.Column="5" DataContext="{Binding RelativeSource={RelativeSource AncestorType=fr:Lista}, Path=DataContext}" Controller="{Binding}" ItemsSource="{Binding TitleOptions}" Text="Job Title"/>
+    ///     &lt;fr:HeaderFilter Grid.Column="6" DataContext="{Binding RelativeSource={RelativeSource AncestorType=fr:Lista}, Path=DataContext}" Controller="{Binding}" ItemsSource="{Binding DepartmentOptions}" Text="Department"/>
+    /// &lt;/fr:Lista.Header>
     /// </code>
-    /// This class works in conjunction with <seealso cref="IFilterOption"/>, <seealso cref="FilterOption"/>
+    /// This class works in conjunction with <seealso cref="IFilterOption"/>, <seealso cref="FilterOption"/>, and <seealso cref="SourceOption"/>.
     /// </summary>
     public class HeaderFilter : AbstractControl, IUIControl
     {
@@ -41,11 +37,10 @@ namespace FrontEnd.Forms
             Source = Helper.LoadFromImages("clearfilter")
         };
 
-        static HeaderFilter() => DefaultStyleKeyProperty.OverrideMetadata(typeof(HeaderFilter), new FrameworkPropertyMetadata(typeof(HeaderFilter)));
-
         #region IsWithinList
         /// <summary>
-        /// This property works as a short-hand to set a Relative Source Binding between the FilterOption's DataContext and the <see cref="Lista"/>'s DataContext.
+        /// Gets or sets a value indicating whether the filter is within a list.
+        /// This property establishes a relative source binding between the FilterOption's DataContext and the <see cref="Lista"/>'s DataContext.
         /// </summary>
         public bool IsWithinList
         {
@@ -85,55 +80,13 @@ namespace FrontEnd.Forms
                 BindingOperations.ClearBinding(this, DataContextProperty);
         }
         #endregion
-
-        private void ResetDropDownButtonAppereance()
-        {
-            if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
-            PART_DropDownButton.Content = Filter;
-            ToolTip = "Filter";
-        }
-
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-            PART_DropDownButton = (Button)GetTemplateChild(nameof(PART_DropDownButton));
-            PART_DropDownButton.Click += OnDropdownButtonClicked;
-            ResetDropDownButtonAppereance();
-
-            PART_ClearButton = (Button?)GetTemplateChild(nameof(PART_ClearButton));
-            if (PART_ClearButton != null)
-                PART_ClearButton.Click += OnClearButtonClicked;
-
-            PART_ListBox = (ListBox)GetTemplateChild(nameof(PART_ListBox));
-            System.Diagnostics.PresentationTraceSources.SetTraceLevel(PART_ListBox.ItemContainerGenerator, System.Diagnostics.PresentationTraceLevel.High);
-
-            ParentWindow = Window.GetWindow(this);
-            if (ParentWindow != null)
-                ParentWindow.Closed += OnClosed;
-        }
-
-        #region Events
-        private void OnClearButtonClicked(object sender, RoutedEventArgs e)
-        {
-            foreach(var item in ItemsSource) 
-                item.Deselect();
-
-            ((IAbstractFormListController)DataContext).OnOptionFilterClicked(new());
-            IsOpen = false;
-            ResetDropDownButtonAppereance();
-        }
-        private void OnDropdownButtonClicked(object sender, RoutedEventArgs e) 
-        {
-            IsOpen = !IsOpen;
-        }            
-        #endregion
-
+        
         #region IsOpen
         public static readonly DependencyProperty IsOpenProperty =
             DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(HeaderFilter), new PropertyMetadata(false));
 
         /// <summary>
-        /// Gets and Sets a boolean indicating if the Popup is open or not/>
+        /// Gets or sets a value indicating whether the popup is open.
         /// </summary>
         public bool IsOpen
         {
@@ -147,14 +100,12 @@ namespace FrontEnd.Forms
             DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<IFilterOption>), typeof(HeaderFilter), new PropertyMetadata(ItemSourceChanged));
 
         /// <summary>
-        /// Gets and sets the <see cref="SourceOption"/> object.
-        /// <para/>
-        /// see also <seealso cref="IFilterOption"/>, <seealso cref="FilterOption"/>, and <seealso cref="SourceOption"/>.
+        /// Gets or sets the collection of filter options.
         /// </summary>
         public IEnumerable<IFilterOption> ItemsSource
         {
-            get => (IEnumerable<IFilterOption>)GetValue(ItemsSourceProperty); 
-            set => SetValue(ItemsSourceProperty, value); 
+            get => (IEnumerable<IFilterOption>)GetValue(ItemsSourceProperty);
+            set => SetValue(ItemsSourceProperty, value);
         }
 
         private static void ItemSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((HeaderFilter)d).BindEvents(e.OldValue, e.NewValue);
@@ -169,7 +120,7 @@ namespace FrontEnd.Forms
             SourceOption? source = new_source as SourceOption;
             source?.AddUIControlReference(this);
 
-            if (source is not null) 
+            if (source is not null)
             {
                 foreach (IFilterOption option in source)
                     option.OnSelectionChanged += OnOptionSelected;
@@ -181,7 +132,7 @@ namespace FrontEnd.Forms
                 }
             }
         }
-        
+
         private void UnsubscribeEvents(SourceOption source)
         {
             foreach (IFilterOption option in source)
@@ -194,12 +145,12 @@ namespace FrontEnd.Forms
             {
                 if (args[0] is string) //UPDATE STRING
                 {
-                    foreach (IFilterOption option in ItemsSource) 
+                    foreach (IFilterOption option in ItemsSource)
                     {
                         option.OnSelectionChanged += OnOptionSelected;
                     }
                 }
-                else 
+                else
                 {
                     IFilterOption option = (IFilterOption)args[0];
                     option.OnSelectionChanged += OnOptionSelected;
@@ -227,11 +178,38 @@ namespace FrontEnd.Forms
             set => SetValue(TextProperty, value);
         }
         #endregion
+        
+        static HeaderFilter() => DefaultStyleKeyProperty.OverrideMetadata(typeof(HeaderFilter), new FrameworkPropertyMetadata(typeof(HeaderFilter)));
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            PART_DropDownButton = (Button)GetTemplateChild(nameof(PART_DropDownButton));
+            PART_DropDownButton.Click += OnDropdownButtonClicked;
+            ResetDropDownButtonAppereance();
 
-        protected override void UnsubscribeEvents(object sender, RoutedEventArgs e) { }
+            PART_ClearButton = (Button?)GetTemplateChild(nameof(PART_ClearButton));
+            if (PART_ClearButton != null)
+                PART_ClearButton.Click += OnClearButtonClicked;
+
+            PART_ListBox = (ListBox)GetTemplateChild(nameof(PART_ListBox));
+            System.Diagnostics.PresentationTraceSources.SetTraceLevel(PART_ListBox.ItemContainerGenerator, System.Diagnostics.PresentationTraceLevel.High);
+        }
 
         #region Event Subscriptions
-        private void OnClosed(object? sender, EventArgs e) => Dispose();
+        private void OnClearButtonClicked(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in ItemsSource)
+                item.Deselect();
+
+            ((IAbstractFormListController)DataContext).OnOptionFilterClicked(new());
+            IsOpen = false;
+            ResetDropDownButtonAppereance();
+        }
+        private void OnDropdownButtonClicked(object sender, RoutedEventArgs e)
+        {
+            IsOpen = !IsOpen;
+        }
+        public override void OnClosed(object? sender, EventArgs e) => Dispose();
         private void OnOptionSelected(object? sender, EventArgs e)
         {
             if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
@@ -242,6 +220,12 @@ namespace FrontEnd.Forms
         }
         #endregion
 
+        private void ResetDropDownButtonAppereance()
+        {
+            if (PART_DropDownButton == null) throw new NullReferenceException("DropDownButton is null");
+            PART_DropDownButton.Content = Filter;
+            ToolTip = "Filter";
+        }
         private static void DisposeSource(SourceOption source)
         {
             foreach (IFilterOption option in source)
@@ -250,7 +234,9 @@ namespace FrontEnd.Forms
             source.Dispose();
         }
 
-        protected override void DisposeEvents()
+        #region IAbstractControl
+        public override void UnsubscribeEvents(object sender, RoutedEventArgs e) { }
+        public override void DisposeEvents()
         {
             base.DisposeEvents();
             if (PART_DropDownButton != null)
@@ -261,15 +247,8 @@ namespace FrontEnd.Forms
 
             DisposeSource((SourceOption)ItemsSource);
 
-            if (ParentWindow != null)
-                ParentWindow.Closing -= OnClosed;
-
             Loaded -= OnLoaded;
-
-            if (ParentWindow != null)
-                ParentWindow.Closed -= OnClosed;
         }
-
+        #endregion
     }
-
 }

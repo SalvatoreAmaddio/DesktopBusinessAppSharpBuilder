@@ -114,7 +114,7 @@ namespace FrontEnd.Forms
             else return height;
         }
 
-        protected override void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        public override void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue is IAbstractFormController)
             {

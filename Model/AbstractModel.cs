@@ -1,7 +1,6 @@
 ﻿using Backend.Model;
 using FrontEnd.Dialogs;
 using FrontEnd.Events;
-using FrontEnd.Notifier;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Reflection;
@@ -9,44 +8,16 @@ using System.Runtime.CompilerServices;
 
 namespace FrontEnd.Model
 {
-    public interface IAbstractModel : ISQLModel, INotifier
-    {
-        /// <summary>
-        /// It gets and sets a value that indicates if any property, which uses <see cref="UpdateProperty{T}(ref T, ref T, string)"/>, of a object extending <see cref="AbstractNotifier"/> has changed.
-        /// </summary>
-        /// <value>True if a property has changed.</value>
-        public bool IsDirty { get; set; }
-
-        /// <summary>
-        /// Occurs when the <see cref="IsDirty"/> property gets from true to false.
-        /// This event gets subscribed and triggered by the <see cref="Forms.SubForm"/> class.
-        /// </summary>
-        public event OnDirtyChangedEventHandler? OnDirtyChanged;
-
-        /// <summary>
-        /// Sets the latest changed Properties to their previous value.
-        /// </summary>
-        public void Undo();
-
-        /// <summary>
-        /// Sets the <see cref="IsDirty"/> property to true.
-        /// </summary>
-        public void Dirt();
-
-        /// <summary>
-        /// Sets the <see cref="IsDirty"/> property to false.
-        /// </summary>
-        public void Clean();
-
-    }
-
-
     /// <summary>
-    /// This class extends the <see cref="AbstractSQLModel"/> and adds extra functionalities for UI purposes
+    /// Extends <see cref="AbstractSQLModel"/> and provides additional UI functionalities.
+    /// Implements <see cref="IAbstractModel"/>.
     /// </summary>
+    /// <typeparam name="M">The type of model that extends <see cref="ISQLModel"/> and has a parameterless constructor.</typeparam>
     public abstract class AbstractModel<M> : AbstractSQLModel, IAbstractModel where M : ISQLModel, new()
     {
         bool _isDirty = false;
+
+        #region Properties
         public bool IsDirty
         {
             get => _isDirty;
@@ -59,9 +30,10 @@ namespace FrontEnd.Model
         }
 
         /// <summary>
-        /// Gets a List of all properties marked with a <see cref="AbstractField"/> attribute
+        /// Gets a list of all properties marked with <see cref="AbstractField"/> attribute.
         /// </summary>
         protected List<SimpleTableField> AllFields { get; }
+        #endregion
 
         #region Events
         public event OnDirtyChangedEventHandler? OnDirtyChanged;
@@ -70,51 +42,77 @@ namespace FrontEnd.Model
         public event BeforeUpdateEventHandler? BeforeUpdate;
         #endregion
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AbstractModel{M}"/> class.
+        /// </summary>
         public AbstractModel() : base() => AllFields = new(GetAllTableFields());
+
+        /// <summary>
+        /// Sets the <see cref="IsDirty"/> property to true.
+        /// </summary>
         public void Dirt() => IsDirty = true;
+
+        /// <summary>
+        /// Sets the <see cref="IsDirty"/> property to false.
+        /// </summary>
         public void Clean() => IsDirty = false;
+
+        /// <summary>
+        /// Raises the <see cref="PropertyChanged"/> event.
+        /// </summary>
+        /// <param name="propName">The name of the property that changed.</param>
         public void RaisePropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
-        public void UpdateProperty<T>(ref T value, ref T _backProp, [CallerMemberName] string propName = "")
+
+        /// <summary>
+        /// Updates the specified property and raises <see cref="BeforeUpdate"/> and <see cref="AfterUpdate"/> events.
+        /// </summary>
+        /// <typeparam name="T">The type of the property.</typeparam>
+        /// <param name="value">The new value of the property.</param>
+        /// <param name="backProp">The old value of the property.</param>
+        /// <param name="propName">The name of the property being updated.</param>
+        public void UpdateProperty<T>(ref T value, ref T backProp, [CallerMemberName] string propName = "")
         {
             SimpleTableField? field = AllFields.Find(s => s.Name.Equals(propName));
-            field?.SetValue(_backProp);
+            field?.SetValue(backProp);
             field?.Change(true);
-            BeforeUpdateArgs args = new(value, _backProp, propName);
+            BeforeUpdateArgs args = new(value, backProp, propName);
             BeforeUpdate?.Invoke(this, args);
             if (args.Cancel) return;
-            _backProp = value;
+            backProp = value;
             IsDirty = true;
             AfterUpdate?.Invoke(this, args);
             RaisePropertyChanged(propName);
         }
-        public void Undo() 
-        { 
-            foreach (var field in AllFields.Where(s=>s.Changed)) 
+
+        /// <summary>
+        /// Sets all changed properties back to their previous values and resets <see cref="IsDirty"/> to false.
+        /// </summary>
+        public void Undo()
+        {
+            foreach (var field in AllFields.Where(s => s.Changed))
             {
                 field.Property.SetValue(this, field.GetValue());
                 field.Change(false);
             }
-
             IsDirty = false;
         }
+
+        /// <summary>
+        /// Validates whether an update operation is allowed.
+        /// </summary>
+        /// <returns>True if update is allowed; otherwise, false.</returns>
         public override bool AllowUpdate()
         {
             bool result = base.AllowUpdate();
-
             if (!result)
                 Failure.Allert($"Please fill all mandatory fields:\n{GetEmptyMandatoryFields()}");
-
             return result;
         }
-        public override void Dispose()
-        {
-            base.Dispose();
-            PropertyChanged = null;
-            AfterUpdate = null;
-            BeforeUpdate = null;
-            GC.SuppressFinalize(this);
-        }
 
+        /// <summary>
+        /// Retrieves all properties marked with the <see cref="AbstractField"/> attribute in the current instance's type.
+        /// </summary>
+        /// <returns>An enumerable collection of <see cref="SimpleTableField"/> instances representing the marked properties.</returns>
         private IEnumerable<SimpleTableField> GetAllTableFields()
         {
             Type type = GetType();
@@ -129,13 +127,39 @@ namespace FrontEnd.Model
             }
         }
 
+        /// <summary>
+        /// Reads and creates an instance of <see cref="ISQLModel"/> from a database record.
+        /// </summary>
+        /// <param name="reader">The database reader containing the record data.</param>
+        /// <returns>An instance of <see cref="ISQLModel"/> created from the database record.</returns>
+        /// <remarks>
+        /// This method is called through reflection in <see cref="CreateFromDbRecord(DbDataReader)"/>
+        /// </remarks>
         public override ISQLModel Read(DbDataReader reader) => CreateFromDbRecord(reader);
+
+        /// <summary>
+        /// Creates an instance of <typeparamref name="M"/> from a database record.
+        /// </summary>
+        /// <param name="reader">The database reader containing the record data.</param>
+        /// <returns>An instance of <typeparamref name="M"/> created from the database record.</returns>
         public M CreateFromDbRecord(DbDataReader reader)
         {
             Type myClassType = typeof(M);
-            ConstructorInfo? constructor = myClassType.GetConstructor([typeof(DbDataReader)]) ?? throw new NullReferenceException($"Class {myClassType.Name} is missing a Constructor that takes a DbDataReader object as parameter!");
-            object myClassInstance = constructor.Invoke([reader]);
+            ConstructorInfo? constructor = myClassType.GetConstructor(new[] { typeof(DbDataReader) }) ?? throw new NullReferenceException($"Class {myClassType.Name} is missing a constructor that takes a DbDataReader object as a parameter!");
+            object myClassInstance = constructor.Invoke(new object[] { reader });
             return (M)myClassInstance;
+        }
+
+        /// <summary>
+        /// Disposes the object and clears event subscriptions.
+        /// </summary>
+        public override void Dispose()
+        {
+            base.Dispose();
+            PropertyChanged = null;
+            AfterUpdate = null;
+            BeforeUpdate = null;
+            GC.SuppressFinalize(this);
         }
     }
 }

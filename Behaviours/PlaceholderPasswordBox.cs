@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using Microsoft.Xaml.Behaviors;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace FrontEnd.Behaviours
 {
@@ -42,27 +41,23 @@ namespace FrontEnd.Behaviours
             AssociatedObject.Loaded += OnLoaded;
             TogglePlaceholder();
         }
-
         protected override void OnDetaching()
         {
             base.OnDetaching();
             AssociatedObject.PasswordChanged -= OnPasswordChanged;
             AssociatedObject.Loaded -= OnLoaded;
         }
-
         private void OnLoaded(object sender, RoutedEventArgs e) => TogglePlaceholder();
         private void OnPasswordChanged(object sender, RoutedEventArgs e) => TogglePlaceholder();
         
         private void TogglePlaceholder()
         {
             if (AssociatedObject.Template == null) return;
-            Label? placeholder = AssociatedObject.Template.FindName("Placeholder", AssociatedObject) as Label;
-            if (placeholder == null) return;
-                if (AssociatedObject.Password.Length == 0)
-                    placeholder.Content = Placeholder;
-                else
-                    placeholder.Content = "";
+            if (AssociatedObject.Template.FindName("Placeholder", AssociatedObject) is not Label placeholder) return;
+            if (AssociatedObject.Password.Length == 0)
+                placeholder.Content = Placeholder;
+            else
+                placeholder.Content = "";
         }
     }
-
 }

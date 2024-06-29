@@ -5,44 +5,57 @@ using FrontEnd.Model;
 using FrontEnd.Source;
 using MvvmHelpers;
 using Backend.Enums;
+using FrontEnd.Forms;
 
 namespace FrontEnd.FilterSource
 {
     /// <summary>
-    /// This class extends ObservableRangeCollection&lt;<see cref="IFilterOption"/>> and implements <see cref="IChildSource"/>.
+    /// Represents a collection that extends <see cref="ObservableRangeCollection{T}"/> with elements of type <see cref="IFilterOption"/> and implements <see cref="IChildSource"/>.
     /// <para/>
-    /// This class works in conjunction with the <see cref="HeaderFilter"/> class.
+    /// This class is designed to work in conjunction with the <see cref="HeaderFilter"/> class.
     /// </summary>
-    /// <param name="source">A RecordSource object</param>
-    /// <param name="displayProperty">The Record's property to display in the option list.</param>
     public class SourceOption : ObservableRangeCollection<IFilterOption>, IChildSource, IDisposable
     {
         #region Variables
         /// <summary>
-        /// A list of <see cref="IUIControl"/> associated to this <see cref="DataSource"/>.
+        /// A list of <see cref="IUIControl"/> associated with this data source.
         /// </summary>
-        protected List<IUIControl>? UIControls;
-        protected IDataSource? Source;
+        protected List<IUIControl>? uiControls;
+        protected IDataSource? source;
         protected string _displayProperty = string.Empty;
         protected OrderBy _orderBy;
-        private string _orderByProperty = string.Empty;
+        private readonly string _orderByProperty = string.Empty;
         #endregion
+
         public IParentSource? ParentSource { get; set; }
 
         #region Constructors
-        public SourceOption() { }
-      //  public SourceOption(IEnumerable<IFilterOption> source) : base(source) { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SourceOption"/> class.
+        /// </summary>
+        internal SourceOption() { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SourceOption"/> class with the specified data source, display property, ordering, and ordering property.
+        /// </summary>
+        /// <param name="source">The data source providing items for the collection.</param>
+        /// <param name="displayProperty">The property of the data source to display in the option list.</param>
+        /// <param name="orderBy">The ordering direction for the collection.</param>
+        /// <param name="orderByProperty">The property used for ordering the collection.</param>
         public SourceOption(IDataSource source, string displayProperty, OrderBy orderBy = OrderBy.ASC, string orderByProperty = "") : base(source.Cast<IAbstractModel>().Select(s => new FilterOption(s, displayProperty)))
         {
             _orderByProperty = orderByProperty;
             _orderBy = orderBy;
             _displayProperty = displayProperty;
-            Source = source;
-            Source.ParentSource?.AddChild(this);
+            this.source = source;
+            this.source.ParentSource?.AddChild(this);
             ReplaceRange(OrderSource());
         }
         #endregion
+
+        /// <summary>
+        /// Orders the source collection based on the specified ordering criteria specified in the constructor.
+        /// </summary>
         protected virtual IEnumerable<IFilterOption> OrderSource()
         {
             if (_orderBy == OrderBy.ASC)
@@ -52,15 +65,16 @@ namespace FrontEnd.FilterSource
         }
 
         /// <summary>
-        /// Returns all selected options.
+        /// Retrieves all selected filter options from the collection.
         /// </summary>
-        /// <returns>An <see cref="IEnumerable{IFilterOption}"/></returns>
+        /// <returns>An <see cref="IEnumerable{IFilterOption}"/> representing selected options.</returns>
         public IEnumerable<IFilterOption> SelectedOptions() => this.Where(s => s.IsSelected);
+
         /// <summary>
-        /// It loops through the List and builds the SQL logic to filter the Select the statement.
+        /// Builds SQL logic to filter the select statement based on selected filter options.
         /// </summary>
-        /// <param name="abstractClause"></param>
-        /// <returns>A string</returns>
+        /// <typeparam name="T">The type of clause to construct.</typeparam>
+        /// <param name="abstractClause">The abstract clause used to build SQL conditions.</param>
         public virtual void Conditions<T>(AbstractClause abstractClause) where T : AbstractConditionalClause, IQueryClause, new()
         {
             int selectedCount = SelectedOptions().Count();
@@ -95,6 +109,7 @@ namespace FrontEnd.FilterSource
                 conditionalClause?.CloseBracket();
             }
         }
+
         protected virtual void ForEachItem(AbstractClause abstractClause, AbstractConditionalClause? conditionalClause, IFilterOption item, int i)
         {
             string? tableName = item?.Record.GetTableName();
@@ -107,26 +122,19 @@ namespace FrontEnd.FilterSource
                 conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
         }
 
-        /// <summary>
-        /// It adds a <see cref="IUIControl"/> object to the <see cref="UIControls"/>.
-        /// <para/>
-        /// If <see cref="UIControls"/> is null, it gets initialised.
-        /// </summary>
-        /// <param name="control">An object implementing <see cref="IUIControl"/></param>
         public void AddUIControlReference(IUIControl control)
         {
-            UIControls ??= [];
-            UIControls.Add(control);
+            uiControls ??= [];
+            uiControls.Add(control);
         }
 
         /// <summary>
-        /// This method is called in <see cref="Update(CRUD, ISQLModel)"/>.
-        /// It loops through the <see cref="UIControls"/> to notify the <see cref="IUIControl"/> object to reflect changes that occured to their ItemsSource which is an instance of <see cref="DataSource"/>.
+        /// Notifies all <see cref="IUIControl"/> objects in the <see cref="uiControls"/> collection of updates to their ItemsSource property, which is an instance of <see cref="IUISource"/>.
         /// </summary>
         protected void NotifyUIControl(object[] args)
         {
-            if (UIControls != null && UIControls.Count > 0)
-                foreach (IUIControl control in UIControls) control.OnItemSourceUpdated(args);
+            if (uiControls != null && uiControls.Count > 0)
+                foreach (IUIControl control in uiControls) control.OnItemSourceUpdated(args);
         }
 
         public virtual void Update(CRUD crud, ISQLModel model)
@@ -155,30 +163,48 @@ namespace FrontEnd.FilterSource
 
         public void Dispose()
         {
-            Source?.ParentSource?.RemoveChild(this);
-            UIControls?.Clear();
+            source?.ParentSource?.RemoveChild(this);
+            uiControls?.Clear();
 
             foreach(IFilterOption option in this)
                 option.Dispose();
 
             Clear();
-            Source?.Dispose();
+            source?.Dispose();
             GC.SuppressFinalize(this);
         }
     }
 
+    /// <summary>
+    /// Represents a specialized collection of filter options derived from <see cref="SourceOption"/>. 
+    /// This class provides additional functionality for handling distinct selection and ordering based on primitive data types.
+    /// <para/>
+    /// This class is designed to work in conjunction with the <see cref="HeaderFilter"/> class.
+    /// </summary>
     public class PrimitiveSourceOption : SourceOption
     {
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PrimitiveSourceOption"/> class using the specified controller and display property for ordering.
+        /// </summary>
+        /// <param name="controller">The controller containing the data source.</param>
+        /// <param name="displayProperty">The property of the data source to display in the option list.</param>
+        /// <param name="orderby">The ordering direction for the collection.</param>
         public PrimitiveSourceOption(IAbstractFormController controller, string displayProperty, OrderBy orderby = OrderBy.ASC) : this(controller.Source, displayProperty, orderby)
         { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PrimitiveSourceOption"/> class using the specified data source and display property for ordering.
+        /// </summary>
+        /// <param name="source">The data source providing items for the collection.</param>
+        /// <param name="displayProperty">The property of the data source to display in the option list.</param>
+        /// <param name="orderby">The ordering direction for the collection.</param>
         public PrimitiveSourceOption(IDataSource source, string displayProperty, OrderBy orderby = OrderBy.ASC)
         {
             this._orderBy = orderby;
             _displayProperty = displayProperty;
-            Source = source;
-            Source.ParentSource?.AddChild(this);
+            base.source = source;
+            base.source.ParentSource?.AddChild(this);
             IEnumerable<IFilterOption> options = OrderSource();
             ReplaceRange(options);
         }
@@ -195,7 +221,11 @@ namespace FrontEnd.FilterSource
             else
                 conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
         }
-        public void SelectDistinct()
+
+        /// <summary>
+        /// Selects distinct filter options from the collection and updates their selection state based on previously selected options.
+        /// </summary>
+        private void SelectDistinct()
         {
 
             IEnumerable<IFilterOption> options = OrderSource();
@@ -213,28 +243,34 @@ namespace FrontEnd.FilterSource
 
             NotifyUIControl(["UPDATE"]);
         }
-
-        protected override IEnumerable<IFilterOption> OrderSource()
-        {
-            IEnumerable<IAbstractModel?>? range = Source?.Cast<IAbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
-            if (range == null) throw new NullReferenceException();
-            if (_orderBy == OrderBy.ASC)
-                return range.Select(s => new FilterOption(s, _displayProperty)).OrderBy(s => s.Value).ToList();
-            else
-                return range.Select(s => new FilterOption(s, _displayProperty)).OrderByDescending(s => s.Value).ToList();
-        }
-
-        private bool CompareValues(object? value1, object? value2)
+        
+        /// <summary>
+        /// Compares two values for equality, handling specific primitive data types such as DateTime and TimeSpan.
+        /// </summary>
+        /// <param name="value1">The first value to compare.</param>
+        /// <param name="value2">The second value to compare.</param>
+        /// <returns>True if the values are equal; otherwise, false.</returns>
+        private static bool CompareValues(object? value1, object? value2)
         {
             if (value1 == null || value2 == null) return false;
 
-            if (value1 is DateTime date1 && value2 is DateTime date2) 
+            if (value1 is DateTime date1 && value2 is DateTime date2)
                 return date1.Date == date2.Date;
 
             if (value1 is TimeSpan time1 && value2 is TimeSpan time2)
                 return time1 == time2;
 
             return value1 == value2;
+        }
+
+        protected override IEnumerable<IFilterOption> OrderSource()
+        {
+            IEnumerable<IAbstractModel?>? range = source?.Cast<IAbstractModel>().GroupBy(s => s.GetPropertyValue(_displayProperty)).Select(s => s.FirstOrDefault()).Distinct();
+            if (range == null) throw new NullReferenceException();
+            if (_orderBy == OrderBy.ASC)
+                return range.Select(s => new FilterOption(s, _displayProperty)).OrderBy(s => s.Value).ToList();
+            else
+                return range.Select(s => new FilterOption(s, _displayProperty)).OrderByDescending(s => s.Value).ToList();
         }
 
         public override void Update(CRUD crud, ISQLModel model)
@@ -257,7 +293,10 @@ namespace FrontEnd.FilterSource
         }
     }
 
-    public enum OrderBy 
+    /// <summary>
+    /// Enum type used in <see cref="SourceOption"/>
+    /// </summary>
+    public enum OrderBy
     { 
         ASC = 0,
         DESC = 1,
