@@ -1,4 +1,5 @@
-﻿using FrontEnd.Controller;
+﻿using Backend.Database;
+using FrontEnd.Controller;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -83,6 +84,15 @@ namespace FrontEnd.ExtensionMethods
             Frame frame = (Frame)tabControl.SelectedContent;
             Page page = (Page)frame.Content;
             return page.DataContext as IAbstractFormController;
+        }
+
+        public static void DisposeOnExit(this Application app) => app.Exit += OnExit;
+
+        private static void OnExit(object sender, ExitEventArgs e)
+        {
+            Application application = (Application)sender;
+            DatabaseManager.Dispose();
+            application.Exit -= OnExit;
         }
     }
 }

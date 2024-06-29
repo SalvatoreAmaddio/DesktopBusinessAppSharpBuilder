@@ -101,7 +101,7 @@ namespace FrontEnd.Source
                     {
                         if (navigator.BOF && !navigator.NoRecords) Controller?.GoFirst();
                         if (navigator.EOF && !navigator.NoRecords) Controller?.GoPrevious();
-                        if (Count==0) Controller?.GoAt(null);
+                        if (Count == 0) Controller?.GoAt(null);
                         else Controller?.GoAt(removedIndex);
                     }
                     break;
@@ -153,10 +153,10 @@ namespace FrontEnd.Source
         public void ReplaceRecords(IEnumerable<M> newSource)
         {
             M? current = default(M?);
-            try 
+            try
             {
                 if (navigator!=null)
-                    current = navigator.Current;
+                    current = navigator.CurrentRecord;
             }
             catch { }
 

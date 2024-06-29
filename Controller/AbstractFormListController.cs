@@ -138,7 +138,7 @@ namespace FrontEnd.Controller
         /// </summary>
         public void CleanSource()
         {
-            if (OpenWindowOnNew) return;
+            if (OpenWindowOnNew || (!RecordSource.Any(s => s.IsNewRecord()))) return;
             List<M> toRemove = RecordSource.Where(s => s.IsNewRecord()).ToList(); // Get only the new records in the collection.
 
             foreach (var item in toRemove)
@@ -163,7 +163,7 @@ namespace FrontEnd.Controller
             if (RecordSource.Any(s => s.IsNewRecord())) return false; // If there is already a new record, exit the method.
             RecordSource.Add(new M()); // Add a new record to the collection.
             Navigator.GoLast(); // Move to the last record, which is a new record.
-            CurrentRecord = Navigator.Current; // Set the CurrentModel property.
+            CurrentRecord = Navigator.CurrentRecord; // Set the CurrentModel property.
             if (InvokeAfterRecordNavigationEvent(RecordMovement.GoNew)) return false; // If using SubForms, invoke the OnNewRecordEvent().
             Records = "New Record"; // Update RecordTracker's record displayer.
             return true;
@@ -212,7 +212,7 @@ namespace FrontEnd.Controller
 
             CleanSource();
             Navigator.GoAt(record);
-            CurrentRecord = Navigator.Current;
+            CurrentRecord = Navigator.CurrentRecord;
             Records = Source.RecordPositionDisplayer();
 
             if (InvokeAfterRecordNavigationEvent(RecordMovement.GoAt)) return false; // Event was cancelled.
