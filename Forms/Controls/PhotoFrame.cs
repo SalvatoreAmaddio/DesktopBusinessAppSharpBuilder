@@ -10,9 +10,9 @@ using System.Windows.Media;
 
 namespace FrontEnd.Forms
 {
-    public class PhotoFrame : Control, IDisposable
+    public class PhotoFrame : Control, IAbstractControl
     {
-        private Window? _parentWindow;
+        public Window? ParentWindow {  get; set; }
         private Image? PART_Picture;
 
         #region RemovePictureCommand
@@ -126,9 +126,22 @@ namespace FrontEnd.Forms
 
         static PhotoFrame() => DefaultStyleKeyProperty.OverrideMetadata(typeof(PhotoFrame), new FrameworkPropertyMetadata(typeof(PhotoFrame)));
 
-        public PhotoFrame() => RemovePictureCommand = new CMD(OnRemovePictureButtonClicked);
+        public PhotoFrame() => RemovePictureCommand = new CMD(RemovePicture);
 
-        private void OnClosed(object? sender, EventArgs e) => Dispose();
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            PART_Picture = (Image?)GetTemplateChild(nameof(PART_Picture));
+            SetImageSource(Source);
+
+            if (PART_Picture != null)
+                PART_Picture.MouseUp += OnPictureMouseUp;
+
+            ParentWindow = Window.GetWindow(this);
+            if (ParentWindow != null)
+                ParentWindow.Closed += OnClosed;
+        }
 
         private void SetImageSource(string? path)
         {
@@ -155,22 +168,7 @@ namespace FrontEnd.Forms
         
         private void SetBrokenImage() => PART_Picture!.Source = Helper.LoadFromImages("brokenImage");
 
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            PART_Picture = (Image?)GetTemplateChild(nameof(PART_Picture));
-            SetImageSource(Source);
-
-            if (PART_Picture != null)
-                PART_Picture.MouseUp += OnPictureMouseUp;
-
-            _parentWindow = Window.GetWindow(this);
-            if (_parentWindow != null)
-                _parentWindow.Closed += OnClosed;
-        }
-
-        private void OnRemovePictureButtonClicked() 
+        private void RemovePicture()
         {
             string? temp = Path.Combine(Sys.AppPath(), Folder, Source);
             Source = string.Empty;
@@ -196,7 +194,15 @@ namespace FrontEnd.Forms
             filePicker?.Dispose();
         }
 
-        public void Dispose()
+        #region IAbstractControl
+        public void OnClosed(object? sender, EventArgs e) => Dispose();
+
+        public void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DisposeEvents()
         {
             if (PART_Picture != null)
             {
@@ -205,9 +211,19 @@ namespace FrontEnd.Forms
                 PART_Picture = null;
             }
 
-            if (_parentWindow!=null)
-                _parentWindow.Closed -= OnClosed;
+            if (ParentWindow != null)
+                ParentWindow.Closed -= OnClosed;
+        }
 
+        public void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        public void Dispose()
+        {
+            DisposeEvents();
             ClearValue(SourceProperty);
             GC.Collect();
             GC.WaitForPendingFinalizers();
