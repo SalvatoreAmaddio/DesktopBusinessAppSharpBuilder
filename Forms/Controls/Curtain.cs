@@ -31,7 +31,7 @@ namespace FrontEnd.Forms
     /// //Click event to open the curtain
     /// private void OpenCurtain(object sender, RoutedEventArgs e) => Curtain.Open();
     /// </code>
-    /// See also <seealso cref="OpenCurtain"/>, <seealso cref="Backend.Utils.SoftwareInfo"/>
+    /// See also <seealso cref="OpenCurtain"/> and <seealso cref="Backend.Utils.SoftwareInfo"/>
     /// </remarks>
     public class Curtain : ContentControl, IAbstractControl
     {

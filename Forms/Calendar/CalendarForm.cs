@@ -5,12 +5,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using FrontEnd.Controller;
-using FrontEnd.Utils;
-using FrontEnd.ExtensionMethods;
 
 namespace FrontEnd.Forms.Calendar
 {
-    public class CalendarForm : Control, IDisposable
+    public class CalendarForm : AbstractControl
     {
         public CalendarDaySlot SelectedSlot { get => CurrentSlots.First(s => s.IsSelected); }
         private readonly List<CalendarDaySlot> CurrentSlots = [];
@@ -21,7 +19,6 @@ namespace FrontEnd.Forms.Calendar
         private StackPanel? PART_Fridays;
         private StackPanel? PART_Saturdays;
         private StackPanel? PART_Sundays;
-        private Window? _parentWindow;
 
         #region RequeryCMD
         public static readonly DependencyProperty RequeryCMDProperty =
@@ -146,7 +143,6 @@ namespace FrontEnd.Forms.Calendar
         public static readonly DependencyProperty EnableWeekButtonProperty =
             DependencyProperty.Register(nameof(EnableWeekButton), typeof(bool), typeof(CalendarForm), new PropertyMetadata(false));
         #endregion
-        static CalendarForm() => DefaultStyleKeyProperty.OverrideMetadata(typeof(CalendarForm), new FrameworkPropertyMetadata(typeof(CalendarForm)));
 
         #region OnDayClickEvent
         public static readonly RoutedEvent OnDayClickEvent = EventManager.RegisterRoutedEvent(
@@ -170,6 +166,8 @@ namespace FrontEnd.Forms.Calendar
         }
         #endregion
 
+        static CalendarForm() => DefaultStyleKeyProperty.OverrideMetadata(typeof(CalendarForm), new FrameworkPropertyMetadata(typeof(CalendarForm)));
+
         public CalendarForm()
         {
             RequeryCMD = new CMDAsync(OnDateUpdate);
@@ -192,11 +190,14 @@ namespace FrontEnd.Forms.Calendar
             PART_Fridays = (StackPanel?)GetTemplateChild(nameof(PART_Fridays));
             PART_Saturdays = (StackPanel?)GetTemplateChild(nameof(PART_Saturdays));
             PART_Sundays = (StackPanel?)GetTemplateChild(nameof(PART_Sundays));
-            _parentWindow = Window.GetWindow(this);
-            if (_parentWindow != null)
-                _parentWindow.Closing += OnUnloaded;
-
             await OnDateUpdate();
+        }
+        public override void OnUnloaded(object sender, RoutedEventArgs e) { }
+        public override void OnClosed(object? sender, EventArgs e) => Dispose();
+        public override void DisposeEvents()
+        {
+            base.DisposeEvents();
+            ClearCalendar();
         }
 
         private async Task Go(TimeTravel timeTravel) 
@@ -237,7 +238,6 @@ namespace FrontEnd.Forms.Calendar
         }
 
         #region Events
-        private void OnUnloaded(object? sender, System.ComponentModel.CancelEventArgs e) => Dispose();
         private void OnCalendarDaySlotMouseUp(object sender, MouseButtonEventArgs e)
         {
             CalendarDaySlot? prevSelectedSlot = CurrentSlots.FirstOrDefault(s => s.IsSelected);
@@ -299,7 +299,7 @@ namespace FrontEnd.Forms.Calendar
         }
         public void ClearCalendar()
         {
-            foreach(var slot in CurrentSlots) 
+            foreach (var slot in CurrentSlots)
                 DisposeCalendarDaySlot(slot);
 
             PART_Mondays?.Children.Clear();
@@ -310,13 +310,6 @@ namespace FrontEnd.Forms.Calendar
             PART_Saturdays?.Children.Clear();
             PART_Sundays?.Children.Clear();
             CurrentSlots.Clear();
-        }
-        public void Dispose()
-        {
-            if (_parentWindow != null)
-                _parentWindow.Closing -= OnUnloaded;
-            ClearCalendar();
-            GC.SuppressFinalize(this);
         }
 
         internal class DateAnalyser(DateTime date, int displayMode = 0) : IDisposable
@@ -469,7 +462,6 @@ namespace FrontEnd.Forms.Calendar
                 Sundays.Clear();
             }
         }
-
     }
 
     public enum TimeTravel 

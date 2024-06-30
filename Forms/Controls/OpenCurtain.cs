@@ -6,6 +6,8 @@ namespace FrontEnd.Forms
 {
     /// <summary>
     /// This class extends <see cref="MenuItem"/> and it is meant to open a <see cref="Curtain"/> object.
+    /// </summary>
+    /// <remarks>
     /// For example:
     /// <code>
     /// &lt;Menu VerticalAlignment="Top">
@@ -13,10 +15,10 @@ namespace FrontEnd.Forms
     ///     ...
     /// &lt;/Menu>
     /// </code>
-    /// </summary>
+    /// </remarks>
     public class OpenCurtain : MenuItem
     {
-        public OpenCurtain() 
+        public OpenCurtain()
         {
             Header = Helper.LoadFromStrings("openCurtain");
             VerticalAlignment = VerticalAlignment.Center;
