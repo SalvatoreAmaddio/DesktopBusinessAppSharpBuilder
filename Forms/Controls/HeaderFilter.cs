@@ -29,7 +29,7 @@ namespace FrontEnd.Forms
 
         private readonly Image Filter = new()
         {
-            Source = Helper.LoadFromImages("filter") 
+            Source = Helper.LoadFromImages("filter")
         };
         
         private readonly Image ClearFilter = new()
@@ -49,42 +49,10 @@ namespace FrontEnd.Forms
         }
 
         public static readonly DependencyProperty IsWithinListProperty =
-            DependencyProperty.Register(nameof(IsWithinList), typeof(bool), typeof(HeaderFilter), new PropertyMetadata(false, OnIsWithinListPropertyChanged));
-
-        private static void OnIsWithinListPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var headerFilter = (HeaderFilter)d;
-            //handle LazyLoading drawbacks
-            if (headerFilter.IsLoaded)
-                headerFilter.UpdateDataContextBinding();
-            else
-                headerFilter.Loaded += OnLoaded;
-        }
-
-        private static void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            HeaderFilter control = (HeaderFilter)sender;
-            control.UpdateDataContextBinding();
-        }
-
-        private void UpdateDataContextBinding()
-        {
-            if (IsWithinList)
-            {
-                SetBinding(DataContextProperty, new Binding(nameof(DataContext))
-                {
-                    RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(Lista), 1)
-                });
-            }
-            else
-                BindingOperations.ClearBinding(this, DataContextProperty);
-        }
+        DependencyProperty.Register(nameof(IsWithinList), typeof(bool), typeof(HeaderFilter), new PropertyMetadata(false, OnIsWithinListPropertyChanged));
         #endregion
         
         #region IsOpen
-        public static readonly DependencyProperty IsOpenProperty =
-            DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(HeaderFilter), new PropertyMetadata(false));
-
         /// <summary>
         /// Gets or sets a value indicating whether the popup is open.
         /// </summary>
@@ -93,12 +61,12 @@ namespace FrontEnd.Forms
             get => (bool)GetValue(IsOpenProperty);
             set => SetValue(IsOpenProperty, value);
         }
+
+        public static readonly DependencyProperty IsOpenProperty =
+        DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(HeaderFilter), new PropertyMetadata(false));
         #endregion
 
         #region ItemsSource
-        public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<IFilterOption>), typeof(HeaderFilter), new PropertyMetadata(ItemSourceChanged));
-
         /// <summary>
         /// Gets or sets the collection of filter options.
         /// </summary>
@@ -108,6 +76,41 @@ namespace FrontEnd.Forms
             set => SetValue(ItemsSourceProperty, value);
         }
 
+        public static readonly DependencyProperty ItemsSourceProperty =
+        DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<IFilterOption>), typeof(HeaderFilter), new PropertyMetadata(ItemSourceChanged));
+        #endregion
+
+        #region Text
+        /// <summary>
+        /// Gets and Sets the string value to be displayed. This would usually be the <see cref="IFilterOption.Value"/> property.
+        /// </summary>
+        public string Text
+        {
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
+        }
+
+        public static readonly DependencyProperty TextProperty =
+        DependencyProperty.Register(nameof(Text), typeof(string), typeof(HeaderFilter), new PropertyMetadata(string.Empty));
+        #endregion
+
+        static HeaderFilter() => DefaultStyleKeyProperty.OverrideMetadata(typeof(HeaderFilter), new FrameworkPropertyMetadata(typeof(HeaderFilter)));
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            PART_DropDownButton = (Button)GetTemplateChild(nameof(PART_DropDownButton));
+            PART_DropDownButton.Click += OnDropdownButtonClicked;
+            ResetDropDownButtonAppereance();
+
+            PART_ClearButton = (Button?)GetTemplateChild(nameof(PART_ClearButton));
+            if (PART_ClearButton != null)
+                PART_ClearButton.Click += OnClearButtonClicked;
+
+            PART_ListBox = (ListBox)GetTemplateChild(nameof(PART_ListBox));
+            System.Diagnostics.PresentationTraceSources.SetTraceLevel(PART_ListBox.ItemContainerGenerator, System.Diagnostics.PresentationTraceLevel.High);
+        }
+
+        #region ItemsSource changed
         private static void ItemSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((HeaderFilter)d).BindEvents(e.OldValue, e.NewValue);
 
         private void BindEvents(object old_source, object new_source)
@@ -165,35 +168,36 @@ namespace FrontEnd.Forms
         }
         #endregion
 
-        #region Text
-        public static readonly DependencyProperty TextProperty =
-        DependencyProperty.Register(nameof(Text), typeof(string), typeof(HeaderFilter), new PropertyMetadata(string.Empty));
-
-        /// <summary>
-        /// Gets and Sets the string value to be displayed. This would usually be the <see cref="IFilterOption.Value"/> property.
-        /// </summary>
-        public string Text
+        #region IsWithinList changed
+        private static void OnIsWithinListPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            get => (string)GetValue(TextProperty);
-            set => SetValue(TextProperty, value);
+            var headerFilter = (HeaderFilter)d;
+            //handle LazyLoading drawbacks
+            if (headerFilter.IsLoaded)
+                headerFilter.UpdateDataContextBinding();
+            else
+                headerFilter.Loaded += OnLoaded;
+        }
+
+        private static void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            HeaderFilter control = (HeaderFilter)sender;
+            control.UpdateDataContextBinding();
+        }
+
+        private void UpdateDataContextBinding()
+        {
+            if (IsWithinList)
+            {
+                SetBinding(DataContextProperty, new Binding(nameof(DataContext))
+                {
+                    RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(Lista), 1)
+                });
+            }
+            else
+                BindingOperations.ClearBinding(this, DataContextProperty);
         }
         #endregion
-        
-        static HeaderFilter() => DefaultStyleKeyProperty.OverrideMetadata(typeof(HeaderFilter), new FrameworkPropertyMetadata(typeof(HeaderFilter)));
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-            PART_DropDownButton = (Button)GetTemplateChild(nameof(PART_DropDownButton));
-            PART_DropDownButton.Click += OnDropdownButtonClicked;
-            ResetDropDownButtonAppereance();
-
-            PART_ClearButton = (Button?)GetTemplateChild(nameof(PART_ClearButton));
-            if (PART_ClearButton != null)
-                PART_ClearButton.Click += OnClearButtonClicked;
-
-            PART_ListBox = (ListBox)GetTemplateChild(nameof(PART_ListBox));
-            System.Diagnostics.PresentationTraceSources.SetTraceLevel(PART_ListBox.ItemContainerGenerator, System.Diagnostics.PresentationTraceLevel.High);
-        }
 
         #region Event Subscriptions
         private void OnClearButtonClicked(object sender, RoutedEventArgs e)
@@ -235,7 +239,7 @@ namespace FrontEnd.Forms
         }
 
         #region IAbstractControl
-        public override void UnsubscribeEvents(object sender, RoutedEventArgs e) { }
+        public override void OnUnloaded(object sender, RoutedEventArgs e) { }
         public override void DisposeEvents()
         {
             base.DisposeEvents();

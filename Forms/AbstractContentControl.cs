@@ -15,10 +15,10 @@ namespace FrontEnd.Forms
         /// <summary>
         /// Default constructor for <see cref="AbstractContentControl"/>.
         /// </summary>
-        public AbstractContentControl() 
+        public AbstractContentControl()
         {
             DataContextChanged += OnDataContextChanged;
-            Unloaded += UnsubscribeEvents;
+            Unloaded += OnUnloaded;
         }
 
         public override void OnApplyTemplate()
@@ -33,12 +33,12 @@ namespace FrontEnd.Forms
         public virtual void DisposeEvents()
         {
             DataContextChanged -= OnDataContextChanged;
-            Unloaded -= UnsubscribeEvents;
+            Unloaded -= OnUnloaded;
             if (ParentWindow != null)
                 ParentWindow.Closed -= OnClosed;
         }
 
-        public virtual void UnsubscribeEvents(object sender, RoutedEventArgs e) => DisposeEvents();
+        public virtual void OnUnloaded(object sender, RoutedEventArgs e) => DisposeEvents();
         public virtual void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e) { }
         public virtual void OnClosed(object? sender, EventArgs e) { }
         #endregion

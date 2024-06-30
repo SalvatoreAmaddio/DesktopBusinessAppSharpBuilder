@@ -17,7 +17,7 @@ namespace FrontEnd.Forms
         /// </summary>
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The event arguments.</param>
-        void UnsubscribeEvents(object sender, RoutedEventArgs e);
+        void OnUnloaded(object sender, RoutedEventArgs e);
 
         /// <summary>
         /// Event handler for when <see cref="ParentWindow"/> closes.

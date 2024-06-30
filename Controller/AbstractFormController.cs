@@ -181,27 +181,16 @@ namespace FrontEnd.Controller
         }
 
         #region SubForm Methods
-        /// <summary>
-        /// Sets the parent record and filters the subform.
-        /// </summary>
-        /// <param name="parentRecord">The parent record to set.</param>
         public void SetParentRecord(IAbstractModel? parentRecord)
         {
             ParentRecord = parentRecord;
             OnSubFormFilter();
             if (ParentRecord != null && ParentRecord.IsNewRecord())
-            {
                 Records = "NO RECORDS";
-            }
             else
-            {
-                Records = "NO RECORDS";
-            }
+                GoFirst();
         }
 
-        /// <summary>
-        /// Invoked to filter the subform based on the parent record. Override this method to implement custom filtering logic.
-        /// </summary>
         public virtual void OnSubFormFilter()
         {
             throw new NotImplementedException("You have not overridden the OnSubFormFilter() method in the Controller class that handles the SubForm.");

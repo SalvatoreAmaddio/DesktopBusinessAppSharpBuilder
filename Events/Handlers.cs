@@ -7,6 +7,7 @@ using Backend.Enums;
 using Backend.Model;
 using FrontEnd.Controller;
 using FrontEnd.Source;
+using FrontEnd.Forms;
 
 namespace FrontEnd.Events
 {
@@ -46,7 +47,7 @@ namespace FrontEnd.Events
     public delegate void NotifyParentControllerEventHandler(object? sender, EventArgs e);
 
     /// <summary>
-    /// Occurs when the parent record changes.
+    /// Occurs when the parent record of a <see cref="SubForm"/> changes.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">Arguments associated with the event.</param>
