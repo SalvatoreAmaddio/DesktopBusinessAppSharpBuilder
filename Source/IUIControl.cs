@@ -4,7 +4,7 @@ namespace FrontEnd.Source
 {
     /// <summary>
     /// Interface that serves as a bridge between an <see cref="IUISource"/> object and a <see cref="Combo"/> object in GUI development.
-    /// The primary purpose is to update the <see cref="Combo"/> control to reflect changes in its ItemSource, which is an instance of <see cref="IUISource"/>.
+    /// The primary purpose is to update the <see cref="Combo"/> and <see cref="HeaderFilter"/> controls to reflect changes in their ItemSource, which is an instance of <see cref="IUISource"/>.
     /// </summary>
     public interface IUIControl
     {
