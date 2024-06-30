@@ -10,9 +10,8 @@ using System.Windows.Media;
 
 namespace FrontEnd.Forms
 {
-    public class PhotoFrame : Control, IAbstractControl
+    public class PhotoFrame : AbstractControl
     {
-        public Window? ParentWindow {  get; set; }
         private Image? PART_Picture;
 
         #region RemovePictureCommand
@@ -137,10 +136,6 @@ namespace FrontEnd.Forms
 
             if (PART_Picture != null)
                 PART_Picture.MouseUp += OnPictureMouseUp;
-
-            ParentWindow = Window.GetWindow(this);
-            if (ParentWindow != null)
-                ParentWindow.Closed += OnClosed;
         }
 
         private void SetImageSource(string? path)
@@ -195,40 +190,23 @@ namespace FrontEnd.Forms
         }
 
         #region IAbstractControl
-        public void OnClosed(object? sender, EventArgs e) => Dispose();
-
-        public void OnUnloaded(object sender, RoutedEventArgs e)
+        public override void OnClosed(object? sender, EventArgs e) => Dispose();
+        public override void OnUnloaded(object sender, RoutedEventArgs e) { }
+        public override void DisposeEvents()
         {
-            throw new NotImplementedException();
-        }
-
-        public void DisposeEvents()
-        {
+            base.DisposeEvents();
             if (PART_Picture != null)
             {
                 PART_Picture.MouseUp -= OnPictureMouseUp;
                 PART_Picture.Source = null;
                 PART_Picture = null;
             }
-
-            if (ParentWindow != null)
-                ParentWindow.Closed -= OnClosed;
-        }
-
-        public void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
-
-        public void Dispose()
-        {
-            DisposeEvents();
             ClearValue(SourceProperty);
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            GC.SuppressFinalize(this);
+
         }
+        #endregion
     }
 
     public class FilePickerCatch
