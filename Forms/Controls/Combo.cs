@@ -1,5 +1,4 @@
-﻿using Backend.Source;
-using FrontEnd.Model;
+﻿using FrontEnd.Model;
 using FrontEnd.Utils;
 using System.Collections;
 using System.Windows;
@@ -17,14 +16,40 @@ namespace FrontEnd.Forms
     public partial class Combo : ComboBox, IUIControl
     {
         private readonly ResourceDictionary resourceDict = Helper.GetDictionary(nameof(Combo));
+        public IAbstractModel? ParentModel => DataContext as IAbstractModel;
+
+        #region Placeholder
+        /// <summary>
+        /// Gets and sets the Placeholder
+        /// </summary>
+        public string Placeholder
+        {
+            get => (string)GetValue(PlaceholderProperty);
+            set => SetValue(PlaceholderProperty, value);
+        }
+
+        public static readonly DependencyProperty PlaceholderProperty =
+        DependencyProperty.Register(nameof(Placeholder), typeof(string), typeof(Combo), new PropertyMetadata(string.Empty));
+        #endregion
+
+        #region ControllerSource
+        /// <summary>
+        /// This property works as a short-hand to set a Relative Source Binding between the combo's ItemSource and a <see cref="Lista"/>'s DataContext's IEnumerable Property.
+        /// </summary>
+        public string ControllerRecordSource
+        {
+            private get => (string)GetValue(ControllerRecordSourceProperty);
+            set => SetValue(ControllerRecordSourceProperty, value);
+        }
+
+        public static readonly DependencyProperty ControllerRecordSourceProperty = DependencyProperty.Register(nameof(ControllerRecordSource), typeof(string), typeof(Combo), new PropertyMetadata(string.Empty, OnControllerRecordSourcePropertyChanged));
+        #endregion
 
         public Combo() 
         {
             ItemContainerStyle = (Style)resourceDict["ComboItemContainerStyle"];
             Style = (Style)resourceDict["ComboStyle"];
         }
-
-        public IAbstractModel? ParentModel => DataContext as IAbstractModel;
         
         /// <summary>
         /// Adjust the <see cref="ComboBox.Text"/> property to relect the Selected Item.
@@ -65,44 +90,6 @@ namespace FrontEnd.Forms
             catch { }
         }
 
-        #region Placeholder
-        /// <summary>
-        /// Gets and sets the Placeholder
-        /// </summary>
-        public string Placeholder
-        {
-            get => (string)GetValue(PlaceholderProperty);
-            set => SetValue(PlaceholderProperty, value);
-        }
-
-        public static readonly DependencyProperty PlaceholderProperty =
-            DependencyProperty.Register(nameof(Placeholder), typeof(string), typeof(Combo), new PropertyMetadata(string.Empty));
-        #endregion
-
-        #region ControllerSource
-        /// <summary>
-        /// This property works as a short-hand to set a Relative Source Binding between the combo's ItemSource and a <see cref="Lista"/>'s DataContext's IEnumerable Property.
-        /// </summary>
-        public string ControllerRecordSource
-        {
-            private get => (string)GetValue(ControllerRecordSourceProperty);
-            set => SetValue(ControllerRecordSourceProperty, value);
-        }
-
-        public static readonly DependencyProperty ControllerRecordSourceProperty = DependencyProperty.Register(nameof(ControllerRecordSource), typeof(string), typeof(Combo), new PropertyMetadata(string.Empty, OnControllerRecordSourcePropertyChanged));
-        private static void OnControllerRecordSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            bool isEmpty = string.IsNullOrEmpty(e.NewValue.ToString());
-            Combo control = (Combo)d;
-            if (!isEmpty)
-                control.SetBinding(ItemsSourceProperty, new Binding($"{nameof(DataContext)}.{e.NewValue}")
-                    {
-                        RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(Lista), 1)
-                    });
-            else control.ClearValue(ItemsSourceProperty);
-        }
-        #endregion
-
         /// <summary>
         /// This method has been overriden to associate this object to the RecordSource.
         /// </summary>
@@ -114,15 +101,24 @@ namespace FrontEnd.Forms
                 source.AddUIControlReference(this);
         }
 
+        private static void OnControllerRecordSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            bool isEmpty = string.IsNullOrEmpty(e.NewValue.ToString());
+            Combo control = (Combo)d;
+            if (!isEmpty)
+                control.SetBinding(ItemsSourceProperty, new Binding($"{nameof(DataContext)}.{e.NewValue}")
+                {
+                    RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(Lista), 1)
+                });
+            else control.ClearValue(ItemsSourceProperty);
+        }
+
+        #region UIControl
         public async void OnItemSourceUpdated(object[] args)
         {
             ResetTemplate();
             await AdjustText(null);
         }
-
-        ~Combo()
-        {
-
-        }
+        #endregion
     }
 }
