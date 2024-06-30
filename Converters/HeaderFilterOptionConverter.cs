@@ -3,8 +3,15 @@ using System.Windows.Data;
 
 namespace FrontEnd.Converters
 {
-    public class HeaderFilterConverter : IValueConverter
+    /// <summary>
+    /// A value converter used to display values in the options of a <see cref="HeaderFilter"/> object.
+    /// This converter handles different types of values and formats them appropriately for display.
+    /// </summary>
+    public class HeaderFilterOptionConverter : IValueConverter
     {
+        /// <summary>
+        /// The format string used for displaying <see cref="TimeSpan"/> values.
+        /// </summary>
         private const string timeFormat = "h:mm tt";
         public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

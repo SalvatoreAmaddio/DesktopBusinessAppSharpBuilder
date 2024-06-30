@@ -3,7 +3,8 @@
                     xmlns:local="clr-namespace:FrontEnd.Forms"
                     xmlns:converter="clr-namespace:FrontEnd.Converters"
                     >
-    <converter:HeaderFilterConverter x:Key="converter"/>
+
+    <converter:HeaderFilterOptionConverter x:Key="converter"/>
 
     <Style TargetType="{x:Type local:HeaderFilter}">
         <Setter Property="Template">

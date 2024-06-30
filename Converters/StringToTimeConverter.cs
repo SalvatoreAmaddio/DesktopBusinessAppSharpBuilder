@@ -4,15 +4,26 @@ using System.Windows.Data;
 namespace FrontEnd.Converters
 {
     /// <summary>
-    /// Use this converter to deal with TimeSpan.<para/>
-    /// For Example in your xaml file:
+    /// Converts <see cref="TimeSpan"/> values to and from their string representation for use in XAML bindings.
+    /// <example>
+    /// Example usage in your XAML file:
     /// <code>
     /// &lt;fr:Text Grid.Column="4" Text="{Binding TOA, Converter={StaticResource TimeBox}}"/>
     /// </code>
-    /// TOA is a TimeSpan property.
+    /// Here, TOA is a <see cref="TimeSpan"/> property.
+    /// </example>
     /// </summary>
+    /// <remarks>
+    /// This converter is declared in the FrontEndDictionary.xaml file located in the Themes folder:
+    /// <code>
+    /// &lt;converter:StringToTimeConverter x:Key="TimeBox"/>
+    /// </code>
+    /// </remarks>
     public class StringToTimeConverter : IValueConverter
     {
+        /// <summary>
+        /// The format string used for displaying <see cref="TimeSpan"/> values.
+        /// </summary>
         private const string format = "h:mm tt";
         public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -28,25 +39,16 @@ namespace FrontEnd.Converters
         {
             if (value is string str)
             {
-                if (str.Length == 1) 
-                {
+                if (str.Length == 1)
                     str = $"{str}:00 AM";
-                }
-                DateTime parsedDateTime;
-                if (DateTime.TryParseExact(str, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDateTime))
+                if (DateTime.TryParseExact(str, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
                 {
                     TimeSpan timeSpan = parsedDateTime.TimeOfDay;
                     return timeSpan;
                 }
                 return value;
             }
-            else
-            {
-                return value;
-            }
+            else return value;
         }
-
-
     }
-
 }
