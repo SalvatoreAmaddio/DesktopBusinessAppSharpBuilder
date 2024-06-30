@@ -5,12 +5,12 @@ using System.Windows.Controls;
 namespace FrontEnd.Behaviours
 {
     /// <summary>
-    /// Due to <see cref="PasswordBox"/> being a sealed class, and therefore not overridable,
-    /// the following class represents a Behavior object which can be attached to the PasswordBox 
-    /// in order to provide a Placeholder.
-    /// For example in your xaml:
+    /// Represents a behavior that can be attached to a <see cref="PasswordBox"/> to provide a placeholder text.
+    /// Since <see cref="PasswordBox"/> is a sealed class and cannot be inherited, this behavior allows adding placeholder functionality.
+    /// <example>
+    /// Example usage in your XAML file:
     /// <code>
-    ///    //import the following namespaces:
+    /// &lt;!-- Import the following namespaces: -->
     ///    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     ///    xmlns:b="clr-namespace:FrontEnd.Behaviours;assembly=FrontEnd"
     ///    ...
@@ -20,13 +20,17 @@ namespace FrontEnd.Behaviours
     ///     &lt;/i:Interaction.Behaviors>
     ///    &lt;/PasswordBox>
     /// </code>
+    /// </example>
     /// </summary>
     public class PlaceholderPasswordBox : Behavior<PasswordBox>
     {
+        /// <summary>
+        /// Identifies the <see cref="Placeholder"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty PlaceholderProperty = DependencyProperty.Register(nameof(Placeholder), typeof(string), typeof(PlaceholderPasswordBox), new PropertyMetadata(string.Empty));
 
         /// <summary>
-        /// Gets and Sets a Placeholder.
+        /// Gets or sets the placeholder text to be displayed when the <see cref="PasswordBox"/> is empty.
         /// </summary>
         public string Placeholder
         {
@@ -47,9 +51,22 @@ namespace FrontEnd.Behaviours
             AssociatedObject.PasswordChanged -= OnPasswordChanged;
             AssociatedObject.Loaded -= OnLoaded;
         }
+
+        /// <summary>
+        /// Handles the Loaded event of the <see cref="PasswordBox"/>.
+        /// Toggles the placeholder visibility.
+        /// </summary>
         private void OnLoaded(object sender, RoutedEventArgs e) => TogglePlaceholder();
+
+        /// <summary>
+        /// Handles the PasswordChanged event of the <see cref="PasswordBox"/>.
+        /// Toggles the placeholder visibility.
+        /// </summary>
         private void OnPasswordChanged(object sender, RoutedEventArgs e) => TogglePlaceholder();
-        
+
+        /// <summary>
+        /// Toggles the placeholder visibility based on whether the <see cref="PasswordBox"/> is empty.
+        /// </summary>
         private void TogglePlaceholder()
         {
             if (AssociatedObject.Template == null) return;
