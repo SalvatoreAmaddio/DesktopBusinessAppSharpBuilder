@@ -31,11 +31,17 @@ namespace FrontEnd.Forms
         private Button? PART_DropDownButton;
         private ListBox? PART_ListBox;
 
+        /// <summary>
+        /// Image used for the filter button's default state.
+        /// </summary>
         private readonly Image Filter = new()
         {
             Source = Helper.LoadFromImages("filter")
         };
-        
+
+        /// <summary>
+        /// Image used for the filter button's clear state.
+        /// </summary>
         private readonly Image ClearFilter = new()
         {
             Source = Helper.LoadFromImages("clearfilter")
