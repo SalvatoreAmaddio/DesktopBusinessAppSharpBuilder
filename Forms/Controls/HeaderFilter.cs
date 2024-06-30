@@ -11,6 +11,8 @@ namespace FrontEnd.Forms
     /// <summary>
     /// Represents a UI control that extends <see cref="AbstractControl"/> and displays a <see cref="SourceOption"/> object within a <see cref="Lista"/>'s header.
     /// This class allows for filtering options in a list's header and provides a clear and dropdown button to manage the filter state.
+    /// </summary>
+    /// <remarks>
     /// <example>
     /// Example usage within XAML:
     /// <code>
@@ -24,7 +26,7 @@ namespace FrontEnd.Forms
     /// See also: <seealso cref="IFilterOption"/>,
     /// <seealso cref="FilterOption"/>, and
     /// <seealso cref="SourceOption"/>
-    /// </summary>
+    /// </remarks>
     public class HeaderFilter : AbstractControl, IUIControl
     {
         private Button? PART_ClearButton;

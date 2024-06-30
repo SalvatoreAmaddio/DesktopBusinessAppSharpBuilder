@@ -13,7 +13,8 @@ namespace FrontEnd.Forms
     /// A Curtain object is a drop-side GUI Content which displays some information about the developer, the application and the client.
     /// By default, this object is hidden.
     /// This object works with an instance of <see cref="Backend.Utils.SoftwareInfo"/>.
-    /// <para/>
+    /// </summary>
+    /// <remarks>    
     /// For Example in your xaml:
     /// <code>
     /// &lt;!--Create a MenuItem to open the Curtain-->
@@ -31,7 +32,7 @@ namespace FrontEnd.Forms
     /// private void OpenCurtain(object sender, RoutedEventArgs e) => Curtain.Open();
     /// </code>
     /// See also <seealso cref="OpenCurtain"/>, <seealso cref="Backend.Utils.SoftwareInfo"/>
-    /// </summary>
+    /// </remarks>
     public class Curtain : ContentControl, IAbstractControl
     {
         private Button? PART_CloseButton;

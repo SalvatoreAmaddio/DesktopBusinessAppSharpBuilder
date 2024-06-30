@@ -9,33 +9,33 @@ using System.Windows.Controls;
 namespace FrontEnd.Forms
 {
     /// <summary>
-    /// This class instantiate a ContentControl for a Window object to show a loading process.
-    /// For Example, in your xaml:
+    /// Represents a ContentControl used to display a loading process within a Window.
+    /// </summary>
+    /// <remarks>
+    /// To use this class in your XAML:
     /// <code>
-    /// &lt;!--IMPORT THE NAMESPACE-->
+    /// &lt;!-- Import the namespace -->
     /// xmlns:fr="clr-namespace:FrontEnd.Forms;assembly=FrontEnd"
     /// 
     /// &lt;Window x:Class="MyApplication.View.LoadingForm"
-    ///     ....
-    ///     ResizeMode="NoResize"
-    ///     WindowStartupLocation="CenterScreen"
-    ///     Title="Welcome" Height="450" Width="450">
+    ///         ...
+    ///         ResizeMode="NoResize"
+    ///         WindowStartupLocation="CenterScreen"
+    ///         Title="Welcome" Height="450" Width="450">
     ///     
     ///     &lt;fr:LoadingMask MainWindow="LoginForm">    
-    ///         &lt;!--YOUR CONTENT HERE-->
+    ///         &lt;!-- Your content here -->
     ///     &lt;/fr:LoadingMask>
     /// &lt;/Window>
     /// </code>
-    /// see also the <see cref="MainWindow"/> property.
-    /// </summary>
-    public class LoadingMask : ContentControl, IDisposable
+    /// </remarks>
+    public class LoadingMask : ContentControl, IAbstractControl
     {
-        protected bool _disposed = false;
-        static LoadingMask() => DefaultStyleKeyProperty.OverrideMetadata(typeof(LoadingMask), new FrameworkPropertyMetadata(typeof(LoadingMask)));
+        public Window? ParentWindow { get; private set; }
 
         /// <summary>
-        /// Sets the name of the Window to open once the loading process has completed. <para/>
-        /// <c>IMPORTANT:</c> the Window to open must be in a folder named 'View'.
+        /// Gets or sets the name of the Window to open once the loading process is complete.
+        /// <para><c>IMPORTANT:</c> The specified Window must be in a folder named 'View'.</para>
         /// </summary>
         public string MainWindow
         {
@@ -43,16 +43,28 @@ namespace FrontEnd.Forms
             set => SetValue(MainWindowProperty, value);
         }
 
+        /// <summary>
+        /// Identifies the MainWindow dependency property.
+        /// </summary>
         public static readonly DependencyProperty MainWindowProperty = DependencyProperty.Register(nameof(MainWindow), typeof(string), typeof(LoadingMask), new PropertyMetadata(string.Empty));
 
-        public LoadingMask() 
+        /// <summary>
+        /// Initializes static members of the <see cref="LoadingMask"/> class.
+        /// </summary>
+        static LoadingMask() => DefaultStyleKeyProperty.OverrideMetadata(typeof(LoadingMask), new FrameworkPropertyMetadata(typeof(LoadingMask)));
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoadingMask"/> class.
+        /// </summary>
+        public LoadingMask()
         {
             Loaded += OnLoading;
             Unloaded += OnUnloaded;
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
-
+        /// <summary>
+        /// Handles the Loaded event of the LoadingMask control.
+        /// </summary>
         protected virtual async void OnLoading(object sender, RoutedEventArgs e)
         {
             string? assemblyName = Sys.AppName;
@@ -68,25 +80,30 @@ namespace FrontEnd.Forms
             Helper.GetActiveWindow()?.GoToWindow((Window?)Activator.CreateInstance(mainWinType));
         }
 
+        #region IAbstractControl
+        public void OnUnloaded(object sender, RoutedEventArgs e) => Dispose();
+
+        public void OnClosed(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DisposeEvents()
+        {
+            Loaded -= OnLoading;
+            Unloaded -= OnUnloaded;
+        }
+
+        public void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
         public virtual void Dispose()
         {
-            Dispose(true);
+            DisposeEvents();
             GC.SuppressFinalize(this);
         }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed) return;
-
-            if (disposing)
-            {
-                Loaded -= OnLoading;
-                Unloaded -= OnUnloaded;
-            }
-
-            _disposed = true;
-        }
-
-        ~LoadingMask() => Dispose(false);
     }
 }
