@@ -8,7 +8,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type report:ReportPage}">
                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding Background}" BorderThickness="0">
-                        <Grid x:Name="Page" Background="{TemplateBinding Background}" Width="{TemplateBinding PageWidth}" Height="{TemplateBinding PageHeight}">
+                        <Grid x:Name="PART_Page" Background="{TemplateBinding Background}" Width="{TemplateBinding PageWidth}" Height="{TemplateBinding PageHeight}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="{TemplateBinding HeaderRow}"/>
                                 <RowDefinition Height="*"/>

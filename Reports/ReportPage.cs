@@ -1,5 +1,4 @@
-﻿using FrontEnd.Forms;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Markup;
@@ -10,70 +9,45 @@ namespace FrontEnd.Reports
     /// <summary>
     /// It instantiates a ReportPage object which can be viewed by the <see cref="ReportViewer"/>
     /// </summary>
-    public class ReportPage : Control, IReportPage
+    public class ReportPage : Control, IReportPage, IDisposable
     {
-        private Grid? grid;
+        private Grid? PART_Page;
         private double? Total { get; set; }
         private double? MainHeight { get; set; }
         private double? HeaderHeight { get; set; }
         private double? FooterHeight { get; set; }
         public bool ContentOverflown { get; private set; }
 
+        #region PaddingPage
         public static readonly DependencyProperty PaddingPageProperty = DependencyProperty.Register(nameof(PaddingPage), typeof(Thickness), typeof(ReportPage), new PropertyMetadata(OnPaddingPagePropertyPage));
+        public Thickness PaddingPage
+        {
+            get => (Thickness)GetValue(PaddingPageProperty);
+            set
+            {
+                SetValue(PaddingPageProperty, value);
+            }
+        }
+        #endregion
 
+        #region PaddingHeaderBody
         public static readonly DependencyProperty PaddingHeaderBodyProperty = DependencyProperty.Register(nameof(PaddingHeaderBody), typeof(Thickness), typeof(ReportPage), new PropertyMetadata());
-
-        public static readonly DependencyProperty PaddingFooterProperty = DependencyProperty.Register(nameof(PaddingFooter), typeof(Thickness), typeof(ReportPage), new PropertyMetadata());
         public Thickness PaddingHeaderBody
         {
             get => (Thickness)GetValue(PaddingHeaderBodyProperty);
             private set => SetValue(PaddingHeaderBodyProperty, value);
         }
+        #endregion
 
+        #region PaddingFooter
+        public static readonly DependencyProperty PaddingFooterProperty = DependencyProperty.Register(nameof(PaddingFooter), typeof(Thickness), typeof(ReportPage), new PropertyMetadata());
         public Thickness PaddingFooter
         {
             get => (Thickness)GetValue(PaddingFooterProperty);
             private set => SetValue(PaddingFooterProperty, value);
         }
-        public Thickness PaddingPage 
-        { 
-            get => (Thickness)GetValue(PaddingPageProperty); 
-            set 
-            {
-                SetValue(PaddingPageProperty, value);
-            } 
-        }
-        private static void OnPaddingPagePropertyPage(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ReportPage page = (ReportPage)d;
-            Thickness value = (Thickness)e.NewValue;
-            page.PaddingHeaderBody = new(value.Left, value.Top, value.Right, 0);
-            page.PaddingFooter = new(value.Left, 0, value.Right, value.Bottom);
-        }
+        #endregion
 
-        public ReportPage()
-        {
-            AdjustPageSize();
-            Background = Brushes.White;
-            LayoutUpdated += OnLayoutUpdated;
-        }
-        static ReportPage() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ReportPage), new FrameworkPropertyMetadata(typeof(ReportPage)));
-
-        private void OnLayoutUpdated(object? sender, EventArgs e)
-        {
-            HeaderHeight = grid?.RowDefinitions[0]?.ActualHeight;
-            MainHeight = grid?.RowDefinitions[1]?.ActualHeight;
-            FooterHeight = grid?.RowDefinitions[2]?.ActualHeight;
-            Total = HeaderHeight + MainHeight + FooterHeight;
-            ContentOverflown = Total > PageHeight;
-        }
-
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-            grid = (Grid?)GetTemplateChild("Page");
-        }
-        
         #region PageWidth
         public static readonly DependencyProperty PageWidthProperty =
          DependencyProperty.Register(nameof(PageWidth), typeof(double), typeof(ReportPage), new PropertyMetadata());
@@ -188,7 +162,38 @@ namespace FrontEnd.Reports
             set => SetValue(PageNumberProperty, value);
         }
         #endregion
-        
+
+        private static void OnPaddingPagePropertyPage(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ReportPage page = (ReportPage)d;
+            Thickness value = (Thickness)e.NewValue;
+            page.PaddingHeaderBody = new(value.Left, value.Top, value.Right, 0);
+            page.PaddingFooter = new(value.Left, 0, value.Right, value.Bottom);
+        }
+
+        static ReportPage() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ReportPage), new FrameworkPropertyMetadata(typeof(ReportPage)));
+        public ReportPage()
+        {
+            AdjustPageSize();
+            Background = Brushes.White;
+            LayoutUpdated += OnLayoutUpdated;
+        }
+
+        private void OnLayoutUpdated(object? sender, EventArgs e)
+        {
+            HeaderHeight = PART_Page?.RowDefinitions[0]?.ActualHeight;
+            MainHeight = PART_Page?.RowDefinitions[1]?.ActualHeight;
+            FooterHeight = PART_Page?.RowDefinitions[2]?.ActualHeight;
+            Total = HeaderHeight + MainHeight + FooterHeight;
+            ContentOverflown = Total > PageHeight;
+        }
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            PART_Page = (Grid?)GetTemplateChild(nameof(PART_Page));
+        }
+
         /// <summary>
         /// Ensure the Page' sizes are set to A4 based on screen's DIP
         /// </summary>
@@ -226,6 +231,11 @@ namespace FrontEnd.Reports
             PageContent pageContent = new();
             ((IAddChild)pageContent).AddChild(fixedPage);
             return pageContent;
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

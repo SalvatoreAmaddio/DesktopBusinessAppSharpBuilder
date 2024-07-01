@@ -2,8 +2,8 @@
 using Backend.Utils;
 using FrontEnd.Controller;
 using FrontEnd.Dialogs;
+using FrontEnd.Forms;
 using FrontEnd.Properties;
-using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -15,13 +15,25 @@ using System.Windows.Input;
 namespace FrontEnd.Reports
 {
     /// <summary>
-    /// This class instantiate a control that allow the view and printing of Reports.
+    /// This class instantiates a control that allows the viewing and printing of reports.
     /// <para/>
-    /// see also: <seealso cref="ReportPage"/>, <seealso cref="ListPage"/>
+    /// See also: <seealso cref="ReportPage"/>, <seealso cref="ListPage"/>
     /// </summary>
-    public class ReportViewer : Control, IDisposable
+    public class ReportViewer : Control, IAbstractControl
     {
-        private Window? _parentWindow;
+        private Button? PART_SendButton;
+        private Button? PART_ChooseDir;
+
+        /// <summary>
+        /// Gets the file path of the report to be saved.
+        /// </summary>
+        private string FilePath => DirName + $"\\{FileName}.pdf";
+        public Window? ParentWindow { get; private set; }
+
+        /// <summary>
+        /// Sets the <see cref="EmailSender"/> that will be used by the <see cref="OnSendEmailClicked(object?, EventArgs)"/>.
+        /// </summary>
+        public EmailSender? EmailSender { private get; set; }
 
         #region OpenFile
         /// <summary>
@@ -33,24 +45,33 @@ namespace FrontEnd.Reports
             set => SetValue(OpenFileProperty, value);
         }
 
+        /// <summary>
+        /// Identifies the OpenFile dependency property.
+        /// </summary>
         public static readonly DependencyProperty OpenFileProperty =
-            DependencyProperty.Register(nameof(OpenFile), typeof(bool), typeof(ReportViewer), new PropertyMetadata(false));
+        DependencyProperty.Register(nameof(OpenFile), typeof(bool), typeof(ReportViewer), new PropertyMetadata(false));
         #endregion
 
         #region Message
-        public static readonly DependencyProperty MessageProperty =
-         DependencyProperty.Register(nameof(Message), typeof(string), typeof(ReportViewer), new PropertyMetadata(string.Empty));
-
+        /// <summary>
+        /// Gets or sets the message to be displayed.
+        /// </summary>
         public string Message
         {
             get => (string)GetValue(MessageProperty);
             set => SetValue(MessageProperty, value);
         }
+
+        /// <summary>
+        /// Identifies the Message dependency property.
+        /// </summary>
+        public static readonly DependencyProperty MessageProperty =
+        DependencyProperty.Register(nameof(Message), typeof(string), typeof(ReportViewer), new PropertyMetadata(string.Empty));
         #endregion
 
         #region IsLoading
         /// <summary>
-        /// Gets and Sets the <see cref="ProgressBar.IsIndeterminate"/> property.
+        /// Gets or sets a value indicating whether a progress bar should be displayed.
         /// </summary>
         public bool IsLoading
         {
@@ -58,96 +79,106 @@ namespace FrontEnd.Reports
             set => SetValue(IsLoadingProperty, value);
         }
 
+        /// <summary>
+        /// Identifies the IsLoading dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsLoadingProperty =
-            DependencyProperty.Register(nameof(IsLoading), typeof(bool), typeof(ReportViewer), new PropertyMetadata(false));
+        DependencyProperty.Register(nameof(IsLoading), typeof(bool), typeof(ReportViewer), new PropertyMetadata(false));
         #endregion
 
         #region FileName
-        public static readonly DependencyProperty FileNameProperty =
-         DependencyProperty.Register(nameof(FileName), typeof(string), typeof(ReportViewer), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         /// <summary>
-        /// Gets and sets the name of the file to be printed.
+        /// Gets or sets the name of the file to be printed.
         /// </summary>
         public string FileName
         {
             get => (string)GetValue(FileNameProperty);
             set => SetValue(FileNameProperty, value);
         }
+
+        /// <summary>
+        /// Identifies the FileName dependency property.
+        /// </summary>
+        public static readonly DependencyProperty FileNameProperty =
+        DependencyProperty.Register(nameof(FileName), typeof(string), typeof(ReportViewer), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         #endregion
 
         #region DirName
-        public static readonly DependencyProperty DirNameProperty =
-         DependencyProperty.Register(nameof(DirName), typeof(string), typeof(ReportViewer), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnDirNamePropertyChanged));
-
-        private static void OnDirNamePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            string? str = (string?)e.NewValue;
-            ReportViewer reportViewer = (ReportViewer)d;
-            reportViewer.DirName = (string.IsNullOrEmpty(str)) ? Sys.Desktop : str;
-            FrontEndSettings.Default.ReportDefaultDirectory = reportViewer.DirName;
-            FrontEndSettings.Default.Save();
-        }
-
         /// <summary>
-        /// Gets and sets the name of the file to be printed.
+        /// Gets or sets the directory name where the file will be saved.
         /// </summary>
         public string DirName
         {
             get => (string)GetValue(DirNameProperty);
             set => SetValue(DirNameProperty, value);
         }
+
+        /// <summary>
+        /// Identifies the DirName dependency property.
+        /// </summary>
+        public static readonly DependencyProperty DirNameProperty =
+        DependencyProperty.Register(nameof(DirName), typeof(string), typeof(ReportViewer), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnDirNamePropertyChanged));
         #endregion
 
         #region SelectedPage
-        public static readonly DependencyProperty SelectedPageProperty =
-         DependencyProperty.Register(nameof(SelectedPage), typeof(ReportPage), typeof(ReportViewer), new PropertyMetadata());
         /// <summary>
-        /// The currently selected page of the Report.
+        /// Gets or sets the currently selected page of the report.
         /// </summary>
         public ReportPage SelectedPage
         {
             get => (ReportPage)GetValue(SelectedPageProperty);
             set => SetValue(SelectedPageProperty, value);
         }
+
+        /// <summary>
+        /// Identifies the SelectedPage dependency property.
+        /// </summary>
+        public static readonly DependencyProperty SelectedPageProperty =
+        DependencyProperty.Register(nameof(SelectedPage), typeof(ReportPage), typeof(ReportViewer), new PropertyMetadata());
         #endregion
 
         #region ItemsSource
-        public static readonly DependencyProperty ItemsSourceProperty =
-         DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<ReportPage>), typeof(ReportViewer), new PropertyMetadata());
         /// <summary>
-        /// An <see cref="IEnumerable"/> containing one or more <see cref="ReportPage"/>(s).
+        /// Gets or sets an <see cref="IEnumerable{ReportPage}"/> containing one or more <see cref="ReportPage"/> instances.
         /// </summary>
         public IEnumerable<ReportPage> ItemsSource
         {
             get => (IEnumerable<ReportPage>)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
+
+        /// <summary>
+        /// Identifies the ItemsSource dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ItemsSourceProperty =
+        DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<ReportPage>), typeof(ReportViewer), new PropertyMetadata());
         #endregion
 
         #region PrintCommand
-        public static readonly DependencyProperty PrintCommandProperty =
-         DependencyProperty.Register(nameof(PrintCommand), typeof(ICommand), typeof(ReportViewer), new PropertyMetadata());
         /// <summary>
-        /// Command that calls the <see cref="PrintFixDocs"/> methodd to print the Document.
+        /// Gets or sets the command that calls the <see cref="PrintFixDocs"/> method to print the document.
         /// </summary>
         public ICommand PrintCommand
         {
             get => (ICommand)GetValue(PrintCommandProperty);
             set => SetValue(PrintCommandProperty, value);
         }
-        #endregion
-        static ReportViewer() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ReportViewer), new FrameworkPropertyMetadata(typeof(ReportViewer)));
-
-        Button? PART_SendButton;
-        Button? PART_ChooseDir;
-
-        private string FilePath => DirName + $"\\{FileName}.pdf";
 
         /// <summary>
-        /// Sets the <see cref="EmailSender"/> that will be used by the <see cref="OnSendEmailClicked(object?, EventArgs)"/>
+        /// Identifies the PrintCommand dependency property.
         /// </summary>
-        public EmailSender? EmailSender { private get; set;}
+        public static readonly DependencyProperty PrintCommandProperty =
+        DependencyProperty.Register(nameof(PrintCommand), typeof(ICommand), typeof(ReportViewer), new PropertyMetadata());
+        #endregion
 
+        /// <summary>
+        /// Initializes static members of the <see cref="ReportViewer"/> class.
+        /// </summary>
+        static ReportViewer() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ReportViewer), new FrameworkPropertyMetadata(typeof(ReportViewer)));
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReportViewer"/> class.
+        /// </summary>
         public ReportViewer()
         {
             PrintCommand = new CMDAsync(PrintFixDocs);
@@ -158,6 +189,37 @@ namespace FrontEnd.Reports
             DirName = FrontEndSettings.Default.ReportDefaultDirectory;
         }
 
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            PART_SendButton = (Button?)GetTemplateChild(nameof(PART_SendButton));
+            if (PART_SendButton != null)
+                PART_SendButton.Click += OnSendEmailClicked;
+
+            PART_ChooseDir = (Button?)GetTemplateChild(nameof(PART_ChooseDir));
+            if (PART_ChooseDir != null)
+                PART_ChooseDir.Click += OnChooseDirClicked;
+
+            ParentWindow = Window.GetWindow(this);
+            if (ParentWindow != null)
+                ParentWindow.Closed += OnClosed;
+        }
+
+        /// <summary>
+        /// Handles changes to the DirName property.
+        /// </summary>
+        private static void OnDirNamePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            string? str = (string?)e.NewValue;
+            ReportViewer reportViewer = (ReportViewer)d;
+            reportViewer.DirName = (string.IsNullOrEmpty(str)) ? Sys.Desktop : str;
+            FrontEndSettings.Default.ReportDefaultDirectory = reportViewer.DirName;
+            FrontEndSettings.Default.Save();
+        }
+
+        /// <summary>
+        /// Handles the send email button click event.
+        /// </summary>
         protected virtual async void OnSendEmailClicked(object? sender, EventArgs e)
         {
             if (EmailSender == null) 
@@ -227,24 +289,9 @@ namespace FrontEnd.Reports
             Message = "";
         }
 
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-            PART_SendButton = (Button?)GetTemplateChild(nameof(PART_SendButton));
-            if (PART_SendButton!=null)
-                PART_SendButton.Click += OnSendEmailClicked;
-
-            PART_ChooseDir = (Button?)GetTemplateChild(nameof(PART_ChooseDir));
-            if (PART_ChooseDir!=null)
-                PART_ChooseDir.Click += OnChooseDirClicked;
-
-            _parentWindow = Window.GetWindow(this);
-            if (_parentWindow!=null)
-                _parentWindow.Closed += OnParentWindowClosed;
-        }
-
-        private void OnParentWindowClosed(object? sender, EventArgs e) => Dispose();
-
+        /// <summary>
+        /// Handles the choose directory button click event.
+        /// </summary>
         private void OnChooseDirClicked(object sender, RoutedEventArgs e)
         {
             FolderDialog folderDialog = new("Select the folder where to save this file.");
@@ -252,6 +299,9 @@ namespace FrontEnd.Reports
             DirName = (result) ? folderDialog.SelectedPath : Sys.Desktop;
         }
 
+        /// <summary>
+        /// Copies the source of the cloned report pages.
+        /// </summary>
         private IEnumerable<PageContent> CopySource(IEnumerable<ReportPage> clonedPages)
         {
             foreach (ReportPage page in clonedPages)
@@ -259,10 +309,10 @@ namespace FrontEnd.Reports
         }
 
         /// <summary>
-        /// This method create a new string containing the <see cref="DirName"/> and <see cref="FileName"/> properties.
+        /// Creates a new string containing the <see cref="_dirName"/> and <see cref="FileName"/> properties.
         /// This is for threading purposes to avoid threading errors.
         /// </summary>
-        /// <returns>A string</returns>
+        /// <returns>A string representing the file path.</returns>
         private string CopyFilePath() 
         {
             StringBuilder sb = new();
@@ -310,11 +360,16 @@ namespace FrontEnd.Reports
 
             return await Application.Current.Dispatcher.InvokeAsync(async() =>
             {
-               return await PrintTask(copied);
+                return await PrintTask(copied);
             }).Result;
         }
 
-        protected virtual async Task<bool> PrintTask(IEnumerable<PageContent> copied) 
+        /// <summary>
+        /// Executes the print task.
+        /// </summary>
+        /// <param name="copied">The pages to be printed.</param>
+        /// <returns>True if printing was successful; otherwise, false.</returns>
+        protected virtual async Task<bool> PrintTask(IEnumerable<PageContent> copied)
         {
             ReportPage first_page = ItemsSource.First();
             double width = first_page.PageWidth;
@@ -361,7 +416,7 @@ namespace FrontEnd.Reports
         }
 
         /// <summary>
-        /// Open the file after it has been printed.
+        /// Opens the file after it has been printed.
         /// </summary>
         /// <param name="filePath">The file path.</param>
         private static void Open(string filePath)
@@ -376,7 +431,17 @@ namespace FrontEnd.Reports
             }
         }
 
-        public void Dispose()
+        #region IAbstractControl
+        public void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        public void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        public void OnClosed(object? sender, EventArgs e) => Dispose();
+        public void DisposeEvents()
         {
             if (PART_SendButton != null)
                 PART_SendButton.Click -= OnSendEmailClicked;
@@ -384,9 +449,16 @@ namespace FrontEnd.Reports
             if (PART_ChooseDir != null)
                 PART_ChooseDir.Click -= OnChooseDirClicked;
 
-            if (_parentWindow != null)
-                _parentWindow.Closed -= OnParentWindowClosed;
+            if (ParentWindow != null)
+                ParentWindow.Closed -= OnClosed;
+        }
+        #endregion
 
+        public void Dispose()
+        {
+            DisposeEvents();
+            foreach(ReportPage page in ItemsSource) 
+                page.Dispose();  
             GC.SuppressFinalize(this);
         }
     }

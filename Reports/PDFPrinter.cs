@@ -7,7 +7,7 @@ using System.Windows.Xps;
 namespace FrontEnd.Reports
 {
     /// <summary>
-    /// This class wraps a <see cref="PrintQueue"/> object which will be used to handle a PDF Printer installed in the local computer.
+    /// This class wraps a <see cref="PrintQueue"/> object which will be used to handle the PDF Printer installed in the local computer.
     /// </summary>
     public class PDFPrinter 
     {
