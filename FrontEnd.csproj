@@ -27,13 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="images\bin.png" />
-    <None Remove="images\brokenImage.png" />
-    <None Remove="images\task.png" />
-    <None Remove="images\uploadImage.jpg" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="logo.ico" />
   </ItemGroup>
 
