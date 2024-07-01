@@ -144,16 +144,13 @@ Let's say your Database has a table called Employee structure as follow:
 
     namespace MyApplication.Model
     {
-         public class Employee : AbstractModel
+         public class Employee : AbstractModel<Employee>
          {
             public Employee() { }
             public Employee(DbDataReader reader)
             {
                 ....
             }
-
-            public override ISQLModel Read(DbDataReader reader) => new Employee(reader);
-
          }
     }
 ```
@@ -271,7 +268,6 @@ namespace MyApplication.Controller
         public RecordSource Genders { get; private set; } = new(DatabaseManager.Find<Gender>()!); //Fetch the data to be displayed in a ComboBox control.
         public RecordSource Departments { get; private set; } = new(DatabaseManager.Find<Department>()!); //Fetch the data to be displayed in a ComboBox control.
         public RecordSource Titles { get; private set; } = new(DatabaseManager.Find<JobTitle>()!); //Fetch the data to be displayed in a ComboBox control.
-        public override int DatabaseIndex => 0; // This tells the controller to use the first Database that was defined in the DatabaseManager class.
     }
 }
 ```
@@ -319,8 +315,7 @@ In your App.xaml file, change the StartupUri property as follow:
 public MainWindow() 
 {
     InitializeComponent();
-    DataContext = new EmployeeController(); //the Controller.
-    ((EmployeeController)DataContext).Window = this; //tell the Controller which Window it is supposed to manage.
+    this.SetController(new EmployeeController()); //use this extention method to link the UI with the Controller.
 }
 ```
 
