@@ -160,7 +160,11 @@ namespace FrontEnd.Reports
 
         protected virtual async void OnSendEmailClicked(object? sender, EventArgs e)
         {
-            if (EmailSender == null) throw new Exception($"{EmailSender} is null");
+            if (EmailSender == null) 
+            {
+                Failure.Allert("This command has not been implemented");
+                return;
+            }
 
             if (!EmailSender.CredentialCheck()) 
             {

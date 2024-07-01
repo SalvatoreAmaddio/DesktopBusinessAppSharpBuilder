@@ -40,7 +40,12 @@ namespace FrontEnd.Converters
         /// <param name="value">The value to convert.</param>
         /// <returns>The fetched record of type <typeparamref name="D"/>.</returns>
         public D? Convert(object value) => (D?)Convert(value, null!, null!, null!);
-        
+
+        public Task<D?> ConvertAsync(object value) 
+        {
+            return Task.FromResult((D?)Convert(value, null!, null!, null!));
+        }
+
         public abstract object? Convert(object value, Type targetType, object parameter, CultureInfo culture);
         public virtual object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => Record;
 
