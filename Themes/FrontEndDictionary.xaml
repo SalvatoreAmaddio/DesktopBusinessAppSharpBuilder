@@ -4,6 +4,7 @@
                     >
     <converter:ReadOnlyConverter x:Key="ReadOnlyConverter"/>
     <converter:StringToTimeConverter x:Key="TimeBox"/>
+    <converter:PercentageConverter x:Key="Percentage"/>
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Text.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/TextBoxDate.xaml"/>
