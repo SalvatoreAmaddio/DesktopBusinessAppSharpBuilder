@@ -250,7 +250,7 @@ At this point, we are ready to tell the Application which Models it will have to
         DatabaseManager.Add(new SQLiteDatabase(new JobTitle())); //Add the database object responsible for dealing with this table.
         DatabaseManager.Add(new SQLiteDatabase(new User())); //Add the database object responsible for dealing with this table.
         ...
-        this.DisposeOnExit(); // ensure Database's are disposed on Application' shutdown.
+        this.DisposeOnExit(); // ensure Databases are disposed on Application' shutdown.
     }
 ```
 
