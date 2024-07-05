@@ -75,7 +75,7 @@ namespace FrontEnd.FilterSource
         /// </summary>
         /// <typeparam name="T">The type of clause to construct.</typeparam>
         /// <param name="abstractClause">The abstract clause used to build SQL conditions.</param>
-        public virtual void Conditions<T>(AbstractClause abstractClause) where T : AbstractConditionalClause, IQueryClause, new()
+        public void Conditions<T>(AbstractClause abstractClause, string alias = "") where T : AbstractConditionalClause, IQueryClause, new()
         {
             int selectedCount = SelectedOptions().Count();
             if (selectedCount == 0) return;
@@ -99,7 +99,7 @@ namespace FrontEnd.FilterSource
                 if (item.IsSelected)
                 {
                     i++;
-                    ForEachItem(abstractClause, conditionalClause, item, i);
+                    ForEachItem(abstractClause, conditionalClause, item, i, alias);
                 }
             }
 
@@ -110,16 +110,19 @@ namespace FrontEnd.FilterSource
             }
         }
 
-        protected virtual void ForEachItem(AbstractClause abstractClause, AbstractConditionalClause? conditionalClause, IFilterOption item, int i)
+        protected virtual void ForEachItem(AbstractClause abstractClause, AbstractConditionalClause? conditionalClause, IFilterOption item, int i, string alias = "")
         {
             string? tableName = item?.Record.GetTableName();
             string? fieldName = null;
             fieldName = item?.Record?.GetPrimaryKey()?.Name;
             abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPrimaryKey()?.GetValue());
             if (conditionalClause is HavingClause) 
-                conditionalClause?.EqualsTo($"{fieldName}", $"@{fieldName}{i}").OR();
-            else 
-                conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+                conditionalClause?.EqualsTo($"{(string.IsNullOrEmpty(alias) ? fieldName : alias)}", $"@{fieldName}{i}").OR();
+            else
+                if (string.IsNullOrEmpty(alias))
+                    conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+                else
+                    conditionalClause?.EqualsTo($"{alias}", $"@{fieldName}{i}").OR();
         }
 
         public void AddUIControlReference(IUIControl control)
@@ -210,16 +213,19 @@ namespace FrontEnd.FilterSource
         }
         #endregion
 
-        protected override void ForEachItem(AbstractClause abstractClause, AbstractConditionalClause? conditionalClause, IFilterOption item, int i)
+        protected override void ForEachItem(AbstractClause abstractClause, AbstractConditionalClause? conditionalClause, IFilterOption item, int i, string alias = "")
         {
             string? tableName = item?.Record.GetTableName();
             string? fieldName = null;
             fieldName = _displayProperty;
             abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPropertyValue(_displayProperty));
             if (conditionalClause is HavingClause)
-                conditionalClause?.EqualsTo($"{fieldName}", $"@{fieldName}{i}").OR();
+                conditionalClause?.EqualsTo($"{(string.IsNullOrEmpty(alias) ? fieldName : alias)}", $"@{fieldName}{i}").OR();
             else
-                conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+                if (string.IsNullOrEmpty(alias))
+                    conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+                else
+                    conditionalClause?.EqualsTo($"{alias}", $"@{fieldName}{i}").OR();
         }
 
         /// <summary>

@@ -13,12 +13,14 @@
                             <RowDefinition Height="20"/>
                             <RowDefinition Height="25"/>
                         </Grid.RowDefinitions>
-                        <ContentPresenter Content="{TemplateBinding Content}"
+                        <Border Padding="{TemplateBinding Padding}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Margin="{TemplateBinding Margin}" CornerRadius="{TemplateBinding CornerRadius}">
+                            <ContentPresenter Content="{TemplateBinding Content}"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
                         <ProgressBar Grid.Row="1" IsIndeterminate="True"/>
-                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Content="Developed by Salvatore Amaddio R."/>
+                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Content="{TemplateBinding FooterString}"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

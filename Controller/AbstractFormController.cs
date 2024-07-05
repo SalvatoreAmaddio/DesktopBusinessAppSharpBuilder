@@ -287,7 +287,7 @@ namespace FrontEnd.Controller
         public override bool AlterRecord(string? sql = null, List<QueryParameter>? parameters = null)
         {
             if (CurrentRecord == null) throw new NoModelException();
-            if (!CurrentRecord.IsDirty) return false; // No changes to update.
+            if (!CurrentRecord.IsDirty) return true; // No changes to update.
             if (!CurrentRecord.AllowUpdate()) return false; // Record did not meet update criteria.
             CRUD crud = (!CurrentRecord.IsNewRecord()) ? CRUD.UPDATE : CRUD.INSERT;
             Db.Model = CurrentRecord;

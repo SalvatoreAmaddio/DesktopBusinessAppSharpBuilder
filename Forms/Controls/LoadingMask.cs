@@ -33,6 +33,20 @@ namespace FrontEnd.Forms
     {
         public Window? ParentWindow { get; private set; }
 
+        public static readonly DependencyProperty FooterStringProperty = DependencyProperty.Register(nameof(FooterString), typeof(string), typeof(LoadingMask), new PropertyMetadata(string.Empty));
+        public string FooterString
+        {
+            get => (string)GetValue(FooterStringProperty);
+            set => SetValue(FooterStringProperty, value);
+        }
+
+        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(LoadingMask), new PropertyMetadata());
+        public CornerRadius CornerRadius
+        {
+            get => (CornerRadius)GetValue(CornerRadiusProperty); 
+            set => SetValue(CornerRadiusProperty, value);
+        }
+
         /// <summary>
         /// Gets or sets the name of the Window to open once the loading process is complete.
         /// <para><c>IMPORTANT:</c> The specified Window must be in a folder named 'View'.</para>
