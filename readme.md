@@ -116,6 +116,8 @@ You can download a executable of the Demo [here](https://drive.google.com/file/d
 | Images        | Folder for images to be used (optional)                           |
 | App.xaml      | The file which is the entry point of every WPF Application        |
 
+## If you are using an SQLite Database:
+Place your database in the Data folder. On the file properties, set the Build Action to 'Content' and Copy to Output Directory to 'Copy if newer'.
 ## Define your first Model:
 Assuming you have a database in the Data folder named "mydb.db", you have to create a Model class for each Table in your database.
 
@@ -249,6 +251,8 @@ At this point, we are ready to tell the Application which Models it will have to
         DatabaseManager.Add(new SQLiteDatabase(new Department())); //Add the database object responsible for dealing with this table.
         DatabaseManager.Add(new SQLiteDatabase(new JobTitle())); //Add the database object responsible for dealing with this table.
         DatabaseManager.Add(new SQLiteDatabase(new User())); //Add the database object responsible for dealing with this table.
+        ...
+        this.DisposeOnExit(); // ensure Databases are disposed on Application' shutdown.
     }
 ```
 
