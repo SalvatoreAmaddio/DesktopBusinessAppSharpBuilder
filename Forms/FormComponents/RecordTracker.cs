@@ -95,7 +95,7 @@ namespace FrontEnd.Forms.FormComponents
         /// Dependency property for the <see cref="Message"/>.
         /// </summary>
         public static readonly DependencyProperty MessageProperty =
-         DependencyProperty.Register(nameof(Message), typeof(string), typeof(RecordTracker), new PropertyMetadata(string.Empty));
+        DependencyProperty.Register(nameof(Message), typeof(string), typeof(RecordTracker), new PropertyMetadata(string.Empty));
         #endregion
 
         /// <summary>
