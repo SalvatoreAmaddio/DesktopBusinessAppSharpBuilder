@@ -12,7 +12,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type formComp:RecordTracker}">
-                    <Grid x:Name="bo">
+                    <Grid>
                         <Grid.Background>
                             <SolidColorBrush Color="{x:Static SystemColors.MenuColor}" />
                         </Grid.Background>
@@ -34,18 +34,18 @@
                             <Label Content="{TemplateBinding Records}" VerticalAlignment="Center" VerticalContentAlignment="Center" Background="White"/>
                             <Button Content="{StaticResource next}" ToolTip="Next Record" CommandParameter="3"/>
                             <Button Content="{StaticResource last}" ToolTip="Last Record" CommandParameter="4"/>
-                            <Separator Width="20" Background="Transparent"/>
+                            <Separator Width="10" Background="Transparent"/>
                             <Button FontSize="10" ToolTip="New Record" Visibility="{TemplateBinding GoNewVisibility}" CommandParameter="5" Background="Transparent" BorderThickness="0">
                                 <Image Source="{StaticResource plus}"/>
                             </Button>
+                            <Separator Width="20" Background="Transparent"/>
+                            <Label Content="{TemplateBinding Message}" VerticalAlignment="Center" Foreground="Green" FontWeight="Bold" Background="Transparent"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Visibility="{TemplateBinding NoInternetVisibility}" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,0,5,0">
                             <Image Source="{StaticResource nowifi}" Width="20" Margin="0,0,10,0"/>
                             <Label Content="No Internet Connection!" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Red" FontWeight="Bold" Background="Transparent"/>
                         </StackPanel>
-
-                        <Label Visibility="Collapsed" Grid.Column="1" Content="Record Updated" Margin="0,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Green" FontWeight="Bold" Background="Transparent"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
