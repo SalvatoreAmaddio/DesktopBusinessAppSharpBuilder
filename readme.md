@@ -246,11 +246,11 @@ At this point, we are ready to tell the Application which Models it will have to
     public App() 
     {
         Sys.LoadAllEmbeddedDll(); //load some custom assemblies that could be used later on.
-        DatabaseManager.Add(new SQLiteDatabase(new Employee())); //Add the database object responsible for dealing with this table.
-        DatabaseManager.Add(new SQLiteDatabase(new Gender())); //Add the database object responsible for dealing with this table.
-        DatabaseManager.Add(new SQLiteDatabase(new Department())); //Add the database object responsible for dealing with this table.
-        DatabaseManager.Add(new SQLiteDatabase(new JobTitle())); //Add the database object responsible for dealing with this table.
-        DatabaseManager.Add(new SQLiteDatabase(new User())); //Add the database object responsible for dealing with this table.
+        DatabaseManager.Add(new SQLiteDatabase<Employee>()); //Add the database object responsible for dealing with this table.
+        DatabaseManager.Add(new SQLiteDatabase<Gender>()); //Add the database object responsible for dealing with this table.
+        DatabaseManager.Add(new SQLiteDatabase<Department>()); //Add the database object responsible for dealing with this table.
+        DatabaseManager.Add(new SQLiteDatabase<JobTitle>()); //Add the database object responsible for dealing with this table.
+        DatabaseManager.Add(new SQLiteDatabase<User>()); //Add the database object responsible for dealing with this table.
         ...
         this.DisposeOnExit(); // ensure Databases are disposed on Application' shutdown.
     }
