@@ -247,7 +247,7 @@ At this point, we are ready to tell the Application which Models it will have to
     {
         Sys.LoadAllEmbeddedDll(); //load some custom assemblies that could be used later on.
         DatabaseManager.DatabaseName = "mydb.db";
-        DatabaseManager.LoadIn();
+        DatabaseManager.LoadInApplicationData();
         DatabaseManager.Add(new SQLiteDatabase<Employee>()); //Add the database object responsible for dealing with this table.
         DatabaseManager.Add(new SQLiteDatabase<Gender>()); //Add the database object responsible for dealing with this table.
         DatabaseManager.Add(new SQLiteDatabase<Department>()); //Add the database object responsible for dealing with this table.
