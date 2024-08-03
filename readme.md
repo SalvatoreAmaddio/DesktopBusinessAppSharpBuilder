@@ -7,7 +7,6 @@
   <img src="https://raw.githubusercontent.com/SalvatoreAmaddio/DesktopBusinessAppSharpBuilder/master/Win32.png" width="300" height="100" />
 </div>
 
-
 ## Description
 DesktopBusinessAppSharpBuilder is a C# framework built on .NET, utilizing Windows Presentation Foundation (WPF). 
 It is designed to expedite the creation of business applications by offering a comprehensive set of tools and classes 
@@ -73,6 +72,12 @@ This framework was build by using the following NuGet Packages:
 - **MimeKit** (Version 4.6.0); Author: Jeffrey Stedfast.
 - **MySqlConnector** (Version 2.2.7); Author: Bradley Grainger.
 - **System.Management** (Version 8.0.0); Author: Microsoft.
+
+## Design Patterns Used:
+- Singleton
+- Builder
+- Observer
+- Publisher-Subscriber
 
 ## Architecture:
 Picture 1 below shows the MCV pattern handled by the Framework.
