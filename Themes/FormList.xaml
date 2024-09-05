@@ -23,10 +23,12 @@
                             <ContentPresenter Grid.Row="0" Content="{TemplateBinding Menu}"/>
                             <ContentPresenter Grid.Row="1" Content="{TemplateBinding Header}"/>
 
-                            <ContentPresenter x:Name="Lista" Grid.Row="2" Content="{TemplateBinding Content}"
+                            <Border Padding="{TemplateBinding Padding}" Grid.Row="2" Background="{TemplateBinding Background}">
+                                <ContentPresenter x:Name="Lista" Content="{TemplateBinding Content}"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                           HorizontalAlignment="Stretch"
                                           VerticalAlignment="Stretch"/>
+                            </Border>
 
                             <ProgressBar Grid.Row="3" IsIndeterminate="{TemplateBinding IsLoading}"/>
                             <formComp:RecordTracker Grid.Row="4" DataContext="{TemplateBinding DataContext}"/>

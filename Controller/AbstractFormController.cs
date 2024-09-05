@@ -374,7 +374,7 @@ namespace FrontEnd.Controller
                 return; // If the record is not dirty, close the window.
             }
 
-            e.Cancel = dirty;
+            e.Cancel = (CheckIsDirtyOnClose) ? dirty : false;
 
             if (AllowAutoSave)
             {
@@ -382,17 +382,22 @@ namespace FrontEnd.Controller
                 return;
             }
 
+
             // Check record integrity before closing.
-            DialogResult result = UnsavedDialog.Ask("Do you want to save your changes before closing?");
-            if (result == DialogResult.No)
+
+            if (CheckIsDirtyOnClose)
             {
-                CurrentRecord?.Undo();
-                e.Cancel = false; // Allow closing the window.
-            }
-            else
-            {
-                bool updateResult = PerformUpdate();
-                e.Cancel = !updateResult; // Prevent closing if the update fails.
+                DialogResult result = UnsavedDialog.Ask("Do you want to save your changes before closing?");
+                if (result == DialogResult.No)
+                {
+                    CurrentRecord?.Undo();
+                    e.Cancel = false; // Allow closing the window.
+                }
+                else
+                {
+                    bool updateResult = PerformUpdate();
+                    e.Cancel = !updateResult; // Prevent closing if the update fails.
+                }
             }
 
             if (!e.Cancel)

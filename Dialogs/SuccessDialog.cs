@@ -21,7 +21,7 @@ namespace FrontEnd.Dialogs
         protected SuccessDialog(string? text = null, string? title = null) : base(text, title)
         { }
 
-        public static DialogResult Display(string? text = null, string? title = "Done!") => _ask(new SuccessDialog(text, title));
+        public static DialogResult Display(string? text = "Record successfully saved", string? title = "Done!") => _ask(new SuccessDialog(text, title));
 
     }
 
