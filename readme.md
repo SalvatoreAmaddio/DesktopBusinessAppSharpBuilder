@@ -1,12 +1,11 @@
 ﻿# DesktopBusinessAppSharpBuilder
 <div style='display:flex'>
-  <img src="https://salvatoreamaddio.co.uk/img/csharp.png" width="100" height="100"/>
-  <img src="https://salvatoreamaddio.co.uk/img/mysql.svg" width="130" height="100" />
-  <img src="https://salvatoreamaddio.co.uk/img/sqlite.png" width="130" height="100" />
-  <img src="https://salvatoreamaddio.co.uk/img/wpf.png" width="150" height="100" />
+  <img src="https://salvatoreamaddio.co.uk/assets/images/programmingLanguages/csharp.png" alt="csharp" width="100" height="100"/>
+  <img src="https://salvatoreamaddio.co.uk/assets/images/databases/mysql.png" width="130" height="100" alt="mysql"/>
+  <img src="https://salvatoreamaddio.co.uk/assets/images/databases/sqlite.png" width="130" height="100" alt="sqlite" />
+  <img src="https://salvatoreamaddio.co.uk/assets/images/technologies/wpf.png" width="150" height="100" />
   <img src="https://raw.githubusercontent.com/SalvatoreAmaddio/DesktopBusinessAppSharpBuilder/master/Win32.png" width="300" height="100" />
 </div>
-
 
 ## Description
 DesktopBusinessAppSharpBuilder is a C# framework built on .NET, utilizing Windows Presentation Foundation (WPF). 
@@ -74,6 +73,12 @@ This framework was build by using the following NuGet Packages:
 - **MySqlConnector** (Version 2.2.7); Author: Bradley Grainger.
 - **System.Management** (Version 8.0.0); Author: Microsoft.
 
+## Design Patterns Used:
+- Singleton
+- Builder
+- Observer
+- Publisher-Subscriber
+
 ## Architecture:
 Picture 1 below shows the MCV pattern handled by the Framework.
 
@@ -89,7 +94,7 @@ Picture 1 below shows the MCV pattern handled by the Framework.
 You can download a Demo of this Framework in action [here](https://github.com/SalvatoreAmaddio/MyApplicationDemo)
 
 ## Demo exe:
-You can download a executable of the Demo [here](https://drive.google.com/file/d/1uMlZIEcip69ItPvh13N4pCltF4sF0QTr/view?usp=drive_link)
+You can download a executable of the Demo [here](https://github.com/SalvatoreAmaddio/MyApplicationDemo/releases/download/v1/Demo.zip)
 
 ## Getting Started:
 - Download the NuGet package **DesktopBusinessAppSharpBuilder**
