@@ -31,7 +31,7 @@ namespace FrontEnd.Forms
         /// <summary>
         /// Gets the DataContext, which should be the Controller that is associated with this object.
         /// </summary>
-        private IAbstractFormListController? Controller => (IAbstractFormListController)DataContext;
+        private IAbstractFormListController? Controller => DataContext as IAbstractFormListController;
 
         private readonly ResourceDictionary styleDictionary = Helper.GetDictionary(nameof(Lista));
         public Window? ParentWindow {  get; private set; }

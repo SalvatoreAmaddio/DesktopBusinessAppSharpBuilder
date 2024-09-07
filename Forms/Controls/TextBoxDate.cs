@@ -136,16 +136,33 @@ namespace FrontEnd.Forms
 
             if (Text.Length == 10)
             {
-                if (Text[CaretIndex].Equals('/'))
+                try 
                 {
-                    CaretIndex = CaretIndex + 1;
-                    e.Handled = true; //cancel the input
+                    if (Text[CaretIndex].Equals('/'))
+                    {
+                        CaretIndex = CaretIndex + 1;
+                        e.Handled = true; //cancel the input
+                        return;
+                    }
+                }
+                catch 
+                {
+                    e.Handled = true;
                     return;
                 }
 
                 int position = CaretIndex;
                 Text = Text.ReplaceCharAt(position, e.Text[0]);
-                CaretIndex = position;
+                CaretIndex = position + 1;
+
+                try
+                {
+                    if (Text[CaretIndex].Equals('/')) 
+                    {
+                        CaretIndex = CaretIndex + 1;
+                    }
+                }
+                catch { }
                 e.Handled = true; //cancel the input
                 return;
             }

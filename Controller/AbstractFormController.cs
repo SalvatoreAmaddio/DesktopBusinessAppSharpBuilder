@@ -23,6 +23,15 @@ namespace FrontEnd.Controller
     /// <typeparam name="M">An <see cref="IAbstractModel"/> object.</typeparam>
     public abstract class AbstractFormController<M> : AbstractSQLModelController<M>, IParentController, ISubFormController, IDisposable, IAbstractFormController<M> where M : IAbstractModel, new()
     {
+        public static RoutedUICommand CloseCMD = new(
+       "Ctrl + ESC",  // Text for the command
+       "CloseCommand",    // Command name
+        typeof(Window),  // Command owner type
+        new()  // Optionally specify default key gestures
+        {
+           new KeyGesture(Key.Escape, ModifierKeys.None)  // Ctrl+A
+        });
+
         #region Backing Fields
         private bool _readOnly = false;
         private M? _currentRecord;
@@ -69,6 +78,8 @@ namespace FrontEnd.Controller
                     _win.Closed += OnWinClosed;
                     _win.Closing += OnWinClosing;
                     _win.Loaded += OnWinLoaded;
+                    _win.InputBindings.Add(new KeyBinding(UpdateCMD, Key.S, ModifierKeys.Control));
+                    _win.CommandBindings.Add(new(CloseCMD, CloseWindow));
                 }
 
                 _uiElement = value;
@@ -330,6 +341,11 @@ namespace FrontEnd.Controller
         #endregion
 
         #region Event Subscriptions
+        private void CloseWindow(object? sender, EventArgs e) 
+        {
+            if (UI is Window win)
+                win.Close();
+        }
         private void OnWinClosed(object? sender, EventArgs e)
         {
             if (UI is Window win)

@@ -24,10 +24,10 @@ namespace FrontEnd.Converters
         /// <summary>
         /// The format string used for displaying <see cref="TimeSpan"/> values.
         /// </summary>
-        private const string format = "h:mm tt";
+        private const string format = "HH:mm";
         public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is TimeSpan time) 
+            if (value is TimeSpan time)
             {
                 DateTime date = DateTime.Today.Add(time);
                 return date.ToString(format, CultureInfo.InvariantCulture);
@@ -40,7 +40,7 @@ namespace FrontEnd.Converters
             if (value is string str)
             {
                 if (str.Length == 1)
-                    str = $"{str}:00 AM";
+                    str = $"{str}:00";
                 if (DateTime.TryParseExact(str, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
                 {
                     TimeSpan timeSpan = parsedDateTime.TimeOfDay;
