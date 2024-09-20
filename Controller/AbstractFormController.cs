@@ -35,7 +35,7 @@ namespace FrontEnd.Controller
         #region Backing Fields
         private bool _readOnly = false;
         private M? _currentRecord;
-        private string _search = string.Empty;
+        public string _search = string.Empty;
         private bool _isLoading = false;
         protected ISQLModel? _currentModel;
         private string _records = string.Empty;
