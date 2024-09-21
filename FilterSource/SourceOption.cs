@@ -115,14 +115,22 @@ namespace FrontEnd.FilterSource
             string? tableName = item?.Record.GetTableName();
             string? fieldName = null;
             fieldName = item?.Record?.GetPrimaryKey()?.Name;
-            abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPrimaryKey()?.GetValue());
-            if (conditionalClause is HavingClause) 
+            
+            if (conditionalClause is HavingClause)
                 conditionalClause?.EqualsTo($"{(string.IsNullOrEmpty(alias) ? fieldName : alias)}", $"@{fieldName}{i}").OR();
             else
+            {
                 if (string.IsNullOrEmpty(alias))
+                {
+                    abstractClause.AddParameter($"{fieldName}{i}", item?.Record?.GetPrimaryKey()?.GetValue());
                     conditionalClause?.EqualsTo($"{tableName}.{fieldName}", $"@{fieldName}{i}").OR();
+                }
                 else
-                    conditionalClause?.EqualsTo($"{alias}", $"@{fieldName}{i}").OR();
+                {
+                    abstractClause.AddParameter($"{alias}{i}", item?.Record?.GetPrimaryKey()?.GetValue());
+                    conditionalClause?.EqualsTo($"{alias}", $"@{alias}{i}").OR();
+                }
+            }
         }
 
         public void AddUIControlReference(IUIControl control)
