@@ -31,5 +31,10 @@ namespace FrontEnd.Forms
         /// Overrides the default style key property metadata for the <see cref="Form"/> class.
         /// </summary>
         static Form() => DefaultStyleKeyProperty.OverrideMetadata(typeof(Form), new FrameworkPropertyMetadata(typeof(Form)));
+
+        public Form() 
+        {
+            HeaderRow = new(0);
+        }
     }
 }

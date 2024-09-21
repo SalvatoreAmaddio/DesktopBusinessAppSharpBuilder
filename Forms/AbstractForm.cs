@@ -93,7 +93,7 @@ namespace FrontEnd.Forms
         /// Identifies the <see cref="HeaderRow"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty HeaderRowProperty =
-            DependencyProperty.Register(nameof(HeaderRow), typeof(GridLength), typeof(AbstractForm), new PropertyMetadata(new GridLength(0), null));
+            DependencyProperty.Register(nameof(HeaderRow), typeof(GridLength), typeof(AbstractForm), new PropertyMetadata(new GridLength(40), null));
         #endregion
 
         #region RecordTrackerRow
