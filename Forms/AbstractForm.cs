@@ -133,7 +133,7 @@ namespace FrontEnd.Forms
                     control.MenuRow = new(SetRow(e.NewValue, 20));
                     break;
                 case true when e.Property.Equals(HeaderProperty):
-                    control.HeaderRow = new(SetRow(e.NewValue, 40));
+                    control.HeaderRow = new(SetRow(e.NewValue, control.HeaderRow.Value));
                     break;
             }
         }
