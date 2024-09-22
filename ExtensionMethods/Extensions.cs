@@ -17,10 +17,13 @@ namespace FrontEnd.ExtensionMethods
         /// </summary>
         /// <param name="win">The current window to close.</param>
         /// <param name="newWin">The new window to open.</param>
-        public static void GoToWindow(this Window win, Window? newWin)
+        public static void GoToWindow(this Window win, Window? newWin, bool showDialog = false)
         {
             win.Hide();
-            newWin?.Show();
+            if (showDialog)
+                newWin?.ShowDialog();
+            else newWin?.Show();
+            
             win.Close();
         }
 
