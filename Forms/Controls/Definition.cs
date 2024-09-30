@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Globalization;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace FrontEnd.Forms
@@ -8,56 +9,22 @@ namespace FrontEnd.Forms
     /// </summary>
     public static class Definition
     {
-        /// <summary>
-        /// Identifies the RowDefinitions attached dependency property.
-        /// This property allows setting row definitions on a <see cref="Grid"/> using a comma-separated string.
-        /// </summary>
         public static readonly DependencyProperty RowDefinitionsProperty =
         DependencyProperty.RegisterAttached("Rows", typeof(string), typeof(Definition),
         new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, OnDefinitionsChanged));
 
-        /// <summary>
-        /// Gets the value of the RowDefinitions attached property for a given <see cref="DependencyObject"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="DependencyObject"/> to retrieve the property value from.</param>
-        /// <returns>The value of the RowDefinitions property.</returns>
         public static string GetRowDefinitions(DependencyObject obj) => (string)obj.GetValue(RowDefinitionsProperty);
 
-        /// <summary>
-        /// Sets the value of the RowDefinitions attached property for a given <see cref="DependencyObject"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="DependencyObject"/> to set the property value on.</param>
-        /// <param name="value">The new value for the RowDefinitions property.</param>
         public static void SetRowDefinitions(DependencyObject obj, string value) => obj.SetValue(RowDefinitionsProperty, value);
 
-        /// <summary>
-        /// Identifies the ColumnDefinitions attached dependency property.
-        /// This property allows setting column definitions on a <see cref="Grid"/> using a comma-separated string.
-        /// </summary>
         public static readonly DependencyProperty ColumnDefinitionsProperty =
         DependencyProperty.RegisterAttached("Columns", typeof(string), typeof(Definition),
         new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, OnDefinitionsChanged));
 
-        /// <summary>
-        /// Gets the value of the ColumnDefinitions attached property for a given <see cref="DependencyObject"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="DependencyObject"/> to retrieve the property value from.</param>
-        /// <returns>The value of the ColumnDefinitions property.</returns>
         public static string GetColumnDefinitions(DependencyObject obj) => (string)obj.GetValue(ColumnDefinitionsProperty);
 
-        /// <summary>
-        /// Sets the value of the ColumnDefinitions attached property for a given <see cref="DependencyObject"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="DependencyObject"/> to set the property value on.</param>
-        /// <param name="value">The new value for the ColumnDefinitions property.</param>
         public static void SetColumnDefinitions(DependencyObject obj, string value) => obj.SetValue(ColumnDefinitionsProperty, value);
 
-        /// <summary>
-        /// Handles changes to the RowDefinitions and ColumnDefinitions properties.
-        /// Updates the corresponding <see cref="Grid"/> with the new definitions.
-        /// </summary>
-        /// <param name="d">The <see cref="DependencyObject"/> on which the property value has changed.</param>
-        /// <param name="e">Event data for the property change.</param>
         private static void OnDefinitionsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is Grid grid)
@@ -78,12 +45,51 @@ namespace FrontEnd.Forms
 
                     foreach (string part in parts)
                     {
+                        GridLength gridLength = ParseGridLength(part.Trim());
+
                         if (isRow)
-                            grid.RowDefinitions.Add(new RowDefinition() { Height = new(Convert.ToDouble(part)) });
+                            grid.RowDefinitions.Add(new RowDefinition() { Height = gridLength });
                         else
-                            grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new(Convert.ToDouble(part)) });
+                            grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = gridLength });
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Parses a string into a <see cref="GridLength"/>. Handles *, Auto, and fixed sizes.
+        /// </summary>
+        /// <param name="value">The string value to parse.</param>
+        /// <returns>A GridLength representing the parsed value.</returns>
+        private static GridLength ParseGridLength(string value)
+        {
+            if (value.Equals("Auto", StringComparison.OrdinalIgnoreCase))
+            {
+                return GridLength.Auto;
+            }
+            else if (value.EndsWith("*"))
+            {
+                // Handle star sizing
+                string starValue = value.TrimEnd('*');
+                if (double.TryParse(starValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double result))
+                {
+                    return new GridLength(result, GridUnitType.Star);
+                }
+                else
+                {
+                    // Default to 1* if no valid number is provided before the '*'
+                    return new GridLength(1, GridUnitType.Star);
+                }
+            }
+            else if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out double absoluteValue))
+            {
+                // Handle fixed sizes
+                return new GridLength(absoluteValue, GridUnitType.Pixel);
+            }
+            else
+            {
+                // Fallback to auto if parsing fails
+                return GridLength.Auto;
             }
         }
     }
