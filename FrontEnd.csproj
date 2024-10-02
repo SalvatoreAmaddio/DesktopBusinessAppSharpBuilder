@@ -15,7 +15,7 @@
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageId>DesktopBusinessAppSharpBuilder</PackageId>
 	<PackageLicenseExpression>EPL-2.0</PackageLicenseExpression>
-	<VersionPrefix>1.0.45</VersionPrefix>
+	<VersionPrefix>1.0.46</VersionPrefix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="BackendBusinessAppSharpBuilder" Version="1.0.34" />
+	<PackageReference Include="BackendBusinessAppSharpBuilder" Version="1.0.35" />
 	<PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.1" />
 	<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
 	<PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
