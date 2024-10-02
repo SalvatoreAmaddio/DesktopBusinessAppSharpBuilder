@@ -72,6 +72,7 @@ This framework was build by using the following NuGet Packages:
 - **MimeKit** (Version 4.6.0); Author: Jeffrey Stedfast.
 - **MySqlConnector** (Version 2.2.7); Author: Bradley Grainger.
 - **System.Management** (Version 8.0.0); Author: Microsoft.
+- **Extended.Wpf.Toolkit** (Version 4.6.1); Author: Xceed.
 
 ## Design Patterns Used:
 - Singleton
