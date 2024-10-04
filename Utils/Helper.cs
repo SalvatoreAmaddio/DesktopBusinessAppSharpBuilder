@@ -214,18 +214,20 @@ namespace FrontEnd.Utils
             GetActiveWindow()?.GoToWindow(loginForm);
         }
 
-        public static string? PickPicture<M>(string fileName, IAbstractFormController<M> controller, FilePickerCatch? filePicked) where M : IAbstractModel, new()
+        public static string? PickPicture<M>(string fileName, string folderName, IAbstractFormController<M> controller, FilePickerCatch? filePicked) where M : IAbstractModel, new()
         {
             if (controller.CurrentRecord == null || filePicked == null) return null;
-            if (controller.CurrentRecord.IsDirty)
-                if (!controller.PerformUpdate()) return null;
 
             if (filePicked.FileRemoved)
                 return null;
 
+            if (controller.CurrentRecord.IsDirty)
+                if (!controller.PerformUpdate()) return null;
+
             if (string.IsNullOrEmpty(filePicked.FilePath)) return null;
 
-            string folderPath = Path.Combine(Sys.AppPath(), "personPictures");
+            string folderPath = Path.Combine(Sys.AppPath(), folderName);
+
             Sys.CreateFolder(folderPath);
 
             FileTransfer fileTransfer = new()
