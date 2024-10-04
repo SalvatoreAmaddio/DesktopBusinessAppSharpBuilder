@@ -10,6 +10,7 @@ using FrontEnd.Dialogs;
 using FrontEnd.Forms;
 using FrontEnd.Model;
 using System.IO;
+using System.Windows.Input;
 
 namespace FrontEnd.Utils
 {
@@ -213,6 +214,9 @@ namespace FrontEnd.Utils
             CurrentUser.Logout();
             GetActiveWindow()?.GoToWindow(loginForm);
         }
+
+        public static RoutedUICommand CreateRoutedUICMD(string text, string name, Key key) =>
+        new(text, name, typeof(Window), [new KeyGesture(key, ModifierKeys.Control)]);
 
         public static string? PickPicture<M>(string fileName, string folderName, IAbstractFormController<M> controller, FilePickerCatch? filePicked) where M : IAbstractModel, new()
         {
