@@ -23,7 +23,7 @@ namespace FrontEnd.ExtensionMethods
             if (showDialog)
                 newWin?.ShowDialog();
             else newWin?.Show();
-            
+
             win.Close();
         }
 
@@ -71,11 +71,11 @@ namespace FrontEnd.ExtensionMethods
         /// <returns>The controller of type C, or default(C) if not found or cast fails.</returns>
         public static C? GetController<C>(this Window win) where C : IAbstractFormController
         {
-            try 
+            try
             {
                 return (C)win.DataContext;
             }
-            catch 
+            catch
             {
                 return default;
             }
@@ -93,7 +93,7 @@ namespace FrontEnd.ExtensionMethods
             {
                 return (C)page.DataContext;
             }
-            catch 
+            catch
             {
                 return default;
             }

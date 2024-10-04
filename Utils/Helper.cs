@@ -7,6 +7,9 @@ using System.ComponentModel;
 using Backend.Utils;
 using FrontEnd.ExtensionMethods;
 using FrontEnd.Dialogs;
+using FrontEnd.Forms;
+using FrontEnd.Model;
+using System.IO;
 
 namespace FrontEnd.Utils
 {
@@ -53,7 +56,7 @@ namespace FrontEnd.Utils
         /// </summary>
         /// <param name="strKey">The key of the resource string.</param>
         /// <returns>The loaded string.</returns>
-        public static string LoadFromStrings(string strKey) 
+        public static string LoadFromStrings(string strKey)
         {
             string? str = GetDictionary("Strings")[strKey].ToString();
             return string.IsNullOrEmpty(str) ? string.Empty : str;
@@ -93,16 +96,16 @@ namespace FrontEnd.Utils
             {
                 if (current is T)
                     return (T)current;
-                    // Check visual tree
+                // Check visual tree
                 DependencyObject parent = VisualTreeHelper.GetParent(current);
 
                 if (parent == null)
                     parent = LogicalTreeHelper.GetParent(current);
-                
+
                 current = parent;
             }
             return null;
-            
+
         }
 
         /// <summary>
@@ -139,7 +142,7 @@ namespace FrontEnd.Utils
         public static BitmapImage? LoadImg(string? path)
         {
             if (string.IsNullOrEmpty(path)) return null;
-            try 
+            try
             {
                 BitmapImage bitmap = new();
                 bitmap.BeginInit();
@@ -148,8 +151,8 @@ namespace FrontEnd.Utils
                 bitmap.EndInit();
                 return bitmap;
             }
-            catch 
-            { 
+            catch
+            {
                 return null;
             }
 
@@ -190,7 +193,7 @@ namespace FrontEnd.Utils
 
             if (width != null) window.Width = width.Value;
             if (height != null) window.Height = height.Value;
-                        
+
             window.ShowDialog();
         }
         #endregion
@@ -209,6 +212,32 @@ namespace FrontEnd.Utils
             }
             CurrentUser.Logout();
             GetActiveWindow()?.GoToWindow(loginForm);
+        }
+
+        public static string? PickPicture<M>(string fileName, IAbstractFormController<M> controller, FilePickerCatch? filePicked) where M : IAbstractModel, new()
+        {
+            if (controller.CurrentRecord == null || filePicked == null) return null;
+            if (controller.CurrentRecord.IsDirty)
+                if (!controller.PerformUpdate()) return null;
+
+            if (filePicked.FileRemoved)
+                return null;
+
+            if (string.IsNullOrEmpty(filePicked.FilePath)) return null;
+
+            string folderPath = Path.Combine(Sys.AppPath(), "personPictures");
+            Sys.CreateFolder(folderPath);
+
+            FileTransfer fileTransfer = new()
+            {
+                SourceFilePath = filePicked.FilePath,
+                DestinationFolder = folderPath,
+                NewFileName = $"{fileName}.{filePicked.Extension}"
+            };
+
+            fileTransfer.Copy();
+
+            return fileTransfer.NewFileName;
         }
     }
 }
