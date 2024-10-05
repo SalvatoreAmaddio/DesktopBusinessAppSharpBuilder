@@ -12,6 +12,7 @@
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Strings.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Colors.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/Controls.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/ToolBarStyle.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/FrontEnd;component/Themes/PasswordBox.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 

@@ -9,31 +9,39 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:Form}">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="{TemplateBinding MenuRow}"/>
-                                <RowDefinition Height="{TemplateBinding HeaderRow}"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="5"/>
-                                <RowDefinition Height="{TemplateBinding RecordTrackerRow}"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="{TemplateBinding RecordStatusColumn}"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <ContentPresenter Grid.Row="0" Grid.Column="1" Content="{TemplateBinding Menu}"/>
-                            <ContentPresenter Grid.Row="1" Grid.ColumnSpan="2" Content="{TemplateBinding Header}"/>
-                            <Border Grid.Row="2" Grid.Column="1" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
-                                <ScrollViewer SnapsToDevicePixels="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                                    <ContentPresenter Content="{TemplateBinding Content}"
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="{TemplateBinding MenuRow}"/>
+                            <RowDefinition Height="{TemplateBinding ToolBarRow}"/>
+                            <RowDefinition Height="{TemplateBinding HeaderRow}"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="{TemplateBinding RecordTrackerRow}"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="{TemplateBinding RecordStatusColumn}"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ContentPresenter Grid.Row="0" Grid.ColumnSpan="2" Content="{TemplateBinding Menu}"/>
+
+                        <Border Grid.Row="1" Grid.ColumnSpan="2" Padding="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <ContentPresenter Content="{TemplateBinding ToolBar}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        </Border>
+                        
+                        <ContentPresenter Grid.Row="2" Grid.ColumnSpan="2" Content="{TemplateBinding Header}"/>
+
+                        <formComp:RecordStatus Grid.Row="3" DataContext="{TemplateBinding DataContext}"/>
+                        <Border Grid.Row="3" Grid.Column="1" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                            <ScrollViewer SnapsToDevicePixels="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                                <ContentPresenter Content="{TemplateBinding Content}"
                                               ContentTemplate="{TemplateBinding ContentTemplate}"
                                               HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                                               VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
-                                </ScrollViewer>
-                            </Border>
-                            <formComp:RecordStatus Grid.Row="0" Grid.RowSpan="3" DataContext="{TemplateBinding DataContext}"/>
-                            <ProgressBar Grid.Row="3" Grid.ColumnSpan="2" IsIndeterminate="{TemplateBinding IsLoading}"/>
-                            <formComp:RecordTracker Grid.Row="4" Grid.ColumnSpan="2" DataContext="{TemplateBinding DataContext}"/>
-                        </Grid>
+                            </ScrollViewer>
+                        </Border>
+                        
+                        <ProgressBar Grid.Row="4" Grid.ColumnSpan="2" IsIndeterminate="{TemplateBinding IsLoading}"/>
+                        <formComp:RecordTracker Grid.Row="5" Grid.ColumnSpan="2" DataContext="{TemplateBinding DataContext}"/>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

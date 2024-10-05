@@ -62,6 +62,23 @@ namespace FrontEnd.Forms
             DependencyProperty.Register(nameof(Menu), typeof(Menu), typeof(AbstractForm), new PropertyMetadata(OnElementChanged));
         #endregion
 
+        #region ToolBar
+        /// <summary>
+        /// Gets or sets the <see cref="System.Windows.Controls.ToolBar"/> associated with the form.
+        /// </summary>
+        public ToolBar ToolBar
+        {
+            get => (ToolBar)GetValue(ToolBarProperty);
+            set => SetValue(ToolBarProperty, value);
+        }
+
+        /// <summary>
+        /// Identifies the <see cref="ToolBar"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ToolBarProperty =
+            DependencyProperty.Register(nameof(ToolBar), typeof(ToolBar), typeof(AbstractForm), new PropertyMetadata(OnElementChanged));
+        #endregion
+
         #region MenuRow
         /// <summary>
         /// Gets or sets the height of the <see cref="Menu"/> row.
@@ -77,6 +94,23 @@ namespace FrontEnd.Forms
         /// </summary>
         public static readonly DependencyProperty MenuRowProperty =
             DependencyProperty.Register(nameof(MenuRow), typeof(GridLength), typeof(AbstractForm), new PropertyMetadata(new GridLength(0), null));
+        #endregion
+
+        #region ToolBarRow
+        /// <summary>
+        /// Gets or sets the height of the <see cref="Menu"/> row.
+        /// </summary>
+        public GridLength ToolBarRow
+        {
+            get => (GridLength)GetValue(ToolBarRowProperty);
+            set => SetValue(ToolBarRowProperty, value);
+        }
+
+        /// <summary>
+        /// Identifies the <see cref="ToolBarRow"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ToolBarRowProperty =
+            DependencyProperty.Register(nameof(ToolBarRow), typeof(GridLength), typeof(AbstractForm), new PropertyMetadata(new GridLength(0), null));
         #endregion
 
         #region HeaderRow
@@ -131,6 +165,9 @@ namespace FrontEnd.Forms
             {
                 case true when e.Property.Equals(MenuProperty):
                     control.MenuRow = new(SetRow(e.NewValue, 20));
+                    break;
+                case true when e.Property.Equals(ToolBarProperty):
+                    control.ToolBarRow = new(SetRow(e.NewValue, 35));
                     break;
                 case true when e.Property.Equals(HeaderProperty):
                     control.HeaderRow = new(SetRow(e.NewValue, control.HeaderRow.Value));
